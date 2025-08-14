@@ -498,7 +498,7 @@ const LobbyPage: React.FC = () => {
   };
 
   return (
-    <SiteLayout hideAuthButtons>
+    <SiteLayout>
       {/* Top Header */}
       <div className="bg-white border-b border-gray-200">
         <div className={cn(

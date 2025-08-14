@@ -85,6 +85,11 @@ Preferred communication style: Simple, everyday language.
 - **Leave Lobby Button Enhancement**: Made desktop Leave Lobby button more prominent with larger size and better visual emphasis
 - **Mobile Admin Navigation**: Added horizontal scrollable tabs with icons and counts for mobile admin interface
 - **Card-Based Admin Layout**: Converted Users, Lobbies, and Transactions from table format to mobile-friendly card layouts
+- **Enhanced Admin Controls**: Added user banning and deleting functionality with confirmation dialogs
+- **User Profile Management**: Created comprehensive profile page with account settings, security, and winnings tabs
+- **ADD BALANCE System**: Implemented full payment system with E-Transfer support and multiple payment options
+- **Navigation Improvements**: Fixed Winners section scrolling, navigation layout at various widths, and dashboard access from lobby
+- **Section IDs**: Added proper IDs to all navigation sections for smooth scrolling functionality
 
 ### User Preferences
 - **Communication Style**: Simple, everyday language

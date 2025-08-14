@@ -3,7 +3,7 @@ import { Play } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-br from-cream to-light-cream py-16 overflow-hidden">
+    <section id="about" className="relative bg-gradient-to-br from-cream to-light-cream py-16 overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-20 h-20 bg-casino-gold rounded-full"></div>
         <div className="absolute top-32 right-20 w-16 h-16 bg-casino-red rounded-full"></div>

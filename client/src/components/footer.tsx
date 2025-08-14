@@ -90,7 +90,7 @@ export function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div id="contact">
             <h4 className="text-lg font-bold mb-4 text-gray-900">Contact Info</h4>
             <div className="space-y-3">
               <div className="flex items-center">

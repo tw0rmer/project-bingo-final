@@ -167,9 +167,33 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+        {/* ADD BALANCE Feature */}
+        <div className="mb-6 rounded-xl bg-gradient-to-r from-casino-gold to-yellow-400 p-4 sm:p-6 shadow-lg border border-yellow-300">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-2">💰 Add Balance</h2>
+              <p className="text-yellow-100 text-sm">Fund your account to start playing! Multiple payment options available.</p>
+            </div>
+            <button
+              onClick={() => setLocation('/add-balance')}
+              className="bg-white text-casino-gold hover:bg-yellow-50 px-6 py-3 rounded-lg font-bold text-sm shadow-md transition-colors self-start sm:self-auto"
+            >
+              Add Funds →
+            </button>
+          </div>
+        </div>
+
         {/* User Info Card - Improved Mobile Layout */}
         <div className="mb-6 rounded-xl bg-gradient-to-r from-white to-gray-50 p-4 sm:p-6 shadow-lg border border-gray-200">
-          <h2 className="mb-4 text-lg sm:text-xl font-bold text-gray-900">Account Information</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Account Information</h2>
+            <button
+              onClick={() => setLocation('/profile')}
+              className="bg-casino-red hover:opacity-90 text-white px-4 py-2 rounded-lg font-medium text-sm self-start sm:self-auto"
+            >
+              Edit Profile
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white rounded-lg p-3 border border-gray-100">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Email Address</p>

@@ -22,26 +22,62 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden lg:flex space-x-8">
-            <Link href="/" className="text-lg font-medium casino-red hover:text-rose-gold transition-colors">
+          {/* Navigation - Better responsive layout */}
+          <nav className="hidden md:flex flex-wrap justify-center space-x-2 lg:space-x-6 xl:space-x-8">
+            <Link href="/" className="text-sm lg:text-lg font-medium casino-red hover:text-rose-gold transition-colors px-2 py-1">
               Home
             </Link>
-            <Link href="/games" className="text-lg font-medium text-gray-700 hover:casino-red transition-colors">
+            <Link href="/games" className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1">
               Games
             </Link>
-            <a href="#how-to-play" className="text-lg font-medium text-gray-700 hover:casino-red transition-colors">
+            <button 
+              onClick={() => {
+                if (window.location.pathname === '/') {
+                  document.getElementById('how-to-play')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#how-to-play';
+                }
+              }}
+              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+            >
               How to Play
-            </a>
-            <a href="#winners" className="text-lg font-medium text-gray-700 hover:casino-red transition-colors">
+            </button>
+            <button 
+              onClick={() => {
+                if (window.location.pathname === '/') {
+                  document.getElementById('winners')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#winners';
+                }
+              }}
+              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+            >
               Winners
-            </a>
-            <a href="#about" className="text-lg font-medium text-gray-700 hover:casino-red transition-colors">
+            </button>
+            <button 
+              onClick={() => {
+                if (window.location.pathname === '/') {
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#about';
+                }
+              }}
+              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+            >
               About
-            </a>
-            <a href="#contact" className="text-lg font-medium text-gray-700 hover:casino-red transition-colors">
+            </button>
+            <button 
+              onClick={() => {
+                if (window.location.pathname === '/') {
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#contact';
+                }
+              }}
+              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+            >
               Contact
-            </a>
+            </button>
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -142,38 +178,62 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             >
               Games
             </Link>
-            <a 
-              href="#how-to-play" 
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  document.getElementById('how-to-play')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#how-to-play';
+                }
+              }}
+              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
               data-testid="link-mobile-how-to-play"
             >
               How to Play
-            </a>
-            <a 
-              href="#winners" 
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
+            </button>
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  document.getElementById('winners')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#winners';
+                }
+              }}
+              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
               data-testid="link-mobile-winners"
             >
               Winners
-            </a>
-            <a 
-              href="#about" 
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
+            </button>
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#about';
+                }
+              }}
+              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
               data-testid="link-mobile-about"
             >
               About
-            </a>
-            <a 
-              href="#contact" 
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
-              onClick={() => setMobileMenuOpen(false)}
+            </button>
+            <button 
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (window.location.pathname === '/') {
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/#contact';
+                }
+              }}
+              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
               data-testid="link-mobile-contact"
             >
               Contact
-            </a>
+            </button>
             
             {/* Auth buttons in mobile menu */}
             {!hideAuthButtons && user && (

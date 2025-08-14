@@ -46,6 +46,8 @@ export default function AdminPage() {
   const [showCreateLobby, setShowCreateLobby] = useState(false);
   const [showEditUser, setShowEditUser] = useState<User | null>(null);
   const [showEditLobby, setShowEditLobby] = useState<Lobby | null>(null);
+  const [showBanConfirm, setShowBanConfirm] = useState<any>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
 
   useEffect(() => {
     fetchData();
@@ -174,6 +176,37 @@ export default function AdminPage() {
       fetchData();
     } catch (error: any) {
       setError(error.message || 'Failed to reset lobby');
+    }
+  };
+
+  // User ban/delete handlers
+  const handleBanUser = (userId: number, email: string) => {
+    setShowBanConfirm({ userId, email });
+  };
+
+  const handleDeleteUser = (userId: number, email: string) => {
+    setShowDeleteConfirm({ userId, email });
+  };
+
+  const confirmBanUser = async () => {
+    if (!showBanConfirm) return;
+    try {
+      await authApiRequest(`/admin/users/${showBanConfirm.userId}/ban`, { method: 'POST' });
+      setShowBanConfirm(null);
+      fetchData();
+    } catch (error: any) {
+      setError(error.message || 'Failed to ban user');
+    }
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!showDeleteConfirm) return;
+    try {
+      await authApiRequest(`/admin/users/${showDeleteConfirm.userId}`, { method: 'DELETE' });
+      setShowDeleteConfirm(null);
+      fetchData();
+    } catch (error: any) {
+      setError(error.message || 'Failed to delete user');
     }
   };
 
@@ -315,15 +348,30 @@ export default function AdminPage() {
                     >
                       Edit Balance
                     </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleUserAdmin(user.id, !user.isAdmin)}
+                        className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
+                          user.isAdmin 
+                            ? 'bg-red-100 hover:bg-red-200 text-red-800' 
+                            : 'bg-green-100 hover:bg-green-200 text-green-800'
+                        }`}
+                      >
+                        {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                      </button>
+                      <button
+                        onClick={() => handleBanUser(user.id, user.email)}
+                        className="bg-orange-100 hover:bg-orange-200 text-orange-800 py-1.5 px-3 rounded text-sm font-medium transition-colors"
+                        title="Ban User"
+                      >
+                        🚫
+                      </button>
+                    </div>
                     <button
-                      onClick={() => toggleUserAdmin(user.id, !user.isAdmin)}
-                      className={`w-full py-1.5 px-3 rounded text-sm font-medium transition-colors ${
-                        user.isAdmin 
-                          ? 'bg-red-100 hover:bg-red-200 text-red-800' 
-                          : 'bg-green-100 hover:bg-green-200 text-green-800'
-                      }`}
+                      onClick={() => handleDeleteUser(user.id, user.email)}
+                      className="w-full bg-red-100 hover:bg-red-200 text-red-800 py-1.5 px-3 rounded text-sm font-medium transition-colors"
                     >
-                      {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                      🗑️ Delete User
                     </button>
                   </div>
                 </div>
@@ -335,6 +383,62 @@ export default function AdminPage() {
                 No users found
               </div>
             )}
+          </div>
+        )}
+
+        {/* Mobile-Friendly Lobbies Tab */}
+        {showBanConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Ban User</h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to ban <strong>{showBanConfirm.email}</strong>? 
+                This will prevent them from logging in and playing games.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={confirmBanUser}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                >
+                  Ban User
+                </button>
+                <button
+                  onClick={() => setShowBanConfirm(null)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete User Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Delete User</h3>
+              <p className="text-gray-600 mb-4">
+                <strong>DANGER:</strong> This will permanently delete user <strong>{showDeleteConfirm.email}</strong> and all their data.
+              </p>
+              <p className="text-red-600 text-sm mb-6">
+                This action cannot be undone!
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={confirmDeleteUser}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                >
+                  Delete Permanently
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -504,7 +608,64 @@ export default function AdminPage() {
         )}
       </main>
 
-      {/* Modals */}
+      {/* Modals - outside main content */}
+      {/* Ban User Confirmation Modal */}
+      {showBanConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Ban User</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to ban <strong>{showBanConfirm.email}</strong>? 
+              This will prevent them from logging in and playing games.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={confirmBanUser}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+              >
+                Ban User
+              </button>
+              <button
+                onClick={() => setShowBanConfirm(null)}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete User Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Delete User</h3>
+            <p className="text-gray-600 mb-4">
+              <strong>DANGER:</strong> This will permanently delete user <strong>{showDeleteConfirm.email}</strong> and all their data.
+            </p>
+            <p className="text-red-600 text-sm mb-6">
+              This action cannot be undone!
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={confirmDeleteUser}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+              >
+                Delete Permanently
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Additional Modals */}
       {showEditUser && (
         <EditUserModal
           user={showEditUser}

@@ -17,6 +17,8 @@ import HowToPlayPage from './pages/how-to-play';
 import NotFoundPage from './pages/not-found';
 import AdminPage from './pages/admin';
 import LobbyPage from './pages/lobby';
+import AddBalancePage from './pages/add-balance';
+import ProfilePage from './pages/profile';
 
 export default function App() {
   return (
@@ -43,6 +45,16 @@ export default function App() {
               <Route path="/lobby/:id">
                 <ProtectedRoute>
                   <LobbyPage />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/add-balance">
+                <ProtectedRoute>
+                  <AddBalancePage />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/profile">
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               </Route>
               <Route component={NotFoundPage} />
