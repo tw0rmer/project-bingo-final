@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { BingoCard } from './bingo-card';
+import { CompactMobileBingo } from './compact-mobile-bingo';
 import { MasterCard } from './master-card';
 import { Eye, Grid3X3, Users, Info } from 'lucide-react';
 
@@ -68,21 +68,55 @@ export function MobileGameView({
       case 'card':
         return (
           <div className="w-full h-full flex flex-col overflow-hidden">
-            <BingoCard
-              onSeatSelect={onSeatSelect}
-              selectedSeat={selectedSeat}
-              participants={participants}
-              isJoining={isJoining}
-              gamePhase={gamePhase}
-              calledNumbers={calledNumbers}
-              onWin={onWin}
-              winnerSeatNumber={winnerSeatNumber}
-              winnerUserId={winnerUserId}
-              myUserId={myUserId}
-              lobbyId={lobbyId}
-              serverRow={serverRow}
-              serverCardsBySeat={serverCardsBySeat}
-            />
+            {/* User Status Bar at top */}
+            <div className="flex-shrink-0 bg-gradient-to-r from-blue-50 to-green-50 border-b border-gray-200 px-3 py-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div>
+                    <div className="text-xs text-gray-600">Balance</div>
+                    <div className="text-sm font-bold text-gray-900">
+                      ${parseFloat(user.balance).toFixed(2)}
+                    </div>
+                  </div>
+                  {currentUserParticipation && (
+                    <div className="bg-green-100 rounded px-2 py-1 border border-green-300">
+                      <div className="text-xs font-medium text-green-800">
+                        Seat #{currentUserParticipation.seatNumber}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-gray-600">Status</div>
+                  <div className={cn(
+                    "text-sm font-bold",
+                    currentUserParticipation ? "text-green-600" : "text-blue-600"
+                  )}>
+                    {currentUserParticipation ? "Playing" : 
+                     (canAffordEntry ? "Ready" : "Low Balance")}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Compact Mobile Bingo Card */}
+            <div className="flex-1 overflow-hidden">
+              <CompactMobileBingo
+                onSeatSelect={onSeatSelect}
+                selectedSeat={selectedSeat}
+                participants={participants}
+                isJoining={isJoining}
+                gamePhase={gamePhase}
+                calledNumbers={calledNumbers}
+                onWin={onWin}
+                winnerSeatNumber={winnerSeatNumber}
+                winnerUserId={winnerUserId}
+                myUserId={myUserId}
+                lobbyId={lobbyId}
+                serverRow={serverRow}
+                serverCardsBySeat={serverCardsBySeat}
+              />
+            </div>
           </div>
         );
       
