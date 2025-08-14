@@ -4,7 +4,7 @@ import './logger'; // Initialize logging system first
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import jwt from 'jsonwebtoken';
+
 import { registerRoutes } from "./routes/index";
 import GameEngine from "./gameEngine";
 import { setupVite, serveStatic, log } from "./vite";
@@ -89,7 +89,7 @@ app.use((req, res, next) => {
   });
 
   // Socket.io authentication middleware
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     
     if (!token) {
@@ -98,11 +98,12 @@ app.use((req, res, next) => {
     }
 
     try {
-      const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      // Import the verifyToken function to ensure consistent JWT handling
+      const { verifyToken } = await import('./middleware/auth');
+      const decoded = verifyToken(token);
       
-      console.log('[SOCKET AUTH] Token verified for user:', decoded.userId);
-      socket.data.userId = decoded.userId;
+      console.log('[SOCKET AUTH] Token verified for user:', decoded.id);
+      socket.data.userId = decoded.id;
       socket.data.userEmail = decoded.email;
       
       next();

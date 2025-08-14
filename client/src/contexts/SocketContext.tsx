@@ -56,7 +56,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     setError(null);
 
     // Create socket connection with authentication
-    const newSocket = io('http://localhost:5000', {
+    // In Replit, use relative URL since everything runs on the same domain
+    const newSocket = io({
       auth: {
         token: token
       },
