@@ -7,6 +7,7 @@ import { authApiRequest } from '@/lib/api';
 interface User {
   id: number;
   email: string;
+  username?: string;
   balance: string;
   isAdmin: boolean;
   createdAt: string;
@@ -42,12 +43,18 @@ export default function AdminPage() {
   const [, setLocation] = useLocation();
   const { user, logout } = useAuth();
 
+  // Search and selection states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUsers, setSelectedUsers] = useState<Set<number>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
   // Form states
   const [showCreateLobby, setShowCreateLobby] = useState(false);
   const [showEditUser, setShowEditUser] = useState<User | null>(null);
   const [showEditLobby, setShowEditLobby] = useState<Lobby | null>(null);
   const [showBanConfirm, setShowBanConfirm] = useState<any>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -210,6 +217,54 @@ export default function AdminPage() {
     }
   };
 
+  // Multi-select functionality
+  const filteredUsers = users.filter(user => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      user.email.toLowerCase().includes(term) ||
+      user.id.toString().includes(term) ||
+      (user.username && user.username.toLowerCase().includes(term))
+    );
+  });
+
+  const handleSelectUser = (userId: number, checked: boolean) => {
+    const newSelected = new Set(selectedUsers);
+    if (checked) {
+      newSelected.add(userId);
+    } else {
+      newSelected.delete(userId);
+    }
+    setSelectedUsers(newSelected);
+    setSelectAll(newSelected.size === filteredUsers.length && filteredUsers.length > 0);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const nonAdminUsers = filteredUsers.filter(user => !user.isAdmin);
+      setSelectedUsers(new Set(nonAdminUsers.map(user => user.id)));
+    } else {
+      setSelectedUsers(new Set());
+    }
+    setSelectAll(checked);
+  };
+
+  const bulkDeleteUsers = async () => {
+    try {
+      const userIds = Array.from(selectedUsers);
+      await authApiRequest('/admin/users/bulk-delete', {
+        method: 'POST',
+        body: JSON.stringify({ ids: userIds })
+      });
+      setSelectedUsers(new Set());
+      setSelectAll(false);
+      setShowBulkDeleteConfirm(false);
+      fetchData();
+    } catch (error: any) {
+      setError(error.message || 'Failed to bulk delete users');
+    }
+  };
+
   const startLobbyGame = async (lobbyId: number) => {
     try { await authApiRequest(`/admin/lobbies/${lobbyId}/start`, { method: 'POST' }); fetchData(); } catch (error: any) { setError(error.message || 'Failed to start lobby game'); }
   };
@@ -319,20 +374,87 @@ export default function AdminPage() {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div className="space-y-4">
+            {/* Search and Multi-Select Controls */}
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                <div className="flex-1 w-full sm:max-w-md">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search by email, username, or ID..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-casino-gold focus:border-transparent"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="select-all"
+                      checked={selectAll}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="w-4 h-4 text-casino-gold bg-gray-100 border-gray-300 rounded focus:ring-casino-gold"
+                    />
+                    <label htmlFor="select-all" className="text-sm font-medium text-gray-700">
+                      Select All ({selectedUsers.size} selected)
+                    </label>
+                  </div>
+                  
+                  {selectedUsers.size > 0 && (
+                    <button
+                      onClick={() => setShowBulkDeleteConfirm(true)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      Delete Selected ({selectedUsers.size})
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {filteredUsers.length !== users.length && (
+                <div className="mt-2 text-sm text-gray-600">
+                  Showing {filteredUsers.length} of {users.length} users
+                </div>
+              )}
+            </div>
+
             {/* Mobile-First Card Layout */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {users.map((user) => (
-                <div key={user.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+              {filteredUsers.map((user) => (
+                <div key={user.id} className={`bg-white rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow ${
+                  selectedUsers.has(user.id) ? 'border-casino-gold bg-yellow-50' : 'border-gray-200'
+                }`}>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-gray-500">ID #{user.id}</span>
-                        {user.isAdmin && (
-                          <span className="bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {!user.isAdmin && (
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.has(user.id)}
+                          onChange={(e) => handleSelectUser(user.id, e.target.checked)}
+                          className="w-4 h-4 text-casino-gold bg-gray-100 border-gray-300 rounded focus:ring-casino-gold"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-medium text-gray-500">ID #{user.id}</span>
+                          {user.isAdmin && (
+                            <span className="bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>
+                          )}
+                        </div>
+                        <h3 className="font-medium text-gray-900 truncate">{user.email}</h3>
+                        {user.username && (
+                          <p className="text-sm text-blue-600">@{user.username}</p>
                         )}
+                        <p className="text-sm text-gray-600">Created: {new Date(user.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <h3 className="font-medium text-gray-900 truncate">{user.email}</h3>
-                      <p className="text-sm text-gray-600">Created: {new Date(user.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                   
@@ -377,6 +499,12 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
+            
+            {filteredUsers.length === 0 && users.length > 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No users match your search criteria
+              </div>
+            )}
             
             {users.length === 0 && (
               <div className="text-center py-8 text-gray-500">
@@ -433,6 +561,46 @@ export default function AdminPage() {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Delete Confirmation Modal */}
+        {showBulkDeleteConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Bulk Delete Users</h3>
+              <p className="text-gray-600 mb-4">
+                <strong>DANGER:</strong> This will permanently delete <strong>{selectedUsers.size} users</strong> and all their data.
+              </p>
+              <div className="bg-gray-50 rounded-md p-3 mb-4 max-h-32 overflow-y-auto">
+                <p className="text-sm text-gray-600 mb-2">Users to be deleted:</p>
+                {filteredUsers
+                  .filter(user => selectedUsers.has(user.id))
+                  .map(user => (
+                    <div key={user.id} className="text-sm text-gray-800">
+                      • {user.email} (ID: {user.id})
+                    </div>
+                  ))
+                }
+              </div>
+              <p className="text-red-600 text-sm mb-6">
+                This action cannot be undone!
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={bulkDeleteUsers}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                >
+                  Delete {selectedUsers.size} Users
+                </button>
+                <button
+                  onClick={() => setShowBulkDeleteConfirm(false)}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
                 >
                   Cancel

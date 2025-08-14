@@ -208,6 +208,58 @@ router.delete('/users/:id', authenticateToken, requireAdmin, async (req: AuthReq
   }
 });
 
+// Bulk delete users (admin)
+router.post('/users/bulk-delete', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'Invalid user IDs array' });
+    }
+    
+    // Validate all IDs are numbers
+    const userIds = ids.map(id => parseInt(id)).filter(id => !isNaN(id));
+    if (userIds.length !== ids.length) {
+      return res.status(400).json({ message: 'All user IDs must be valid numbers' });
+    }
+    
+    // Get all users to validate they exist and check admin status
+    const allUsers = await db.select().from(users);
+    const usersToDelete = allUsers.filter(user => userIds.includes(user.id));
+    
+    if (usersToDelete.length === 0) {
+      return res.status(404).json({ message: 'No users found with provided IDs' });
+    }
+    
+    // Don't allow deleting admin users
+    const adminUsers = usersToDelete.filter(user => user.isAdmin);
+    if (adminUsers.length > 0) {
+      return res.status(403).json({ 
+        message: `Cannot delete admin users: ${adminUsers.map(u => u.email).join(', ')}` 
+      });
+    }
+    
+    // Delete transactions and participations for all users
+    for (const userId of userIds) {
+      await db.delete(walletTransactions).where(eq(walletTransactions.userId, userId));
+      await db.delete(lobbyParticipants).where(eq(lobbyParticipants.userId, userId));
+    }
+    
+    // Delete all users
+    for (const userId of userIds) {
+      await db.delete(users).where(eq(users.id, userId));
+    }
+    
+    res.json({ 
+      message: `Successfully deleted ${usersToDelete.length} users`,
+      deletedUsers: usersToDelete.map(u => ({ id: u.id, email: u.email }))
+    });
+  } catch (error) {
+    console.error('Bulk delete users error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Create new lobby (admin)
 router.post('/lobbies', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
