@@ -35,10 +35,10 @@ export function RecentWinners() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-casino-gold to-yellow-600 rounded-full mb-6">
               <Trophy className="text-white animate-pulse" size={40} />
             </div>
-            <h2 className="text-5xl font-bold bg-gradient-to-r from-casino-gold to-casino-red bg-clip-text text-transparent mb-4">
-              🏆 Recent Big Winners! 🏆
+            <h2 className="text-6xl md:text-7xl font-black bg-gradient-to-r from-casino-gold via-yellow-500 to-casino-red bg-clip-text text-transparent mb-6">
+              🏆 HALL OF CHAMPIONS 🏆
             </h2>
-            <p className="text-xl text-gray-600">Loading amazing winnings...</p>
+            <p className="text-2xl md:text-3xl text-gray-700 font-bold">Loading life-changing wins...</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -62,11 +62,12 @@ export function RecentWinners() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-casino-gold to-yellow-600 rounded-full mb-6">
             <Trophy className="text-white" size={40} />
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-casino-gold to-casino-red bg-clip-text text-transparent mb-4">
-            🏆 Recent Big Winners! 🏆
+          <h2 className="text-6xl md:text-7xl font-black bg-gradient-to-r from-casino-gold via-yellow-500 to-casino-red bg-clip-text text-transparent mb-6">
+            🏆 HALL OF CHAMPIONS 🏆
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Check out our latest champions and their amazing winnings! Could you be next?
+          <p className="text-2xl md:text-3xl text-gray-700 max-w-4xl mx-auto font-bold leading-tight">
+            These players struck gold and changed their lives forever! 
+            <span className="block mt-2 text-casino-red">Your winning moment is just one game away!</span>
           </p>
         </div>
 
@@ -96,8 +97,9 @@ export function RecentWinners() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {winners.map((winner: any, index: number) => {
               const winAmount = Number(winner.amount || 0);
-              const isJackpot = winAmount >= 500;
-              const isBigWin = winAmount >= 100;
+              const isJackpot = winAmount >= 250;
+              const isBigWin = winAmount >= 150;
+              const isGoodWin = winAmount >= 50;
               
               return (
                 <div 
@@ -106,7 +108,8 @@ export function RecentWinners() {
                     relative overflow-hidden rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300
                     ${isJackpot ? 'bg-gradient-to-br from-purple-600 via-pink-600 to-red-600' :
                       isBigWin ? 'bg-gradient-to-br from-casino-gold via-yellow-500 to-orange-500' :
-                      'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600'}
+                      isGoodWin ? 'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600' :
+                      'bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500'}
                   `}
                 >
                   {/* Animated Background Pattern */}
@@ -150,9 +153,13 @@ export function RecentWinners() {
                         inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
                         ${isJackpot ? 'bg-white/30 text-white' :
                           isBigWin ? 'bg-white/30 text-white' :
+                          isGoodWin ? 'bg-white/30 text-white' :
                           'bg-white/30 text-white'}
                       `}>
-                        {isJackpot ? '🎰 JACKPOT!' : isBigWin ? '💰 BIG WIN!' : '🎯 WINNER!'}
+                        {isJackpot ? '🎰 MEGA JACKPOT! ($250+)' : 
+                         isBigWin ? '💰 BIG WIN! ($150+)' : 
+                         isGoodWin ? '🎯 GOOD WIN! ($50+)' : 
+                         '🏅 WINNER!'}
                       </div>
                     </div>
 
