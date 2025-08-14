@@ -172,42 +172,38 @@ export function MobileBingoCard({
   };
 
   return (
-    <div className="h-full flex flex-col p-2 space-y-2">
-      {/* Header - compact */}
-      <div className="text-center flex-shrink-0">
-        <h2 className="text-lg font-bold text-gray-900 mb-1">Bingo Card</h2>
-        {selectedSeat ? (
-          <div className="inline-flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+    <div className="w-full h-full flex flex-col">
+      {/* Header - minimal */}
+      <div className="flex-shrink-0 text-center py-2">
+        <h2 className="text-base font-bold text-gray-900">Bingo Card</h2>
+        {selectedSeat && (
+          <div className="inline-flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium mt-1">
             🪑 Seat {selectedSeat}
           </div>
-        ) : (
-          <p className="text-gray-600 text-xs">Select a seat to join the game</p>
         )}
       </div>
 
-      {/* Mobile-optimized bingo grid with larger touch targets */}
-      <div className="flex-1 flex flex-col space-y-2">
-        {/* Column headers - larger for mobile */}
-        <div className="grid grid-cols-6 gap-1">
-          <div className="flex items-center justify-center bg-indigo-600 text-white rounded-lg h-12 text-base font-bold">
-            SEAT
-          </div>
-          {['B', 'I', 'N', 'G', 'O'].map((letter, index) => (
-            <div key={letter} className="flex flex-col items-center justify-center bg-blue-600 text-white rounded-lg h-12 text-base font-bold">
-              <div className="text-white font-bold text-lg">{letter}</div>
-              <div className="text-xs text-white opacity-90 font-medium leading-none">
-                {index === 0 && "1-15"}
-                {index === 1 && "16-30"}
-                {index === 2 && "31-45"}
-                {index === 3 && "46-60"}
-                {index === 4 && "61-75"}
-              </div>
-            </div>
-          ))}
+      {/* Column headers - compact */}
+      <div className="flex-shrink-0 grid grid-cols-6 gap-1 px-2 mb-2">
+        <div className="flex items-center justify-center bg-indigo-600 text-white rounded h-8 text-xs font-bold">
+          SEAT
         </div>
+        {['B', 'I', 'N', 'G', 'O'].map((letter, index) => (
+          <div key={letter} className="flex flex-col items-center justify-center bg-blue-600 text-white rounded h-8 text-xs font-bold">
+            <div className="text-white font-bold text-sm">{letter}</div>
+            <div className="text-[10px] text-white opacity-90 leading-none">
+              {index === 0 && "1-15"}
+              {index === 1 && "16-30"}
+              {index === 2 && "31-45"}
+              {index === 3 && "46-60"}
+              {index === 4 && "61-75"}
+            </div>
+          </div>
+        ))}
+      </div>
 
-        {/* Scrollable rows - optimized height for mobile to show all 15 rows */}
-        <div className="flex-1 overflow-y-auto space-y-1 min-h-0" style={{ maxHeight: 'calc(100vh - 180px)', minHeight: '840px' }}>
+      {/* Scrollable content area - uses remaining space */}
+      <div className="flex-1 overflow-y-auto px-2 pb-2">
           {Array.from({ length: 15 }, (_, rowIndex) => {
             const seatNumber = rowIndex + 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
@@ -216,13 +212,13 @@ export function MobileBingoCard({
             const isMyRow = selectedSeat === seatNumber;
 
             return (
-              <div key={rowIndex} className="grid grid-cols-6 gap-1">
-                {/* Seat button - larger for mobile */}
+              <div key={rowIndex} className="grid grid-cols-6 gap-1 mb-2">
+                {/* Seat button - compact but touch-friendly */}
                 <button
                   onClick={() => !isOccupied && !isJoining && onSeatSelect(seatNumber)}
                   disabled={isOccupied || isJoining}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-lg h-14 font-bold transition-all min-h-[56px]",
+                    "flex flex-col items-center justify-center rounded h-11 font-bold transition-all",
                     "focus:outline-none focus:ring-2 focus:ring-blue-500",
                     "active:scale-95 transition-transform duration-100",
                     isSelected && "bg-emerald-600 text-white shadow-lg",
@@ -231,8 +227,8 @@ export function MobileBingoCard({
                     winnerSeatNumber === seatNumber && "ring-4 ring-yellow-400 animate-pulse"
                   )}
                 >
-                  <div className="text-base font-bold text-current">#{seatNumber}</div>
-                  <div className="text-xs font-medium truncate max-w-full leading-none">
+                  <div className="text-sm font-bold text-current">#{seatNumber}</div>
+                  <div className="text-[10px] font-medium truncate max-w-full leading-none">
                     {isOccupied ? (
                       participant?.user?.email?.split('@')[0] || 'User'
                     ) : (
@@ -241,14 +237,14 @@ export function MobileBingoCard({
                   </div>
                 </button>
 
-                {/* Bingo numbers - larger touch targets for mobile */}
+                {/* Bingo numbers - optimized size */}
                 {bingoCard && bingoCard[rowIndex]?.map((number, colIndex) => (
                   <button
                     key={colIndex}
                     onClick={gamePhase === 'playing' && isMyRow ? () => handleNumberClick(rowIndex, colIndex) : undefined}
                     disabled={gamePhase !== 'playing' || !isMyRow}
                     className={cn(
-                      "flex items-center justify-center rounded-lg h-14 text-base font-bold transition-all min-h-[56px]",
+                      "flex items-center justify-center rounded h-11 text-sm font-bold transition-all",
                       "focus:outline-none focus:ring-2 focus:ring-blue-500",
                       gamePhase === 'playing' && isMyRow && "active:scale-95 transition-transform duration-100",
                       gamePhase === 'playing' && isMyRow ? "cursor-pointer" : "cursor-default",
@@ -267,16 +263,13 @@ export function MobileBingoCard({
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Instructions - compact */}
-      <div className="text-center text-xs text-gray-600 bg-gray-50 rounded-lg p-2 flex-shrink-0">
-        {gamePhase === 'lobby' && !selectedSeat && "Tap a seat number to join"}
-        {gamePhase === 'lobby' && selectedSeat && "Waiting for game to start..."}
-        {gamePhase === 'playing' && selectedSeat && "Tap numbers on your row when called"}
-        {gamePhase === 'playing' && !selectedSeat && "You're not in this game"}
-        {gamePhase === 'finished' && "Game finished"}
+        
+        {/* Instructions at bottom if no seat selected */}
+        {!selectedSeat && gamePhase === 'lobby' && (
+          <div className="text-center text-xs text-gray-600 bg-gray-50 rounded p-2 mt-4">
+            Tap a seat number to join the game
+          </div>
+        )}
       </div>
     </div>
   );
