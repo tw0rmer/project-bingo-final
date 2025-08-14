@@ -7,6 +7,9 @@ import ConnectionStatus from '../components/ConnectionStatus';
 import { SiteLayout } from '@/components/SiteLayout';
 import { BingoCard } from '../components/games/bingo-card';
 import { MasterCard } from '../components/games/master-card';
+import { MobileGameView } from '../components/games/mobile-game-view';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { cn } from '@/lib/utils';
 
 interface Lobby {
   id: number;
@@ -58,6 +61,7 @@ const LobbyPage: React.FC = () => {
   const [callMs, setCallMs] = useState(3000);
 
   const { socket, isConnected } = useSocket();
+  const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
 
   // Load deterministic lobby cards for waiting phase
   useEffect(() => {
@@ -100,7 +104,7 @@ const LobbyPage: React.FC = () => {
           apiRequest<Participant[]>(`/lobbies/${lobbyId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
-          apiRequest<User>('/dashboard', {
+          apiRequest<{ user: User }>('/dashboard', {
             headers: { 'Authorization': `Bearer ${token}` }
           }).then(data => data.user)
         ]);
@@ -415,7 +419,7 @@ const LobbyPage: React.FC = () => {
             }}
             winnerSeatNumber={winner?.seatNumber}
             winnerUserId={winner?.userId}
-            myUserId={user.id}
+            myUserId={user?.id}
             lobbyId={lobby.id}
             // When a server card exists for this seat, provide it so the client-card matches
             serverRow={currentUserParticipation ? serverCardsBySeat[currentUserParticipation.seatNumber] : undefined}
@@ -495,246 +499,313 @@ const LobbyPage: React.FC = () => {
 
   return (
     <SiteLayout hideAuthButtons>
-      {/* Mobile-Responsive Top Header */}
+      {/* Top Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-2 sm:px-4 py-2">
+        <div className={cn(
+          "container mx-auto py-2",
+          isMobile ? "px-2" : "px-4"
+        )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
               <button
                 onClick={() => setLocation('/dashboard')}
-                className="text-casino-red hover:opacity-80 transition-colors text-sm sm:text-sm flex-shrink-0 touch-manipulation"
+                className="text-casino-red hover:opacity-80 transition-colors text-sm flex-shrink-0 touch-manipulation"
               >
                 ← Back
               </button>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{lobby.name}</h1>
+              <h1 className={cn(
+                "font-bold text-gray-900 truncate",
+                isMobile ? "text-lg" : "text-xl"
+              )}>{lobby.name}</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
-              <ConnectionStatus showDetails={false} className="text-xs hidden sm:block" />
-              <div className="text-xs sm:text-xs text-gray-700">
-                <span className="hidden sm:inline">Balance: </span>${getBalanceAsNumber(user.balance).toFixed(2)}
+              {!isMobile && <ConnectionStatus showDetails={false} className="text-xs" />}
+              <div className="text-xs text-gray-700">
+                {!isMobile && <span>Balance: </span>}${getBalanceAsNumber(user.balance).toFixed(2)}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile-Responsive Game Container */}
-      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
-        <div className="mx-auto max-w-7xl">
-          <div className="bg-white rounded-lg p-2 sm:p-3 min-h-[calc(100vh-12rem)] lg:h-[780px] flex flex-col gap-2 border border-gray-200">
-            {/* Mobile-Responsive HUD Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-center">
-              <div className="bg-gray-100 rounded p-2">
-                <div className="text-[10px] sm:text-[11px] text-gray-600">Entry Fee</div>
-                <div className="text-sm sm:text-base font-bold text-casino-red">${lobby.entryFee}</div>
-              </div>
-              <div className="bg-gray-100 rounded p-2">
-                <div className="text-[10px] sm:text-[11px] text-gray-600">Players</div>
-                <div className="text-sm sm:text-base font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
-              </div>
-              <div className="bg-gray-100 rounded p-2">
-                <div className="text-[10px] sm:text-[11px] text-gray-600">Game Phase</div>
-                <div className={`text-sm sm:text-base font-bold flex items-center justify-center gap-1 sm:gap-2 ${
-                  gameStatus === 'waiting' ? 'text-yellow-600' :
-                  gameStatus === 'active' ? 'text-green-600' : 'text-purple-600'
-                }`}>
-                  <span className="text-xs sm:text-sm">
-                    {gameStatus === 'waiting' && '🪑'}
-                    {gameStatus === 'active' && '🎯'}
-                    {gameStatus === 'finished' && '🏆'}
-                  </span>
-                  <span className="text-xs sm:text-sm">
-                    {gameStatus === 'waiting' && 'Lobby'}
-                    {gameStatus === 'active' && 'Playing'}
-                    {gameStatus === 'finished' && 'Finished'}
-                  </span>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded p-2 flex flex-col lg:flex-row items-center justify-center gap-1 lg:gap-2">
-                <div className="text-center lg:text-left">
-                  <div className="text-[10px] sm:text-[11px] text-gray-600">Connection</div>
-                  <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>{isConnected ? '🟢 Live' : '🔴 Offline'}</div>
-                </div>
-                {currentUserParticipation && gameStatus !== 'active' && (
-                  <button
-                    onClick={handleLeaveLobby}
-                    disabled={joining}
-                    className="bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-2 lg:px-3 py-1 lg:py-1.5 rounded text-[10px] lg:text-xs font-semibold text-white"
-                    title="Leave Lobby"
-                  >
-                    Leave
-                  </button>
-                )}
-              </div>
+      {/* Game Container */}
+      <div className={cn(
+        "container mx-auto py-2",
+        isMobile ? "px-0" : "px-4"
+      )}>
+        <div className={cn(
+          "mx-auto",
+          isMobile ? "w-full" : "max-w-7xl"
+        )}>
+          {isMobile ? (
+            /* Mobile View - Full height tabbed interface */
+            <div className="h-[calc(100vh-4rem)] bg-white border-t border-gray-200">
+              <MobileGameView
+                onSeatSelect={(seatNumber) => {
+                  const currentGamePhase = (() => {
+                    const status = gameStatus || lobby.status;
+                    switch (status) {
+                      case 'waiting': return 'lobby';
+                      case 'active': return 'playing';
+                      case 'finished': return 'finished';
+                      default: return 'lobby';
+                    }
+                  })();
+                  if (currentGamePhase === 'lobby' && !joining) {
+                    handleJoinLobby(seatNumber);
+                  }
+                }}
+                selectedSeat={currentUserParticipation?.seatNumber}
+                participants={participants}
+                isJoining={joining}
+                gamePhase={(() => {
+                  const status = gameStatus || lobby.status;
+                  switch (status) {
+                    case 'waiting': return 'lobby';
+                    case 'active': return 'playing';
+                    case 'finished': return 'finished';
+                    default: return 'lobby';
+                  }
+                })()}
+                calledNumbers={calledNumbers}
+                onWin={(pattern, rowNumbers) => {
+                  if (!currentUserParticipation) return;
+                  const token = localStorage.getItem('token');
+                  apiRequest(`/games/${lobby.id}/claim`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ userId: user!.id, seatNumber: currentUserParticipation.seatNumber, numbers: rowNumbers }),
+                  }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+                }}
+                winnerSeatNumber={winner?.seatNumber}
+                winnerUserId={winner?.userId}
+                myUserId={user?.id}
+                lobbyId={lobby.id}
+                serverRow={currentUserParticipation ? serverCardsBySeat[currentUserParticipation.seatNumber] : undefined}
+                serverCardsBySeat={serverCardsBySeat}
+                lobby={lobby}
+                user={user}
+                currentUserParticipation={currentUserParticipation}
+                canAffordEntry={canAffordEntry}
+                isConnected={isConnected}
+                isPaused={isPaused}
+                gameStatus={gameStatus}
+              />
             </div>
-
-            {/* Mobile-Responsive Main Content */}
-            <div className="flex flex-col lg:grid lg:grid-cols-[1fr,260px] gap-2 flex-1 min-h-0">
-              {/* Card */}
-              <div className="bg-white rounded p-2 overflow-hidden border border-gray-200">
-                {renderBingoCard()}
+          ) : (
+            /* Desktop View - Original layout */
+            <div className="bg-white rounded-lg p-3 min-h-[calc(100vh-12rem)] lg:h-[780px] flex flex-col gap-2 border border-gray-200">
+              {/* Desktop HUD Row */}
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="bg-gray-100 rounded p-2">
+                  <div className="text-[11px] text-gray-600">Entry Fee</div>
+                  <div className="text-base font-bold text-casino-red">${lobby.entryFee}</div>
+                </div>
+                <div className="bg-gray-100 rounded p-2">
+                  <div className="text-[11px] text-gray-600">Players</div>
+                  <div className="text-base font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
+                </div>
+                <div className="bg-gray-100 rounded p-2">
+                  <div className="text-[11px] text-gray-600">Game Phase</div>
+                  <div className={`text-base font-bold flex items-center justify-center gap-2 ${
+                    gameStatus === 'waiting' ? 'text-yellow-600' :
+                    gameStatus === 'active' ? 'text-green-600' : 'text-purple-600'
+                  }`}>
+                    <span className="text-sm">
+                      {gameStatus === 'waiting' && '🪑'}
+                      {gameStatus === 'active' && '🎯'}
+                      {gameStatus === 'finished' && '🏆'}
+                    </span>
+                    <span className="text-sm">
+                      {gameStatus === 'waiting' && 'Lobby'}
+                      {gameStatus === 'active' && 'Playing'}
+                      {gameStatus === 'finished' && 'Finished'}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-gray-100 rounded p-2 flex items-center justify-center gap-2">
+                  <div className="text-left">
+                    <div className="text-[11px] text-gray-600">Connection</div>
+                    <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                      {isConnected ? '🟢 Live' : '🔴 Offline'}
+                    </div>
+                  </div>
+                  {currentUserParticipation && gameStatus !== 'active' && (
+                    <button
+                      onClick={handleLeaveLobby}
+                      disabled={joining}
+                      className="bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-3 py-1.5 rounded text-xs font-semibold text-white"
+                      title="Leave Lobby"
+                    >
+                      Leave
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* Mobile-Responsive Sidebar */}
-              <div className="bg-white rounded p-2 flex flex-col min-h-0 lg:min-h-0 border border-gray-200">
-                {/* Admin controls (minimal) */}
-                {user?.isAdmin && (
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    {gameStatus !== 'active' && (
-                      <button
-                        onClick={async () => {
-                          try {
-                            const token = localStorage.getItem('token');
-                            await apiRequest(`/games/${lobby.id}/start`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                          } catch (e) {
-                            setToastMsg((e as Error).message);
-                          }
-                        }}
-                        className="bg-green-600 hover:bg-green-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
-                      >Start</button>
-                    )}
-                    {gameStatus === 'active' && (
-                      <>
+              {/* Desktop Main Content */}
+              <div className="grid grid-cols-[1fr,260px] gap-2 flex-1 min-h-0">
+                {/* Card */}
+                <div className="bg-white rounded p-2 overflow-hidden border border-gray-200">
+                  {renderBingoCard()}
+                </div>
+
+                {/* Desktop Sidebar */}
+                <div className="bg-white rounded p-2 flex flex-col min-h-0 border border-gray-200">
+                  {/* Admin controls */}
+                  {user?.isAdmin && (
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      {gameStatus !== 'active' && (
                         <button
                           onClick={async () => {
                             try {
                               const token = localStorage.getItem('token');
-                              const endpoint = isPaused ? 'resume' : 'pause';
-                              await apiRequest(`/games/${lobby.id}/${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                              setIsPaused(!isPaused);
+                              await apiRequest(`/games/${lobby.id}/start`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
                             } catch (e) {
                               setToastMsg((e as Error).message);
                             }
                           }}
-                          className="bg-indigo-600 hover:bg-indigo-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
-                        >{isPaused ? 'Resume' : 'Pause'}</button>
-                        <select
-                          className="bg-white border border-gray-300 rounded text-xs px-1 py-1"
-                          value={callMs}
-                          onChange={async (e) => {
-                            const ms = parseInt(e.target.value, 10);
-                            setCallMs(ms);
-                            try {
-                              const token = localStorage.getItem('token');
-                              await apiRequest(`/games/${lobby.id}/speed`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ ms }) });
-                            } catch (err) {
-                              setToastMsg((err as Error).message);
-                            }
-                          }}
-                        >
-                          <option value={1000}>Speed: 1s</option>
-                          <option value={2000}>Speed: 2s</option>
-                          <option value={3000}>Speed: 3s</option>
-                          <option value={5000}>Speed: 5s</option>
-                        </select>
-                        <button
-                          onClick={async () => {
-                            try {
-                              const token = localStorage.getItem('token');
-                              await apiRequest(`/games/${lobby.id}/stop`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                            } catch (e) {
-                              if ((e as Error).message?.includes('No active game')) {
-                                setToastMsg('No active game');
-                              } else {
+                          className="bg-green-600 hover:bg-green-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
+                        >Start</button>
+                      )}
+                      {gameStatus === 'active' && (
+                        <>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token');
+                                const endpoint = isPaused ? 'resume' : 'pause';
+                                await apiRequest(`/games/${lobby.id}/${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                                setIsPaused(!isPaused);
+                              } catch (e) {
                                 setToastMsg((e as Error).message);
                               }
-                            }
-                          }}
-                          className="bg-yellow-600 hover:bg-yellow-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
-                        >Stop</button>
-                      </>
+                            }}
+                            className="bg-indigo-600 hover:bg-indigo-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
+                          >{isPaused ? 'Resume' : 'Pause'}</button>
+                          <select
+                            className="bg-white border border-gray-300 rounded text-xs px-1 py-1"
+                            value={callMs}
+                            onChange={async (e) => {
+                              const ms = parseInt(e.target.value, 10);
+                              setCallMs(ms);
+                              try {
+                                const token = localStorage.getItem('token');
+                                await apiRequest(`/games/${lobby.id}/speed`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ ms }) });
+                              } catch (err) {
+                                setToastMsg((err as Error).message);
+                              }
+                            }}
+                          >
+                            <option value={1000}>Speed: 1s</option>
+                            <option value={2000}>Speed: 2s</option>
+                            <option value={3000}>Speed: 3s</option>
+                            <option value={5000}>Speed: 5s</option>
+                          </select>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = localStorage.getItem('token');
+                                await apiRequest(`/games/${lobby.id}/stop`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                              } catch (e) {
+                                if ((e as Error).message?.includes('No active game')) {
+                                  setToastMsg('No active game');
+                                } else {
+                                  setToastMsg((e as Error).message);
+                                }
+                              }
+                            }}
+                            className="bg-yellow-600 hover:bg-yellow-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
+                          >Stop</button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Called numbers panel */}
+                  <div className="mb-2 bg-gray-50 rounded p-2 border border-gray-200">
+                    <div className="text-xs font-bold mb-1 text-gray-900">Called Numbers</div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[11px] text-gray-600 flex-shrink-0">Last:</span>
+                      <div className="inline-flex gap-1">
+                        {calledNumbers.length > 0 && (
+                          <span className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
+                            {calledNumbers[calledNumbers.length - 1]}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-gray-600 flex-shrink-0">Recent:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {calledNumbers.slice(-6).reverse().map((n, idx) => (
+                          <span key={idx} className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
+                            {n}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Master Card - Always visible on desktop */}
+                  <div className="mb-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="text-xs text-gray-700">Master (1–75)</div>
+                      <div className="text-[11px] text-gray-500">Yellow = called</div>
+                    </div>
+                    <MasterCard calledNumbers={calledNumbers} compact={true} showHeaders={false} />
+                  </div>
+
+                  {/* Join/Seat area */}
+                  <div className="mb-2">
+                    {currentUserParticipation ? (
+                      <div className="bg-green-50 rounded p-2 text-center border border-green-200">
+                        <p className="text-green-700 text-sm font-medium">You are in seat {currentUserParticipation.seatNumber}</p>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 rounded p-2 text-center text-gray-700 text-sm border border-gray-200">
+                        {lobby.status === 'waiting' 
+                          ? (canAffordEntry ? 'Click an available seat to join' : 'Insufficient balance to join')
+                          : 'Lobby not accepting players'}
+                      </div>
                     )}
                   </div>
-                )}
 
-                {/* Called numbers panel - mobile optimized */}
-                <div className="mb-2 bg-gray-50 rounded p-2 border border-gray-200">
-                  <div className="text-xs font-bold mb-1 text-gray-900">Called Numbers</div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-1">
-                    <span className="text-[11px] text-gray-600 flex-shrink-0">Last:</span>
-                    <div className="inline-flex gap-1">
-                      {calledNumbers.length > 0 && (
-                        <span className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
-                          {calledNumbers[calledNumbers.length - 1]}
-                        </span>
+                  {/* Participants */}
+                  <div className="flex-1 min-h-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h2 className="text-sm font-bold text-gray-900">Players ({participants.length}/{lobby.maxSeats})</h2>
+                    </div>
+                    <div className="space-y-2 overflow-y-auto pr-1 h-full">
+                      {participants.length > 0 ? (
+                        participants.map((participant) => (
+                          <div key={participant.id} className="flex items-center justify-between bg-gray-50 rounded p-2 border border-gray-200">
+                            <div>
+                              <div className="text-xs font-medium text-gray-900">
+                                {participant.user?.email?.split('@')[0] || 'Unknown'}
+                                {participant.userId === user.id && <span className="text-green-700 ml-1">(You)</span>}
+                              </div>
+                              <div className="text-[11px] text-gray-500">Seat {participant.seatNumber}</div>
+                            </div>
+                            <div className="text-[11px] text-gray-500">
+                              {new Date(participant.joinedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4 text-sm">No players yet. Be the first to join!</p>
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <span className="text-[11px] text-gray-600 flex-shrink-0">Recent:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {calledNumbers.slice(-6).reverse().map((n, idx) => (
-                        <span key={idx} className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
-                          {n}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Master Card compact - hidden on mobile to save space */}
-                <div className="mb-2 hidden lg:block">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="text-xs text-gray-700">Master (1–75)</div>
-                    <div className="text-[11px] text-gray-500">Light yellow = called</div>
-                  </div>
-                  <MasterCard calledNumbers={calledNumbers} compact={true} showHeaders={false} />
-                </div>
-
-                {/* Join/Seat area */}
-                <div className="mb-2">
-                  {currentUserParticipation ? (
-                    <div className="bg-green-50 rounded p-2 text-center border border-green-200">
-                      <p className="text-green-700 text-sm font-medium">You are in seat {currentUserParticipation.seatNumber}</p>
-                    </div>
-                  ) : (
-                    <div className="bg-gray-50 rounded p-2 text-center text-gray-700 text-sm border border-gray-200">
-                      {lobby.status === 'waiting' 
-                        ? (canAffordEntry ? 'Click an available seat to join' : 'Insufficient balance to join')
-                        : 'Lobby not accepting players'}
-                    </div>
-                  )}
-                </div>
-
-                {/* Mobile-Responsive Participants */}
-                <div className="flex-1 min-h-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h2 className="text-sm font-bold text-gray-900">Players ({participants.length}/{lobby.maxSeats})</h2>
-                  </div>
-                  <div className="space-y-2 overflow-y-auto pr-1 max-h-64 lg:max-h-none lg:h-full">
-                    {participants.length > 0 ? (
-                      participants.map((participant) => (
-                        <div key={participant.id} className="flex items-center justify-between bg-gray-50 rounded p-2 border border-gray-200">
-                          <div>
-                            <div className="text-xs font-medium text-gray-900">
-                              {participant.user?.email?.split('@')[0] || 'Unknown'}
-                              {participant.userId === user.id && <span className="text-green-700 ml-1">(You)</span>}
-                            </div>
-                            <div className="text-[11px] text-gray-500">Seat {participant.seatNumber}</div>
-                          </div>
-                          <div className="text-[11px] text-gray-500">
-                            {new Date(participant.joinedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4 text-sm">No players yet. Be the first to join!</p>
-                    )}
-                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Mobile-Responsive Footer */}
-            <div className="hidden lg:flex items-center justify-between text-[11px] text-gray-500">
-              <div>Tip: Use the left table to pick a seat.</div>
+              {/* Desktop Footer */}
+              <div className="flex items-center justify-between text-[11px] text-gray-500">
+                <div>Tip: Use the left table to pick a seat.</div>
+              </div>
             </div>
-            
-            {/* Mobile-only quick instructions */}
-            <div className="lg:hidden text-center text-xs text-gray-500 bg-gray-50 rounded p-2">
-              Tap a seat number to join the game
-            </div>
-          </div>
+          )}
         </div>
       </div>
       {toastMsg && (

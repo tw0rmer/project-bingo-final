@@ -24,7 +24,10 @@ export const MasterCard: React.FC<MasterCardProps> = ({ calledNumbers, className
         {columns.map((col) => (
           <div key={col.label} className="flex flex-col gap-[2px]">
             {showHeaders && (
-              <div className="h-6 rounded bg-gray-100 text-gray-900 text-[11px] font-semibold flex items-center justify-center border border-gray-200">
+              <div className={cn(
+                "rounded bg-gray-100 text-gray-900 font-semibold flex items-center justify-center border border-gray-200",
+                compact ? "h-6 text-[11px]" : "h-8 text-sm"
+              )}>
                 {col.label}
               </div>
             )}
@@ -34,11 +37,11 @@ export const MasterCard: React.FC<MasterCardProps> = ({ calledNumbers, className
                 <div
                   key={num}
                   className={cn(
-                    compact ? "h-5 text-[10px]" : "h-6 text-[10px]",
-                    "rounded leading-none flex items-center justify-center select-none",
+                    "rounded leading-none flex items-center justify-center select-none transition-colors",
+                    compact ? "h-5 text-[10px]" : "h-7 text-xs sm:text-sm font-medium",
                     isCalled
-                      ? "bg-yellow-200/80 text-gray-900 font-semibold"
-                      : "bg-gray-100 text-gray-900 border border-gray-200"
+                      ? "bg-yellow-300 text-gray-900 font-bold border-2 border-yellow-500"
+                      : "bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-50"
                   )}
                   title={`Number ${num}${isCalled ? ' (called)' : ''}`}
                 >
