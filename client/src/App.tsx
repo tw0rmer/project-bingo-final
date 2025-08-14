@@ -5,7 +5,7 @@ import { SocketProvider } from './contexts/SocketContext';
 import { queryClient } from './lib/queryClient';
 import { Toaster } from './components/ui/toaster';
 import ProtectedRoute from './components/ProtectedRoute';
-import DebugPanel from './components/DebugPanel';
+
 
 // Pages
 import HomePage from './pages/home';
@@ -49,7 +49,7 @@ export default function App() {
             </Switch>
           </Router>
           <Toaster />
-          <DebugPanel />
+
         </SocketProvider>
       </AuthProvider>
     </QueryClientProvider>

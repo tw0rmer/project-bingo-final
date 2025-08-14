@@ -205,7 +205,7 @@ export const initializeDebugLogger = () => {
 
 export const getDebugLogger = () => debugLoggerInstance;
 
-// Auto-initialize in development
-if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
-  initializeDebugLogger();
-} 
+// Auto-initialize in development - Disabled for mobile optimization
+// if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+//   initializeDebugLogger();
+// } 

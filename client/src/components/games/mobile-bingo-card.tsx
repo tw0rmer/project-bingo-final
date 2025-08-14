@@ -194,8 +194,8 @@ export function MobileBingoCard({
           </div>
           {['B', 'I', 'N', 'G', 'O'].map((letter, index) => (
             <div key={letter} className="flex flex-col items-center justify-center bg-blue-600 text-white rounded-lg h-10 text-sm font-bold">
-              <div>{letter}</div>
-              <div className="text-[10px] opacity-75">
+              <div className="text-white font-bold">{letter}</div>
+              <div className="text-[10px] text-white opacity-90 font-medium">
                 {index === 0 && "1-15"}
                 {index === 1 && "16-30"}
                 {index === 2 && "31-45"}
@@ -206,8 +206,8 @@ export function MobileBingoCard({
           ))}
         </div>
 
-        {/* Scrollable rows */}
-        <div className="flex-1 overflow-y-auto space-y-2">
+        {/* Scrollable rows with proper height */}
+        <div className="flex-1 overflow-y-auto space-y-2 max-h-[calc(100vh-280px)]">
           {Array.from({ length: 15 }, (_, rowIndex) => {
             const seatNumber = rowIndex + 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
@@ -231,12 +231,12 @@ export function MobileBingoCard({
                     winnerSeatNumber === seatNumber && "ring-4 ring-yellow-400 animate-pulse"
                   )}
                 >
-                  <div className="text-xs font-bold">#{seatNumber}</div>
-                  <div className="text-[10px] opacity-90 truncate max-w-full">
+                  <div className="text-sm font-bold text-current">#{seatNumber}</div>
+                  <div className="text-[10px] font-medium truncate max-w-full">
                     {isOccupied ? (
                       participant?.user?.email?.split('@')[0] || 'User'
                     ) : (
-                      'Open'
+                      'Available'
                     )}
                   </div>
                 </button>
