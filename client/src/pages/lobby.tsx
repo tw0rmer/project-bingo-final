@@ -590,13 +590,14 @@ const LobbyPage: React.FC = () => {
                 isConnected={isConnected}
                 isPaused={isPaused}
                 gameStatus={gameStatus}
+                onLeaveLobby={handleLeaveLobby}
               />
             </div>
           ) : (
             /* Desktop View - Original layout */
             <div className="bg-white rounded-lg p-3 min-h-[calc(100vh-12rem)] lg:h-[780px] flex flex-col gap-2 border border-gray-200">
-              {/* Desktop HUD Row */}
-              <div className="grid grid-cols-4 gap-2 text-center">
+              {/* Desktop HUD Row - Enhanced with Pool Size */}
+              <div className="grid grid-cols-5 gap-2 text-center">
                 <div className="bg-gray-100 rounded p-2">
                   <div className="text-[11px] text-gray-600">Entry Fee</div>
                   <div className="text-base font-bold text-casino-red">${lobby.entryFee}</div>
@@ -605,9 +606,13 @@ const LobbyPage: React.FC = () => {
                   <div className="text-[11px] text-gray-600">Players</div>
                   <div className="text-base font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
                 </div>
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded p-2 border border-yellow-200">
+                  <div className="text-[11px] text-yellow-800">Prize Pool</div>
+                  <div className="text-base font-bold text-yellow-600">${(lobby.entryFee * lobby.seatsTaken * 0.9).toFixed(0)}</div>
+                </div>
                 <div className="bg-gray-100 rounded p-2">
                   <div className="text-[11px] text-gray-600">Game Phase</div>
-                  <div className={`text-base font-bold flex items-center justify-center gap-2 ${
+                  <div className={`text-base font-bold flex items-center justify-center gap-1 ${
                     gameStatus === 'waiting' ? 'text-yellow-600' :
                     gameStatus === 'active' ? 'text-green-600' : 'text-purple-600'
                   }`}>
@@ -616,7 +621,7 @@ const LobbyPage: React.FC = () => {
                       {gameStatus === 'active' && '🎯'}
                       {gameStatus === 'finished' && '🏆'}
                     </span>
-                    <span className="text-sm">
+                    <span className="text-xs">
                       {gameStatus === 'waiting' && 'Lobby'}
                       {gameStatus === 'active' && 'Playing'}
                       {gameStatus === 'finished' && 'Finished'}
@@ -630,12 +635,12 @@ const LobbyPage: React.FC = () => {
                       {isConnected ? '🟢 Live' : '🔴 Offline'}
                     </div>
                   </div>
-                  {currentUserParticipation && gameStatus !== 'active' && (
+                  {currentUserParticipation && (
                     <button
                       onClick={handleLeaveLobby}
-                      disabled={joining}
+                      disabled={joining || gameStatus === 'active'}
                       className="bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-3 py-1.5 rounded text-xs font-semibold text-white"
-                      title="Leave Lobby"
+                      title={gameStatus === 'active' ? 'Cannot leave during game' : 'Leave Lobby'}
                     >
                       Leave
                     </button>

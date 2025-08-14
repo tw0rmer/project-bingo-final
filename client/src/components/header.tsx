@@ -86,28 +86,11 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             </div>
           )}
 
-          {/* Mobile Auth Buttons + Menu */}
-          <div className="flex lg:hidden items-center space-x-2">
-            {!hideAuthButtons && user && (
-              <>
-                <Link href="/dashboard">
-                  <Button size="sm" className="px-3 py-1 text-xs bg-casino-gold text-white hover:bg-yellow-500">Dashboard</Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-3 py-1 text-xs border-casino-red text-casino-red hover:bg-casino-red hover:text-white"
-                  onClick={logout}
-                >
-                  Logout
-                </Button>
-              </>
-            )}
-            
-            {/* Mobile menu button */}
+          {/* Mobile Menu Button Only */}
+          <div className="flex lg:hidden items-center">
             <Button 
               variant="ghost" 
-              className="lg:hidden p-2"
+              className="p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="button-mobile-menu"
             >
@@ -123,8 +106,26 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
           <nav className="flex flex-col space-y-2 p-4">
+            {/* User info and auth options at top if logged in */}
+            {!hideAuthButtons && user && (
+              <>
+                <div className="pb-2 mb-2 border-b border-gray-200">
+                  <p className="text-sm text-gray-600">Logged in as:</p>
+                  <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                </div>
+                <Link 
+                  href="/dashboard" 
+                  className="text-lg font-medium bg-casino-gold text-white px-4 py-2 rounded hover:bg-yellow-500 transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                  data-testid="link-mobile-dashboard"
+                >
+                  Dashboard
+                </Link>
+              </>
+            )}
+            
             <Link 
               href="/" 
               className="text-lg font-medium casino-red hover:text-rose-gold transition-colors py-2"
@@ -175,59 +176,47 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             </a>
             
             {/* Auth buttons in mobile menu */}
-            {!hideAuthButtons && (
+            {!hideAuthButtons && user && (
               <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
-                {user ? (
-                  <>
-                    <div className="text-sm text-gray-700 py-2">Welcome, {user.email}</div>
-                    <Link href="/dashboard">
-                      <Button 
-                        size="lg" 
-                        className="w-full px-4 py-2 bg-casino-gold text-white hover:bg-yellow-500"
-                        onClick={() => setMobileMenuOpen(false)}
-                        data-testid="button-mobile-dashboard"
-                      >
-                        Dashboard
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="w-full px-4 py-2 border-2 border-casino-red text-casino-red hover:bg-casino-red hover:text-white"
-                      onClick={() => {
-                        logout();
-                        setMobileMenuOpen(false);
-                      }}
-                      data-testid="button-mobile-logout"
-                    >
-                      Logout
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/login">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full px-6 py-3 text-lg font-medium casino-red border-2 border-casino-red hover:bg-casino-red hover:text-white"
-                        onClick={() => setMobileMenuOpen(false)}
-                        data-testid="button-mobile-login"
-                      >
-                        Login
-                      </Button>
-                    </Link>
-                    <Link href="/register">
-                      <Button
-                        size="lg"
-                        className="w-full px-6 py-3 text-lg font-medium bg-casino-gold text-white hover:bg-yellow-500 shadow-lg"
-                        onClick={() => setMobileMenuOpen(false)}
-                        data-testid="button-mobile-signup"
-                      >
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </>
-                )}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full px-4 py-2 border-2 border-casino-red text-casino-red hover:bg-casino-red hover:text-white"
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  data-testid="button-mobile-logout"
+                >
+                  Logout
+                </Button>
+              </div>
+            )}
+            
+            {/* Login/Signup buttons if not logged in */}
+            {!hideAuthButtons && !user && (
+              <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full px-6 py-3 text-lg font-medium casino-red border-2 border-casino-red hover:bg-casino-red hover:text-white"
+                    onClick={() => setMobileMenuOpen(false)}
+                    data-testid="button-mobile-login"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    className="w-full px-6 py-3 text-lg font-medium bg-casino-gold text-white hover:bg-yellow-500 shadow-lg"
+                    onClick={() => setMobileMenuOpen(false)}
+                    data-testid="button-mobile-signup"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
               </div>
             )}
           </nav>

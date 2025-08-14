@@ -30,6 +30,7 @@ interface MobileGameViewProps {
   isConnected: boolean;
   isPaused: boolean;
   gameStatus: string;
+  onLeaveLobby?: () => void;
 }
 
 type MobileTab = 'card' | 'master' | 'players' | 'info';
@@ -54,7 +55,8 @@ export function MobileGameView({
   canAffordEntry,
   isConnected,
   isPaused,
-  gameStatus
+  gameStatus,
+  onLeaveLobby
 }: MobileGameViewProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>('card');
 
@@ -147,6 +149,8 @@ export function MobileGameView({
             isConnected={isConnected}
             isPaused={isPaused}
             calledNumbers={calledNumbers}
+            currentUserParticipation={currentUserParticipation}
+            onLeaveLobby={onLeaveLobby}
           />
         );
     }

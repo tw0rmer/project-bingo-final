@@ -144,84 +144,107 @@ export default function DashboardPage() {
 
   return (
     <SiteLayout hideAuthButtons>
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-            <div className="text-sm text-gray-600">
-              Welcome, {user.username || user.email}
-              {user.isAdmin && <span className="ml-2 bg-casino-gold text-dark-brown px-2 py-0.5 rounded text-xs">ADMIN</span>}
+      <div className="max-w-7xl mx-auto p-3 sm:p-6">
+        {/* Header - Mobile Responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+            <div className="text-sm text-gray-600 mt-1">
+              Welcome back, {user.username || user.email?.split('@')[0]}
+              {user.isAdmin && <span className="ml-2 bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <ConnectionStatus showDetails={true} className="text-sm" />
+          
+          <div className="flex flex-wrap items-center gap-2">
+            <ConnectionStatus showDetails={true} className="text-xs sm:text-sm" />
             {user.isAdmin && (
               <button
                 onClick={() => setLocation('/admin')}
-                className="bg-casino-red hover:opacity-90 px-4 py-2 rounded text-sm font-medium text-white"
+                className="bg-casino-red hover:opacity-90 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-xs sm:text-sm font-medium text-white"
               >
-                Admin Dashboard
+                Admin Panel
               </button>
             )}
-            <button
-              onClick={logout}
-              className="bg-gray-800 hover:bg-gray-900 px-4 py-2 rounded text-sm text-white border border-gray-700"
-            >
-              Logout
-            </button>
           </div>
         </div>
-        {/* User Info */}
-        <div className="mb-8 rounded-lg bg-white p-6 shadow border border-gray-200">
-          <h2 className="mb-4 text-xl font-bold">Account Information</h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-gray-600">Email</p>
-              <p className="text-lg text-gray-900">{data.user.email}</p>
+        {/* User Info Card - Improved Mobile Layout */}
+        <div className="mb-6 rounded-xl bg-gradient-to-r from-white to-gray-50 p-4 sm:p-6 shadow-lg border border-gray-200">
+          <h2 className="mb-4 text-lg sm:text-xl font-bold text-gray-900">Account Information</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg p-3 border border-gray-100">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Email Address</p>
+              <p className="text-base sm:text-lg font-medium text-gray-900 mt-1">{data.user.email}</p>
             </div>
-            <div>
-              <p className="text-gray-600">Balance</p>
-              <p className="text-lg font-bold text-green-700">${getBalanceAsNumber(data.user.balance)}</p>
+            <div className="bg-white rounded-lg p-3 border border-gray-100">
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Current Balance</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-600 mt-1">${getBalanceAsNumber(data.user.balance).toFixed(2)}</p>
             </div>
           </div>
         </div>
 
-        {/* Available Lobbies */}
-        <div className="mb-8 rounded-lg bg-white p-6 shadow border-2 border-casino-gold">
+        {/* Available Lobbies - Improved Mobile Grid */}
+        <div className="mb-6 rounded-xl bg-white p-4 sm:p-6 shadow-lg border-2 border-casino-gold">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Available Lobbies</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Available Lobbies</h2>
             <button
               onClick={fetchDashboardData}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
-              🔄 Refresh
+              <span className="text-base">🔄</span>
+              <span>Refresh</span>
             </button>
           </div>
           {!data.lobbies || data.lobbies.length === 0 ? (
-            <p className="text-gray-600">No lobbies available at the moment.</p>
+            <p className="text-gray-600 text-center py-8">No lobbies available at the moment.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {data.lobbies.map((room) => (
-                <div key={room.id} className="bg-gradient-to-br from-light-cream to-white rounded-xl shadow-lg border-2 border-casino-gold p-6 hover:shadow-xl transition-all">
-                  <div className="flex justify-between items-start mb-4">
+                <div key={room.id} className="bg-gradient-to-br from-gray-50 to-white rounded-lg shadow-md border border-gray-200 p-4 hover:shadow-lg transition-all">
+                  {/* Lobby Header */}
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 className="text-xl font-bold casino-red">{room.name}</h3>
-                      <p className="text-gray-600">Lobby #{room.id}</p>
+                      <h3 className="text-base sm:text-lg font-bold text-casino-red">{room.name}</h3>
+                      <p className="text-xs text-gray-500">Lobby #{room.id}</p>
                     </div>
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${room.status==='active'?'bg-green-100 text-green-800': room.status==='finished'?'bg-purple-100 text-purple-800':'bg-yellow-100 text-yellow-800'}`}>{room.status.toUpperCase()}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                      room.status === 'active' ? 'bg-green-100 text-green-700' : 
+                      room.status === 'finished' ? 'bg-purple-100 text-purple-700' : 
+                      'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {room.status.toUpperCase()}
+                    </span>
                   </div>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between"><span className="text-gray-700">Players:</span><span className="font-semibold">{room.seatsTaken}/{room.maxSeats}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-700">Prize Pool:</span><span className="font-bold casino-gold">${(parseFloat(room.entryFee)*room.seatsTaken).toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-700">Entry Fee:</span><span className="font-semibold">${room.entryFee}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-700">Status:</span><span className={`font-semibold ${room.status==='active'?'text-green-600':room.status==='finished'?'text-purple-600':'casino-red'}`}>{room.status}</span></div>
+                  
+                  {/* Lobby Stats */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Players:</span>
+                      <span className="font-semibold text-gray-900">{room.seatsTaken}/{room.maxSeats}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Prize Pool:</span>
+                      <span className="font-bold text-green-600">${(parseFloat(room.entryFee) * room.seatsTaken * 0.9).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Entry Fee:</span>
+                      <span className="font-semibold text-gray-900">${room.entryFee}</span>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <button onClick={() => handleViewLobby(room.id)} className="flex-1 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">View Lobby</button>
-                    <button onClick={() => handleViewLobby(room.id)} className="rounded bg-casino-gold px-4 py-2 text-white hover:bg-yellow-500" disabled={room.seatsTaken >= room.maxSeats || room.status !== 'waiting'}>
-                      {room.seatsTaken >= room.maxSeats ? 'Full' : room.status !== 'waiting' ? 'Started' : 'Join'}
-                    </button>
-                  </div>
+                  
+                  {/* Action Button */}
+                  <button 
+                    onClick={() => handleViewLobby(room.id)} 
+                    className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
+                      room.status === 'waiting' 
+                        ? 'bg-casino-gold text-white hover:bg-yellow-500' 
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
+                    }`}
+                    disabled={room.status !== 'waiting'}
+                  >
+                    {room.status === 'waiting' ? 'Enter Lobby' : 
+                     room.status === 'active' ? 'Game in Progress' : 
+                     'Game Finished'}
+                  </button>
                 </div>
               ))}
             </div>

@@ -8,6 +8,8 @@ interface MobileInfoViewProps {
   isConnected: boolean;
   isPaused: boolean;
   calledNumbers: number[];
+  currentUserParticipation?: any;
+  onLeaveLobby?: () => void;
 }
 
 export function MobileInfoView({ 
@@ -15,7 +17,9 @@ export function MobileInfoView({
   gameStatus, 
   isConnected, 
   isPaused,
-  calledNumbers 
+  calledNumbers,
+  currentUserParticipation,
+  onLeaveLobby
 }: MobileInfoViewProps) {
   return (
     <div className="w-full h-full flex flex-col p-2">
@@ -185,6 +189,24 @@ export function MobileInfoView({
             </li>
           </ul>
         </div>
+
+        {/* Leave Lobby Button */}
+        {currentUserParticipation && onLeaveLobby && (
+          <div className="mt-2">
+            <button
+              onClick={onLeaveLobby}
+              disabled={gameStatus === 'active'}
+              className={cn(
+                "w-full py-3 px-4 rounded-lg font-medium text-sm transition-colors",
+                gameStatus === 'active' 
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-casino-red text-white hover:bg-red-700"
+              )}
+            >
+              {gameStatus === 'active' ? 'Cannot Leave During Game' : 'Leave Lobby'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
