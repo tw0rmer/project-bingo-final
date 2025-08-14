@@ -628,24 +628,29 @@ const LobbyPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <div className="bg-gray-100 rounded p-2 flex items-center justify-center gap-2">
-                  <div className="text-left">
-                    <div className="text-[11px] text-gray-600">Connection</div>
-                    <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
-                      {isConnected ? '🟢 Live' : '🔴 Offline'}
-                    </div>
+                <div className="bg-gray-100 rounded p-2">
+                  <div className="text-[11px] text-gray-600">Connection</div>
+                  <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                    {isConnected ? '🟢 Live' : '🔴 Offline'}
                   </div>
-                  {currentUserParticipation && (
+                </div>
+                {/* Prominent Leave Lobby Button */}
+                {currentUserParticipation && (
+                  <div className="bg-red-50 rounded p-2 border border-red-200 flex items-center justify-center">
                     <button
                       onClick={handleLeaveLobby}
                       disabled={joining || gameStatus === 'active'}
-                      className="bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-3 py-1.5 rounded text-xs font-semibold text-white"
+                      className={`px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ${
+                        gameStatus === 'active' 
+                          ? 'bg-gray-200 text-gray-500 border-gray-300 cursor-not-allowed' 
+                          : 'bg-casino-red hover:bg-red-600 text-white border-casino-red hover:border-red-600 shadow-md hover:shadow-lg'
+                      }`}
                       title={gameStatus === 'active' ? 'Cannot leave during game' : 'Leave Lobby'}
                     >
-                      Leave
+                      🚪 Leave Lobby
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Desktop Main Content */}

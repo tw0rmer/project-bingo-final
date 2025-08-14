@@ -237,239 +237,269 @@ export default function AdminPage() {
 
   return (
     <SiteLayout hideAuthButtons>
-      <main className="mx-auto max-w-7xl p-4">
-        {/* Tabs */}
-        <div className="mb-6 border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            {[
-              { id: 'users', label: 'Users', count: users.length },
-              { id: 'lobbies', label: 'Lobbies', count: lobbies.length },
-              { id: 'transactions', label: 'Transactions', count: transactions.length }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-casino-gold text-casino-red'
-                    : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
-                }`}
-              >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
-          </nav>
+      <main className="mx-auto max-w-7xl p-3 sm:p-4">
+        {/* Header */}
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Panel</h1>
+              <p className="text-sm text-gray-600 mt-1">Manage users, lobbies, and transactions</p>
+            </div>
+            <button
+              onClick={() => setLocation('/dashboard')}
+              className="text-casino-red hover:opacity-80 text-sm font-medium self-start sm:self-auto"
+            >
+              ← Back to Dashboard
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile-Responsive Tabs */}
+        <div className="mb-4 sm:mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
+              {[
+                { id: 'users', label: 'Users', count: users.length, icon: '👥' },
+                { id: 'lobbies', label: 'Lobbies', count: lobbies.length, icon: '🏠' },
+                { id: 'transactions', label: 'Transactions', count: transactions.length, icon: '💰' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex-shrink-0 flex items-center gap-2 py-2 px-3 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-casino-gold text-casino-red bg-yellow-50'
+                      : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-base">{tab.icon}</span>
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded-full text-xs">
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="space-y-6">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-left">Username</th>
-                    <th className="px-4 py-3 text-left">Balance</th>
-                    <th className="px-4 py-3 text-left">Admin</th>
-                    <th className="px-4 py-3 text-left">Created</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id} className="border-t border-gray-200">
-                      <td className="px-4 py-3">{user.id}</td>
-                      <td className="px-4 py-3">{user.email}</td>
-                      <td className="px-4 py-3">{(user as any).username || '-'}</td>
-                      <td className="px-4 py-3">${user.balance}</td>
-                      <td className="px-4 py-3">
-                        {user.isAdmin ? (
-                          <span className="bg-casino-gold text-white px-2 py-1 rounded text-xs">ADMIN</span>
-                        ) : (
-                          <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs">USER</span>
+          <div className="space-y-4">
+            {/* Mobile-First Card Layout */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {users.map((user) => (
+                <div key={user.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-gray-500">ID #{user.id}</span>
+                        {user.isAdmin && (
+                          <span className="bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => setShowEditUser(user)}
-                            className="bg-blue-600 px-2 py-1 rounded text-xs text-white hover:bg-blue-700"
-                          >
-                            Edit Balance
-                          </button>
-                          <button
-                            onClick={async () => {
-                              const newUsername = prompt('Set username', (user as any).username || '') || '';
-                              if (!newUsername) return;
-                              try { await authApiRequest(`/admin/users/${user.id}/username`, { method: 'PUT', body: JSON.stringify({ username: newUsername }) }); fetchData(); } catch (e:any) { setError(e.message||'Failed to update username'); }
-                            }}
-                            className="bg-purple-600 px-2 py-1 rounded text-xs text-white hover:bg-purple-700"
-                          >
-                            Set Username
-                          </button>
-                          <button
-                            onClick={() => toggleUserAdmin(user.id, !user.isAdmin)}
-                            className={`px-2 py-1 rounded text-xs text-white ${
-                              user.isAdmin 
-                                ? 'bg-red-600 hover:bg-red-700' 
-                                : 'bg-casino-red hover:opacity-90'
-                            }`}
-                          >
-                            {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                      <h3 className="font-medium text-gray-900 truncate">{user.email}</h3>
+                      <p className="text-sm text-gray-600">Created: {new Date(user.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <div className="text-xs text-gray-500 mb-1">Balance</div>
+                    <div className="text-lg font-bold text-green-600">${parseFloat(user.balance).toFixed(2)}</div>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => setShowEditUser(user)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded text-sm font-medium transition-colors"
+                    >
+                      Edit Balance
+                    </button>
+                    <button
+                      onClick={() => toggleUserAdmin(user.id, !user.isAdmin)}
+                      className={`w-full py-1.5 px-3 rounded text-sm font-medium transition-colors ${
+                        user.isAdmin 
+                          ? 'bg-red-100 hover:bg-red-200 text-red-800' 
+                          : 'bg-green-100 hover:bg-green-200 text-green-800'
+                      }`}
+                    >
+                      {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
+            
+            {users.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No users found
+              </div>
+            )}
           </div>
         )}
 
-        {/* Lobbies Tab */}
+        {/* Mobile-Friendly Lobbies Tab */}
         {activeTab === 'lobbies' && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Lobby Management</h2>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Lobby Management</h2>
               <button
                 onClick={() => setShowCreateLobby(true)}
-                className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+                className="bg-casino-gold hover:bg-yellow-500 text-white py-2 px-4 rounded-lg font-medium text-sm self-start sm:self-auto"
               >
-                Create Lobby
+                + Create Lobby
               </button>
             </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">Name</th>
-                    <th className="px-4 py-3 text-left">Entry Fee</th>
-                    <th className="px-4 py-3 text-left">Seats</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lobbies.map((lobby) => (
-                    <tr key={lobby.id} className="border-t border-gray-200">
-                      <td className="px-4 py-3">{lobby.id}</td>
-                      <td className="px-4 py-3">{lobby.name}</td>
-                      <td className="px-4 py-3">${lobby.entryFee}</td>
-                      <td className="px-4 py-3">{lobby.seatsTaken}/{lobby.maxSeats}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs text-white ${
-                          lobby.status === 'active' ? 'bg-green-600' :
-                          lobby.status === 'waiting' ? 'bg-casino-gold' : 'bg-gray-600'
+            
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {lobbies.map((lobby) => (
+                <div key={lobby.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-gray-500">ID #{lobby.id}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          lobby.status === 'active' ? 'bg-green-100 text-green-700' :
+                          lobby.status === 'finished' ? 'bg-purple-100 text-purple-700' :
+                          'bg-yellow-100 text-yellow-700'
                         }`}>
                           {lobby.status.toUpperCase()}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => setShowEditLobby(lobby)}
-                            className="bg-blue-600 px-2 py-1 rounded text-xs text-white hover:bg-blue-700"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => fillLobbyWithBots(lobby.id)}
-                            className="bg-casino-red px-2 py-1 rounded text-xs text-white hover:opacity-90"
-                            disabled={lobby.seatsTaken >= lobby.maxSeats}
-                          >
-                            Fill Bots
-                          </button>
-                          <button
-                            onClick={() => resetLobby(lobby.id)}
-                            className="bg-gray-800 px-2 py-1 rounded text-xs text-white hover:bg-black"
-                          >
-                            Reset
-                          </button>
-                          <button
-                            onClick={() => startLobbyGame(lobby.id)}
-                            className="bg-green-600 px-2 py-1 rounded text-xs text-white hover:bg-green-700"
-                            disabled={lobby.status === 'active'}
-                          >
-                            Start
-                          </button>
-                          {lobby.status === 'active' && (
-                            <>
-                              {!gameMetaByLobby[lobby.id]?.isPaused && (
-                                <button onClick={() => pauseLobbyGame(lobby.id)} className="bg-indigo-600 px-2 py-1 rounded text-xs text-white hover:bg-indigo-700">Pause</button>
-                              )}
-                              {gameMetaByLobby[lobby.id]?.isPaused && (
-                                <button onClick={() => resumeLobbyGame(lobby.id)} className="bg-indigo-500 px-2 py-1 rounded text-xs text-white hover:bg-indigo-600">Resume</button>
-                              )}
-                              <button onClick={() => stopLobbyGame(lobby.id)} className="bg-yellow-600 px-2 py-1 rounded text-xs text-white hover:bg-yellow-700">Stop</button>
-                              <button onClick={() => setLobbySpeed(lobby.id)} className="bg-casino-gold px-2 py-1 rounded text-xs text-white hover:bg-yellow-500">Speed</button>
-                            </>
-                          )}
-                          <button
-                            onClick={() => deleteLobby(lobby.id)}
-                            className="bg-red-600 px-2 py-1 rounded text-xs text-white hover:bg-red-700"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                      <h3 className="font-medium text-gray-900 mb-1">{lobby.name}</h3>
+                      <p className="text-sm text-gray-600">Created: {new Date(lobby.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 mb-3 text-center">
+                    <div>
+                      <div className="text-xs text-gray-500">Entry</div>
+                      <div className="font-bold text-casino-red">${lobby.entryFee}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Players</div>
+                      <div className="font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Prize</div>
+                      <div className="font-bold text-green-600">${(parseFloat(lobby.entryFee) * lobby.seatsTaken * 0.9).toFixed(0)}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {lobby.status === 'waiting' && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => startLobbyGame(lobby.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white py-1.5 px-2 rounded text-xs font-medium"
+                        >
+                          Start
+                        </button>
+                        <button
+                          onClick={() => fillLobbyWithBots(lobby.id)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded text-xs font-medium"
+                        >
+                          Add Bots
+                        </button>
+                      </div>
+                    )}
+                    
+                    {lobby.status === 'active' && (
+                      <div className="grid grid-cols-3 gap-1">
+                        <button
+                          onClick={() => gameMetaByLobby[lobby.id]?.isPaused ? resumeLobbyGame(lobby.id) : pauseLobbyGame(lobby.id)}
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        >
+                          {gameMetaByLobby[lobby.id]?.isPaused ? 'Resume' : 'Pause'}
+                        </button>
+                        <button
+                          onClick={() => setLobbySpeed(lobby.id)}
+                          className="bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        >
+                          Speed
+                        </button>
+                        <button
+                          onClick={() => stopLobbyGame(lobby.id)}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        >
+                          Stop
+                        </button>
+                      </div>
+                    )}
+                    
+                    <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-100">
+                      <button
+                        onClick={() => setShowEditLobby(lobby)}
+                        className="bg-gray-600 hover:bg-gray-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => resetLobby(lobby.id)}
+                        className="bg-orange-600 hover:bg-orange-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        onClick={() => deleteLobby(lobby.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+            
+            {lobbies.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No lobbies found
+              </div>
+            )}
           </div>
         )}
 
-        {/* Transactions Tab */}
+        {/* Mobile-Friendly Transactions Tab */}
         {activeTab === 'transactions' && (
-          <div className="space-y-6">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white rounded-lg">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">User ID</th>
-                    <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Type</th>
-                    <th className="px-4 py-3 text-left">Description</th>
-                    <th className="px-4 py-3 text-left">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((transaction) => (
-                    <tr key={transaction.id} className="border-t border-gray-200">
-                      <td className="px-4 py-3">{transaction.id}</td>
-                      <td className="px-4 py-3">{transaction.userId}</td>
-                      <td className="px-4 py-3">
-                        <span className={parseFloat(transaction.amount) >= 0 ? 'text-green-700' : 'text-red-700'}>
-                          {parseFloat(transaction.amount) >= 0 ? '+' : ''}${transaction.amount}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs text-white ${
-                          transaction.type === 'deposit' ? 'bg-green-600' :
-                          transaction.type === 'withdrawal' ? 'bg-red-600' : 'bg-blue-600'
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Transactions</h2>
+            
+            <div className="space-y-3">
+              {transactions.map((transaction) => (
+                <div key={transaction.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-medium text-gray-500">ID #{transaction.id}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          parseFloat(transaction.amount) > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
                           {transaction.type.toUpperCase()}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">{transaction.description}</td>
-                      <td className="px-4 py-3">
-                        {new Date(transaction.createdAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                      <p className="font-medium text-gray-900 mb-1">{transaction.description}</p>
+                      <p className="text-xs text-gray-500">
+                        User #{transaction.userId} • {new Date(transaction.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-lg font-bold ${
+                        parseFloat(transaction.amount) > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {parseFloat(transaction.amount) > 0 ? '+' : ''}${parseFloat(transaction.amount).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+            
+            {transactions.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                No transactions found
+              </div>
+            )}
           </div>
         )}
       </main>

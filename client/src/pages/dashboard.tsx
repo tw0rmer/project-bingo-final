@@ -268,38 +268,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Admin Panel */}
-        {data.user.isAdmin && (
-          <div className="mt-6 rounded-lg bg-rose-50 p-6 shadow border border-rose-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-casino-red">Admin Panel</h2>
-                <p className="text-gray-700">Access admin controls for users, lobbies, and transactions</p>
-              </div>
-              <button
-                onClick={() => setLocation('/admin')}
-                className="rounded-lg bg-casino-gold px-6 py-3 text-white hover:bg-yellow-500 font-semibold text-lg flex items-center space-x-2"
-              >
-                <span>🛠️</span>
-                <span>Open Admin Dashboard</span>
-              </button>
-            </div>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded p-3 border border-rose-100">
-                <div className="text-gray-600 text-sm">User Management</div>
-                <div className="text-casino-red font-medium">Manage accounts & balances</div>
-              </div>
-              <div className="bg-white rounded p-3 border border-rose-100">
-                <div className="text-gray-600 text-sm">Lobby Control</div>
-                <div className="text-casino-red font-medium">Create & manage game rooms</div>
-              </div>
-              <div className="bg-white rounded p-3 border border-rose-100">
-                <div className="text-gray-600 text-sm">Transaction Monitor</div>
-                <div className="text-casino-red font-medium">View all financial activity</div>
-              </div>
-            </div>
-          </div>
-        )}
+
       </div>
     </SiteLayout>
   );
