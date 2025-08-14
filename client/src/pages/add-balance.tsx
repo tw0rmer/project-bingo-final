@@ -74,13 +74,13 @@ export default function AddBalancePage() {
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => setLocation('/dashboard')}
-              className="text-casino-red hover:opacity-80 transition-colors text-sm"
+              className="text-casino-red hover:opacity-80 transition-colors text-sm font-medium"
             >
               ← Back to Dashboard
             </button>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Add Balance</h1>
-          <p className="text-gray-600">Choose a payment method to fund your account</p>
+          <p className="text-gray-800">Choose a payment method to fund your account</p>
         </div>
 
         {/* Current Balance */}
@@ -103,7 +103,7 @@ export default function AddBalancePage() {
                 Amount (CAD)
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">$</span>
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 text-lg">$</span>
                 <input
                   type="number"
                   id="amount"
@@ -224,8 +224,8 @@ export default function AddBalancePage() {
             </div>
             <div>
               <h4 className="font-medium text-gray-900 mb-2">⏰ Processing Times</h4>
-              <p className="text-gray-600">E-Transfer: 1-24 hours</p>
-              <p className="text-gray-600">Other methods: Coming soon</p>
+              <p className="text-gray-800">E-Transfer: 1-24 hours</p>
+              <p className="text-gray-800">Other methods: Coming soon</p>
             </div>
           </div>
         </div>
