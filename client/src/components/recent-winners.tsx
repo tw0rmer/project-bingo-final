@@ -132,7 +132,7 @@ export function RecentWinners() {
                         <span className="text-2xl">🎉</span>
                       </div>
                       <h3 className="text-lg font-bold mb-1">
-                        Player #{winner.userId}
+                        {winner.username ? winner.username : `Player #${winner.userId}`}
                       </h3>
                       <p className="text-white/80 text-sm">
                         {new Date(winner.createdAt).toLocaleDateString('en-US', {

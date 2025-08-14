@@ -9,7 +9,8 @@ import adminRoutes from './admin';
 import achievementsRoutes from './achievements';
 import { storage } from '../storage';
 import { db } from '../db';
-import { winners as winnersTable, users as usersTable } from '../../shared/schema';
+import { winners as winnersTable, users as usersTable, lobbies } from '../../shared/schema';
+import { eq } from 'drizzle-orm';
 
 export async function registerRoutes(app: Express): Promise<void> {
   app.use('/api', (req, res, next) => {
@@ -109,7 +110,18 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // Winners CRUD (public list + admin manage)
   app.get('/api/winners', async (_req, res) => {
-    const list = await db.select().from(winnersTable);
+    const list = await db.select({
+      id: winnersTable.id,
+      gameId: winnersTable.gameId,
+      lobbyId: winnersTable.lobbyId,
+      userId: winnersTable.userId,
+      amount: winnersTable.amount,
+      note: winnersTable.note,
+      createdAt: winnersTable.createdAt,
+      username: usersTable.username,
+      email: usersTable.email
+    }).from(winnersTable)
+    .leftJoin(usersTable, eq(winnersTable.userId, usersTable.id));
     res.json(list);
   });
 

@@ -33,7 +33,7 @@ interface Transaction {
 }
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'users' | 'lobbies' | 'transactions'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'lobbies' | 'transactions' | 'prizes'>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [lobbies, setLobbies] = useState<Lobby[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -53,6 +53,10 @@ export default function AdminPage() {
   const [showEditUser, setShowEditUser] = useState<User | null>(null);
   const [showEditLobby, setShowEditLobby] = useState<Lobby | null>(null);
   const [showBanConfirm, setShowBanConfirm] = useState<any>(null);
+  
+  // Prize pool states
+  const [prizePoolInfo, setPrizePoolInfo] = useState<Record<number, any>>({});
+  const [distributingPrize, setDistributingPrize] = useState<number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
@@ -217,6 +221,42 @@ export default function AdminPage() {
     }
   };
 
+  // Prize pool management functions
+  const fetchPrizePoolInfo = async (lobbyId: number) => {
+    try {
+      const info = await authApiRequest(`/admin/prize-pool/${lobbyId}`);
+      setPrizePoolInfo(prev => ({ ...prev, [lobbyId]: info }));
+    } catch (error: any) {
+      console.error('Failed to fetch prize pool info:', error);
+    }
+  };
+
+  const distributePrize = async (lobbyId: number, winnerId: number) => {
+    try {
+      setDistributingPrize(lobbyId);
+      const result = await authApiRequest(`/admin/distribute-prize/${lobbyId}`, {
+        method: 'POST',
+        body: JSON.stringify({ winnerId })
+      });
+      
+      // Show success message
+      alert(`Prize distributed successfully!\n\n` +
+        `Winner: ${result.winnerUsername}\n` +
+        `Lobby: ${result.lobbyName}\n` +
+        `Total Pool: $${result.totalPrizePool}\n` +
+        `House Take (30%): $${result.houseTake}\n` +
+        `Winner Prize (70%): $${result.winnerPrize}`);
+      
+      // Refresh data
+      await fetchData();
+      await fetchPrizePoolInfo(lobbyId);
+    } catch (error: any) {
+      setError(error.message || 'Failed to distribute prize');
+    } finally {
+      setDistributingPrize(null);
+    }
+  };
+
   // Multi-select functionality
   const filteredUsers = users.filter(user => {
     if (!searchTerm) return true;
@@ -349,7 +389,8 @@ export default function AdminPage() {
               {[
                 { id: 'users', label: 'Users', count: users.length, icon: '👥' },
                 { id: 'lobbies', label: 'Lobbies', count: lobbies.length, icon: '🏠' },
-                { id: 'transactions', label: 'Transactions', count: transactions.length, icon: '💰' }
+                { id: 'transactions', label: 'Transactions', count: transactions.length, icon: '💰' },
+                { id: 'prizes', label: 'Prize Pools', count: lobbies.filter(l => l.seatsTaken > 0).length, icon: '🏆' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -770,6 +811,108 @@ export default function AdminPage() {
             {transactions.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No transactions found
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Prize Pool Management Tab */}
+        {activeTab === 'prizes' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">🏆 Prize Pool Distribution System</h3>
+              <p className="text-gray-600 mb-4">
+                Manage prize pools and distribute winnings to players. The system automatically takes 30% house cut and awards 70% to the winner.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {lobbies
+                .filter(lobby => lobby.seatsTaken > 0)
+                .map((lobby) => {
+                  const totalPool = lobby.entryFee * lobby.seatsTaken;
+                  const houseTake = Math.floor(totalPool * 0.30);
+                  const winnerPrize = totalPool - houseTake;
+                  
+                  return (
+                    <div key={lobby.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{lobby.name}</h4>
+                          <p className="text-sm text-gray-600">Lobby #{lobby.id}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          lobby.status === 'active' ? 'bg-green-100 text-green-800' :
+                          lobby.status === 'waiting' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {lobby.status}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Entry Fee:</span>
+                          <span className="font-medium">${lobby.entryFee}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Seats Taken:</span>
+                          <span className="font-medium">{lobby.seatsTaken}/{lobby.maxSeats}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Total Pool:</span>
+                          <span className="font-semibold text-green-600">${totalPool.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">House Take (30%):</span>
+                          <span className="font-medium text-orange-600">${houseTake.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Winner Prize (70%):</span>
+                          <span className="font-semibold text-blue-600">${winnerPrize.toFixed(2)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => fetchPrizePoolInfo(lobby.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          Refresh Pool Info
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            const winnerId = prompt(`Enter winner's User ID for ${lobby.name}:`);
+                            if (winnerId && !isNaN(parseInt(winnerId))) {
+                              distributePrize(lobby.id, parseInt(winnerId));
+                            }
+                          }}
+                          disabled={distributingPrize === lobby.id}
+                          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          {distributingPrize === lobby.id ? 'Distributing...' : 'Distribute Prize'}
+                        </button>
+                        
+                        <button
+                          onClick={() => resetLobby(lobby.id)}
+                          className="w-full bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        >
+                          Reset Lobby
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+            
+            {lobbies.filter(lobby => lobby.seatsTaken > 0).length === 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+                <div className="text-gray-400 text-4xl mb-4">🏆</div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Prize Pools</h3>
+                <p className="text-gray-600">
+                  Prize pools will appear here when players join lobbies. Each lobby needs at least one player to generate a prize pool.
+                </p>
               </div>
             )}
           </div>

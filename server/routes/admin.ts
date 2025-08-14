@@ -559,4 +559,117 @@ router.post('/cleanup-database', authenticateToken, requireAdmin, async (req: Au
   }
 });
 
+// Prize Pool Distribution System - 30% house take, 70% to winner
+router.post('/distribute-prize/:lobbyId', async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    const lobbyId = parseInt(req.params.lobbyId);
+    const { winnerId } = req.body;
+
+    if (!lobbyId || !winnerId) {
+      return res.status(400).json({ message: 'Lobby ID and Winner ID are required' });
+    }
+
+    // Get lobby details
+    const lobby = await db.select().from(lobbies).where(eq(lobbies.id, lobbyId)).limit(1);
+    if (!lobby.length) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Calculate prize pool (entry fee × number of seats taken)
+    const totalPrizePool = lobby[0].entryFee * lobby[0].seatsTaken;
+    const houseTake = Math.floor(totalPrizePool * 0.30); // 30% house take
+    const winnerPrize = totalPrizePool - houseTake; // 70% to winner
+
+    if (totalPrizePool <= 0) {
+      return res.status(400).json({ message: 'No prize pool available - no players joined' });
+    }
+
+    // Get winner user details
+    const winnerUser = await db.select().from(users).where(eq(users.id, winnerId)).limit(1);
+    if (!winnerUser.length) {
+      return res.status(404).json({ message: 'Winner not found' });
+    }
+
+    // Update winner's balance
+    await db.update(users)
+      .set({ balance: winnerUser[0].balance + winnerPrize })
+      .where(eq(users.id, winnerId));
+
+    // Create winner record
+    await db.insert(winners).values({
+      lobbyId: lobbyId,
+      userId: winnerId,
+      amount: winnerPrize,
+      note: `Prize distribution: $${winnerPrize.toFixed(2)} from pool of $${totalPrizePool.toFixed(2)} (30% house take: $${houseTake.toFixed(2)})`
+    });
+
+    // Create wallet transaction for winner
+    await db.insert(walletTransactions).values({
+      userId: winnerId,
+      type: 'prize_win',
+      amount: winnerPrize,
+      description: `Bingo win - Lobby ${lobby[0].name}`,
+      status: 'completed'
+    });
+
+    // Reset lobby seats taken to 0 after distribution
+    await db.update(lobbies)
+      .set({ seatsTaken: 0, status: 'waiting' })
+      .where(eq(lobbies.id, lobbyId));
+
+    res.json({
+      message: 'Prize distributed successfully',
+      totalPrizePool: totalPrizePool.toFixed(2),
+      houseTake: houseTake.toFixed(2),
+      winnerPrize: winnerPrize.toFixed(2),
+      winnerUsername: winnerUser[0].username || `Player #${winnerId}`,
+      lobbyName: lobby[0].name
+    });
+
+  } catch (error: any) {
+    console.error('Prize distribution error:', error);
+    res.status(500).json({ message: 'Failed to distribute prize', error: error.message });
+  }
+});
+
+// Get prize pool info for a lobby
+router.get('/prize-pool/:lobbyId', async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    const lobbyId = parseInt(req.params.lobbyId);
+    const lobby = await db.select().from(lobbies).where(eq(lobbies.id, lobbyId)).limit(1);
+    
+    if (!lobby.length) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    const totalPrizePool = lobby[0].entryFee * lobby[0].seatsTaken;
+    const houseTake = Math.floor(totalPrizePool * 0.30);
+    const winnerPrize = totalPrizePool - houseTake;
+
+    res.json({
+      lobbyId,
+      lobbyName: lobby[0].name,
+      entryFee: lobby[0].entryFee,
+      seatsTaken: lobby[0].seatsTaken,
+      maxSeats: lobby[0].maxSeats,
+      totalPrizePool: totalPrizePool.toFixed(2),
+      houseTake: houseTake.toFixed(2),
+      winnerPrize: winnerPrize.toFixed(2),
+      status: lobby[0].status
+    });
+
+  } catch (error: any) {
+    console.error('Prize pool info error:', error);
+    res.status(500).json({ message: 'Failed to get prize pool info', error: error.message });
+  }
+});
+
 export default router;
