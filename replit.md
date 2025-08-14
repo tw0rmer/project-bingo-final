@@ -31,18 +31,22 @@ Preferred communication style: Simple, everyday language.
 - **Winners**: User testimonials and winning records
 - **FAQ Items**: Frequently asked questions with ordering
 
-#### API Endpoints (server/routes.ts)
+#### API Endpoints (server/routes/index.ts)
 - `GET /api/game-rooms` - List all available game rooms
 - `GET /api/game-rooms/:id` - Get specific game room details
-- `GET /api/winners` - List recent winners and testimonials
+- `GET /api/winners` - List recent winners with username/email data (joined from users table)
 - `GET /api/faq` - Get FAQ items
+- `POST /api/admin/distribute-prize/:lobbyId` - Distribute prize with 30% house take to specified winner
+- `GET /api/admin/prize-pool/:lobbyId` - Get detailed prize pool information for lobby management
 
 #### Frontend Pages & Components
 - **Home Page**: Landing page with hero section, game lobby, how-to-play, winners, and FAQ
 - **Header**: Navigation with casino branding
 - **Game Lobby**: Display of available bingo rooms with real-time status
-- **Recent Winners**: Testimonials and winning showcases
+- **HALL OF CHAMPIONS**: Dramatic winners showcase with gradient cards and win tier system ($50+, $150+, $250+)
 - **FAQ Section**: Collapsible questions and answers
+- **Admin Panel**: Comprehensive management interface with Users, Lobbies, Transactions, and Prize Pools tabs
+- **Prize Pool Management**: Real-time prize pool tracking with 30% house take calculations and distribution controls
 
 ## Data Flow
 1. Frontend components use TanStack Query to fetch data from REST endpoints
@@ -97,6 +101,16 @@ Preferred communication style: Simple, everyday language.
 - **Mobile-Responsive SubNav**: Created user-friendly subnav that works across all device sizes with compact design
 - **Login/Register Page Updates**: Modified auth pages to hide subnav for cleaner focused experience
 - **Achievement Categories**: Added multiple achievement types including games, social, milestone, and special categories with rarity levels
+- **HALL OF CHAMPIONS Redesign**: Transformed Winners section with larger, more dramatic presentation and win tier system
+- **Win Category System**: Implemented $50+ (Good Win), $150+ (Big Win), $250+ (Mega Jackpot) with color-coded gradient cards
+- **Username Integration**: Winners now display actual usernames when available, falling back to "Player #ID" for legacy users
+- **Winners API Enhancement**: Updated database query to join users table for username and email information display
+- **Functional Prize Pool System**: Built complete 30% house take prize distribution system in admin dashboard
+- **Prize Pool Management Tab**: Added dedicated "Prize Pools" tab in admin panel for managing game winnings distribution
+- **Automated Prize Calculations**: Real-time calculation of total pools, house take (30%), and winner prizes (70%) based on entry fees × seats taken
+- **Prize Distribution API**: Backend endpoints for distributing prizes, updating user balances, and creating transaction records
+- **Wallet Integration**: Prize distributions automatically update winner balances and create wallet transaction history
+- **Lobby Reset System**: Automatic lobby seat reset after prize distribution to prepare for next game session
 
 ### User Preferences
 - **Communication Style**: Simple, everyday language
