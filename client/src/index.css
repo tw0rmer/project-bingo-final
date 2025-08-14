@@ -64,6 +64,40 @@
     @apply font-sans antialiased bg-background text-foreground;
     background-color: var(--cream);
     color: var(--dark-brown);
+    /* Prevent text selection on mobile for game elements */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    /* Improve touch scrolling */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Allow text selection for inputs and content areas */
+  input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
+  }
+
+  /* Mobile-specific touch improvements */
+  @media (max-width: 768px) {
+    /* Prevent zoom on double tap */
+    * {
+      touch-action: manipulation;
+    }
+    
+    /* Ensure minimum touch target size */
+    button, .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Better scrolling for mobile */
+    .mobile-scroll {
+      -webkit-overflow-scrolling: touch;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
   }
 }
 

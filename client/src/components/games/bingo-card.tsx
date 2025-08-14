@@ -153,23 +153,23 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
 
   return (
     <div className={cn(
-      "relative rounded-md border p-2",
+      "relative rounded-md border p-1 sm:p-2",
       "bg-white border-gray-200",
       getPhaseStyles(),
-      "w-full max-w-[995px]"
+      "w-full"
     )}>
-      {/* Grid Container - Compact, no vertical scroll */}
-      <div className="overflow-hidden">
-        <div className="w-full grid grid-cols-6 gap-[2px] select-none">
+      {/* Mobile-Responsive Grid Container */}
+      <div className="overflow-x-auto">
+        <div className="min-w-[300px] grid grid-cols-6 gap-[1px] sm:gap-[2px] select-none">
           {/* Headers Row */}
-          <div className="bg-indigo-600 text-white font-semibold text-center h-7 rounded text-[11px] flex flex-col items-center justify-center leading-none">
-            <span className="text-[12px]">🪑</span>
-            <span className="text-[10px]">Seats</span>
+          <div className="bg-indigo-600 text-white font-semibold text-center h-6 sm:h-7 rounded text-[9px] sm:text-[11px] flex flex-col items-center justify-center leading-none">
+            <span className="text-[10px] sm:text-[12px]">🪑</span>
+            <span className="text-[8px] sm:text-[10px]">Seats</span>
           </div>
           {['B', 'I', 'N', 'G', 'O'].map((letter, index) => (
-            <div key={letter} className="bg-blue-600 text-white font-semibold text-center h-7 rounded text-[11px] flex flex-col items-center justify-center leading-none">
-              <span className="text-[12px] font-bold">{letter}</span>
-              <span className="text-[9px] opacity-75">
+            <div key={letter} className="bg-blue-600 text-white font-semibold text-center h-6 sm:h-7 rounded text-[9px] sm:text-[11px] flex flex-col items-center justify-center leading-none">
+              <span className="text-[10px] sm:text-[12px] font-bold">{letter}</span>
+              <span className="text-[7px] sm:text-[9px] opacity-75">
                 {index === 0 && "1-15"}
                 {index === 1 && "16-30"}
                 {index === 2 && "31-45"}
@@ -188,14 +188,15 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
 
             return (
               <React.Fragment key={rowIndex}>
-                {/* Seat Cell */}
+                {/* Mobile-Responsive Seat Cell */}
                 <button
                   onClick={() => !isOccupied && !isJoining && onSeatSelect(seatNumber)}
                   disabled={isOccupied || isJoining}
                   title={isOccupied ? `Seat ${seatNumber}: ${participant?.user?.email || 'Unknown User'}` : `Seat ${seatNumber}: Available`}
                   className={cn(
-                    "relative text-left px-1 h-8 rounded font-medium text-[10.5px] transition-colors",
+                    "relative text-left px-0.5 sm:px-1 h-9 sm:h-8 rounded font-medium text-[9px] sm:text-[10.5px] transition-colors touch-manipulation",
                     "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
+                    "active:scale-95 transition-transform duration-100", // Touch feedback
                     isSelected && "bg-emerald-600 text-white",
                     isOccupied && !isSelected && "bg-red-600 text-white cursor-not-allowed",
                     !isSelected && !isOccupied && "bg-gray-100 text-gray-900 hover:bg-blue-600 hover:text-white cursor-pointer",
@@ -205,14 +206,14 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
                   )}
                 >
                   <div className="flex items-center justify-between leading-none">
-                    <span className="font-bold">#{seatNumber}</span>
-                    <div className="flex items-center gap-1">
-                      {isSelected && <span className="text-[10px] bg-white/20 rounded px-1">✓</span>}
-                      {isOccupied && !isSelected && <span className="text-[10px]">👤</span>}
-                      {!isOccupied && !isSelected && <span className="text-[10px] opacity-50">○</span>}
+                    <span className="font-bold text-[8px] sm:text-[10px]">#{seatNumber}</span>
+                    <div className="flex items-center gap-0.5 sm:gap-1">
+                      {isSelected && <span className="text-[8px] sm:text-[10px] bg-white/20 rounded px-0.5 sm:px-1">✓</span>}
+                      {isOccupied && !isSelected && <span className="text-[8px] sm:text-[10px]">👤</span>}
+                      {!isOccupied && !isSelected && <span className="text-[8px] sm:text-[10px] opacity-50">○</span>}
                     </div>
                   </div>
-                  <div className="truncate opacity-90 leading-none">
+                  <div className="truncate opacity-90 leading-none text-[7px] sm:text-[9px]">
                     {isOccupied ? (
                       participant?.user?.email?.split('@')[0] || 'Unknown'
                     ) : (
@@ -221,16 +222,16 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
                   </div>
                 </button>
 
-                {/* Bingo Numbers */}
+                {/* Mobile-Responsive Bingo Numbers */}
                 {bingoCard && bingoCard[rowIndex]?.map((number, colIndex) => (
                   <button
                     key={colIndex}
                     onClick={gamePhase === 'playing' ? () => handleNumberClick(rowIndex, colIndex) : undefined}
                     disabled={gamePhase !== 'playing'}
                     className={cn(
-                      "text-center h-8 rounded font-medium text-[11px] transition-colors leading-none",
+                      "text-center h-9 sm:h-8 rounded font-medium text-[9px] sm:text-[11px] transition-colors leading-none touch-manipulation",
                       "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
-                      gamePhase === 'playing' && "cursor-pointer",
+                      gamePhase === 'playing' && "cursor-pointer active:scale-95 transition-transform duration-100",
                       gamePhase !== 'playing' && "cursor-default opacity-90",
                       number.isMarked ? "bg-blue-600 text-white font-bold" : "bg-gray-100 text-gray-900",
                       winnerSeatNumber === seatNumber && (winnerUserId && myUserId && winnerUserId === myUserId

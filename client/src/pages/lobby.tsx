@@ -495,91 +495,91 @@ const LobbyPage: React.FC = () => {
 
   return (
     <SiteLayout hideAuthButtons>
-      {/* Top App Header */}
+      {/* Mobile-Responsive Top Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-2">
+        <div className="container mx-auto px-2 sm:px-4 py-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
               <button
                 onClick={() => setLocation('/dashboard')}
-                className="text-casino-red hover:opacity-80 transition-colors text-sm"
+                className="text-casino-red hover:opacity-80 transition-colors text-sm sm:text-sm flex-shrink-0 touch-manipulation"
               >
-                ← Back to Dashboard
+                ← Back
               </button>
-              <h1 className="text-xl font-bold text-gray-900">{lobby.name}</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{lobby.name}</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <ConnectionStatus showDetails={true} className="text-xs" />
-              <div className="text-xs text-gray-700">Balance: ${getBalanceAsNumber(user.balance).toFixed(2)}</div>
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <ConnectionStatus showDetails={false} className="text-xs hidden sm:block" />
+              <div className="text-xs sm:text-xs text-gray-700">
+                <span className="hidden sm:inline">Balance: </span>${getBalanceAsNumber(user.balance).toFixed(2)}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Game Container 995 x 720 */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="mx-auto max-w-[995px]">
-          <div className="bg-white rounded-lg p-3 h-[780px] grid grid-rows-[auto,1fr,auto] gap-2 border border-gray-200">
-            {/* HUD Row */}
-            <div className="grid grid-cols-4 gap-2 text-center items-center">
+      {/* Mobile-Responsive Game Container */}
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
+        <div className="mx-auto max-w-7xl">
+          <div className="bg-white rounded-lg p-2 sm:p-3 min-h-[calc(100vh-12rem)] lg:h-[780px] flex flex-col gap-2 border border-gray-200">
+            {/* Mobile-Responsive HUD Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-center">
               <div className="bg-gray-100 rounded p-2">
-                <div className="text-[11px] text-gray-600">Entry Fee</div>
-                <div className="text-base font-bold text-casino-red">${lobby.entryFee}</div>
+                <div className="text-[10px] sm:text-[11px] text-gray-600">Entry Fee</div>
+                <div className="text-sm sm:text-base font-bold text-casino-red">${lobby.entryFee}</div>
               </div>
               <div className="bg-gray-100 rounded p-2">
-                <div className="text-[11px] text-gray-600">Players</div>
-                <div className="text-base font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
+                <div className="text-[10px] sm:text-[11px] text-gray-600">Players</div>
+                <div className="text-sm sm:text-base font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
               </div>
               <div className="bg-gray-100 rounded p-2">
-                <div className="text-[11px] text-gray-600">Game Phase</div>
-                <div className={`text-base font-bold flex items-center justify-center gap-2 ${
+                <div className="text-[10px] sm:text-[11px] text-gray-600">Game Phase</div>
+                <div className={`text-sm sm:text-base font-bold flex items-center justify-center gap-1 sm:gap-2 ${
                   gameStatus === 'waiting' ? 'text-yellow-600' :
                   gameStatus === 'active' ? 'text-green-600' : 'text-purple-600'
                 }`}>
-                  <span>
+                  <span className="text-xs sm:text-sm">
                     {gameStatus === 'waiting' && '🪑'}
                     {gameStatus === 'active' && '🎯'}
                     {gameStatus === 'finished' && '🏆'}
                   </span>
-                  <span>
+                  <span className="text-xs sm:text-sm">
                     {gameStatus === 'waiting' && 'Lobby'}
                     {gameStatus === 'active' && 'Playing'}
                     {gameStatus === 'finished' && 'Finished'}
                   </span>
                 </div>
               </div>
-              <div className="bg-gray-100 rounded p-2 flex items-center justify-center gap-2">
-                <div className="text-left">
-                  <div className="text-[11px] text-gray-600">Connection</div>
+              <div className="bg-gray-100 rounded p-2 flex flex-col lg:flex-row items-center justify-center gap-1 lg:gap-2">
+                <div className="text-center lg:text-left">
+                  <div className="text-[10px] sm:text-[11px] text-gray-600">Connection</div>
                   <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>{isConnected ? '🟢 Live' : '🔴 Offline'}</div>
                 </div>
                 {currentUserParticipation && gameStatus !== 'active' && (
                   <button
                     onClick={handleLeaveLobby}
                     disabled={joining}
-                    className="ml-2 bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-3 py-1.5 rounded text-xs font-semibold text-white"
+                    className="bg-casino-red hover:opacity-90 disabled:bg-gray-300 px-2 lg:px-3 py-1 lg:py-1.5 rounded text-[10px] lg:text-xs font-semibold text-white"
                     title="Leave Lobby"
                   >
-                    Leave Lobby
+                    Leave
                   </button>
                 )}
               </div>
             </div>
-            {/* Main Row: Card + Sidebar (Master Card moved to sidebar) */}
-            
 
-            {/* Main Row: Card + Sidebar */}
-            <div className="grid grid-cols-[1fr,260px] gap-2 min-h-0">
+            {/* Mobile-Responsive Main Content */}
+            <div className="flex flex-col lg:grid lg:grid-cols-[1fr,260px] gap-2 flex-1 min-h-0">
               {/* Card */}
               <div className="bg-white rounded p-2 overflow-hidden border border-gray-200">
                 {renderBingoCard()}
               </div>
 
-              {/* Sidebar */}
-              <div className="bg-white rounded p-2 flex flex-col min-h-0 border border-gray-200">
+              {/* Mobile-Responsive Sidebar */}
+              <div className="bg-white rounded p-2 flex flex-col min-h-0 lg:min-h-0 border border-gray-200">
                 {/* Admin controls (minimal) */}
                 {user?.isAdmin && (
-                  <div className="mb-2 flex items-center gap-2">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
                     {gameStatus !== 'active' && (
                       <button
                         onClick={async () => {
@@ -609,7 +609,7 @@ const LobbyPage: React.FC = () => {
                           className="bg-indigo-600 hover:bg-indigo-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
                         >{isPaused ? 'Resume' : 'Pause'}</button>
                         <select
-                          className="ml-2 bg-white border border-gray-300 rounded text-xs px-1 py-1"
+                          className="bg-white border border-gray-300 rounded text-xs px-1 py-1"
                           value={callMs}
                           onChange={async (e) => {
                             const ms = parseInt(e.target.value, 10);
@@ -640,18 +640,18 @@ const LobbyPage: React.FC = () => {
                               }
                             }
                           }}
-                          className="bg-yellow-600 hover:bg-yellow-700 px-2.5 py-1 rounded text-xs font-semibold ml-auto text-white"
+                          className="bg-yellow-600 hover:bg-yellow-700 px-2.5 py-1 rounded text-xs font-semibold text-white"
                         >Stop</button>
                       </>
                     )}
                   </div>
                 )}
 
-                {/* Called numbers panel (now directly under admin controls) */}
-                <div className="mb-2 bg-white rounded p-2 border border-gray-200">
+                {/* Called numbers panel - mobile optimized */}
+                <div className="mb-2 bg-gray-50 rounded p-2 border border-gray-200">
                   <div className="text-xs font-bold mb-1 text-gray-900">Called Numbers</div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[11px] text-gray-600">Last:</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-1">
+                    <span className="text-[11px] text-gray-600 flex-shrink-0">Last:</span>
                     <div className="inline-flex gap-1">
                       {calledNumbers.length > 0 && (
                         <span className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
@@ -660,10 +660,10 @@ const LobbyPage: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-gray-600">Recent:</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <span className="text-[11px] text-gray-600 flex-shrink-0">Recent:</span>
                     <div className="flex flex-wrap gap-1">
-                      {calledNumbers.slice(-8).reverse().map((n, idx) => (
+                      {calledNumbers.slice(-6).reverse().map((n, idx) => (
                         <span key={idx} className="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[11px] font-semibold">
                           {n}
                         </span>
@@ -672,8 +672,8 @@ const LobbyPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Master Card compact */}
-                <div className="mb-2">
+                {/* Master Card compact - hidden on mobile to save space */}
+                <div className="mb-2 hidden lg:block">
                   <div className="flex items-center justify-between mb-1">
                     <div className="text-xs text-gray-700">Master (1–75)</div>
                     <div className="text-[11px] text-gray-500">Light yellow = called</div>
@@ -681,56 +681,58 @@ const LobbyPage: React.FC = () => {
                   <MasterCard calledNumbers={calledNumbers} compact={true} showHeaders={false} />
                 </div>
 
-                
-
                 {/* Join/Seat area */}
                 <div className="mb-2">
                   {currentUserParticipation ? (
-                    <div className="bg-white rounded p-2 text-center border border-gray-200">
-                      <p className="text-green-700 text-sm">You are in seat {currentUserParticipation.seatNumber}</p>
+                    <div className="bg-green-50 rounded p-2 text-center border border-green-200">
+                      <p className="text-green-700 text-sm font-medium">You are in seat {currentUserParticipation.seatNumber}</p>
                     </div>
                   ) : (
-                    <div className="bg-white rounded p-2 text-center text-gray-700 text-sm border border-gray-200">
+                    <div className="bg-gray-50 rounded p-2 text-center text-gray-700 text-sm border border-gray-200">
                       {lobby.status === 'waiting' 
-                        ? (canAffordEntry ? 'Click on an available seat to join' : 'Insufficient balance to join this lobby')
-                        : 'Lobby is not accepting new players'}
+                        ? (canAffordEntry ? 'Click an available seat to join' : 'Insufficient balance to join')
+                        : 'Lobby not accepting players'}
                     </div>
                   )}
                 </div>
 
-                {/* Participants */}
+                {/* Mobile-Responsive Participants */}
                 <div className="flex-1 min-h-0">
                   <div className="flex items-center justify-between mb-1">
-                    <h2 className="text-sm font-bold text-gray-900">Current Players ({participants.length}/{lobby.maxSeats})</h2>
+                    <h2 className="text-sm font-bold text-gray-900">Players ({participants.length}/{lobby.maxSeats})</h2>
                   </div>
-                  <div className="space-y-2 overflow-y-auto pr-1 h-full">
+                  <div className="space-y-2 overflow-y-auto pr-1 max-h-64 lg:max-h-none lg:h-full">
                     {participants.length > 0 ? (
                       participants.map((participant) => (
-                        <div key={participant.id} className="flex items-center justify-between bg-white rounded p-2 border border-gray-200">
+                        <div key={participant.id} className="flex items-center justify-between bg-gray-50 rounded p-2 border border-gray-200">
                           <div>
                             <div className="text-xs font-medium text-gray-900">
-                              {participant.user?.email?.split('@')[0] || 'Unknown Player'}
+                              {participant.user?.email?.split('@')[0] || 'Unknown'}
                               {participant.userId === user.id && <span className="text-green-700 ml-1">(You)</span>}
                             </div>
                             <div className="text-[11px] text-gray-500">Seat {participant.seatNumber}</div>
                           </div>
                           <div className="text-[11px] text-gray-500">
-                            {new Date(participant.joinedAt).toLocaleTimeString()}
+                            {new Date(participant.joinedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 text-center py-6 text-sm">No players yet. Be the first to join!</p>
+                      <p className="text-gray-500 text-center py-4 text-sm">No players yet. Be the first to join!</p>
                     )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Row: compact actions */}
-            <div className="flex items-center justify-between text-[11px] text-gray-500">
+            {/* Mobile-Responsive Footer */}
+            <div className="hidden lg:flex items-center justify-between text-[11px] text-gray-500">
               <div>Tip: Use the left table to pick a seat.</div>
-              {/* removed extra buttons */}
+            </div>
+            
+            {/* Mobile-only quick instructions */}
+            <div className="lg:hidden text-center text-xs text-gray-500 bg-gray-50 rounded p-2">
+              Tap a seat number to join the game
             </div>
           </div>
         </div>
