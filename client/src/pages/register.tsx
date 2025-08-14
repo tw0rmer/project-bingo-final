@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,7 +12,15 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [, setLocation] = useLocation();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  // Auto-redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      console.log('[REGISTER] User already authenticated, redirecting to dashboard...');
+      setLocation('/dashboard');
+    }
+  }, [user, setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
