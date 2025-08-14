@@ -6,6 +6,8 @@ interface User {
   id: number;
   email: string;
   isAdmin: boolean;
+  balance: number;
+  username?: string;
 }
 
 interface AuthContextType {
@@ -96,7 +98,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser({
           id: userData.id,
           email: userData.email,
-          isAdmin: userData.isAdmin || false
+          isAdmin: userData.isAdmin || false,
+          balance: parseFloat(userData.balance) || 0,
+          username: userData.username || undefined
         });
         setError(null);
       } catch (err: any) {
@@ -152,7 +156,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser({
         id: userData.id,
         email: userData.email,
-        isAdmin: userData.isAdmin || false
+        isAdmin: userData.isAdmin || false,
+        balance: parseFloat(userData.balance) || 0,
+        username: userData.username || undefined
       });
       setError(null);
     } catch (err: any) {

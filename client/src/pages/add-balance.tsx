@@ -99,7 +99,7 @@ export default function AddBalancePage() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Enter Amount</h3>
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-900 mb-2">
                 Amount (CAD)
               </label>
               <div className="relative">
@@ -121,7 +121,7 @@ export default function AddBalancePage() {
                 <button
                   key={preset}
                   onClick={() => setAmount(preset.toString())}
-                  className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                  className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg text-sm font-medium transition-colors"
                 >
                   ${preset}
                 </button>
@@ -160,12 +160,12 @@ export default function AddBalancePage() {
                         <span className="bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">SELECTED</span>
                       )}
                     </div>
-                    <p className="text-gray-600 text-sm mb-2">{method.description}</p>
+                    <p className="text-gray-700 text-sm mb-2">{method.description}</p>
                     <div className="flex gap-4 text-sm">
-                      <span className="text-gray-500">
+                      <span className="text-gray-800">
                         <strong>Processing:</strong> {method.processingTime}
                       </span>
-                      <span className="text-gray-500">
+                      <span className="text-gray-800">
                         <strong>Fees:</strong> {method.fees}
                       </span>
                     </div>
@@ -219,8 +219,8 @@ export default function AddBalancePage() {
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
               <h4 className="font-medium text-gray-900 mb-2">📞 Contact Support</h4>
-              <p className="text-gray-600">Email: support@wildcardpremium.com</p>
-              <p className="text-gray-600">Phone: 1-800-WILDCARD</p>
+              <p className="text-gray-800">Email: support@wildcardpremium.com</p>
+              <p className="text-gray-800">Phone: 1-800-WILDCARD</p>
             </div>
             <div>
               <h4 className="font-medium text-gray-900 mb-2">⏰ Processing Times</h4>
