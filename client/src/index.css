@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(39, 66%, 98%);
+  --foreground: hsl(30, 86%, 12%);
+  --muted: hsl(39, 33%, 95%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(30, 86%, 12%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(30, 86%, 12%);
+  --border: hsl(39, 33%, 90%);
+  --input: hsl(39, 33%, 90%);
+  --primary: hsl(10, 83%, 55%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(45, 91%, 58%);
+  --secondary-foreground: hsl(30, 86%, 12%);
+  --accent: hsl(28, 94%, 53%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(30, 86%, 12%);
+  --radius: 0.75rem;
+  
+  /* Custom casino colors */
+  --casino-red: hsl(0, 73%, 41%);
+  --casino-gold: hsl(45, 91%, 58%);
+  --cream: hsl(39, 66%, 98%);
+  --light-cream: hsl(39, 40%, 97%);
+  --dark-brown: hsl(30, 86%, 12%);
+  --rose-gold: hsl(25, 95%, 53%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(10, 83%, 55%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background-color: var(--cream);
+    color: var(--dark-brown);
+  }
+}
+
+@layer utilities {
+  .casino-red {
+    color: var(--casino-red);
+  }
+  
+  .casino-gold {
+    color: var(--casino-gold);
+  }
+  
+  .bg-casino-red {
+    background-color: var(--casino-red);
+  }
+  
+  .bg-casino-gold {
+    background-color: var(--casino-gold);
+  }
+  
+  .bg-cream {
+    background-color: var(--cream);
+  }
+  
+  .bg-light-cream {
+    background-color: var(--light-cream);
+  }
+  
+  .text-dark-brown {
+    color: var(--dark-brown);
+  }
+  
+  .text-rose-gold {
+    color: var(--rose-gold);
+  }
+  
+  .bg-rose-gold {
+    background-color: var(--rose-gold);
+  }
+  
+  .border-casino-gold {
+    border-color: var(--casino-gold);
+  }
+  
+  .border-casino-red {
+    border-color: var(--casino-red);
+  }
+  
+  /* Enhanced Bingo Card Animations */
+  .shadow-3xl {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-bounce-soft {
+    animation: bounce-soft 1s ease-in-out infinite;
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px -10px currentColor;
+    }
+    to {
+      box-shadow: 0 0 20px -5px currentColor, 0 0 40px -10px currentColor;
+    }
+  }
+  
+  @keyframes bounce-soft {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  /* Glassmorphism effects */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+  
+  .bg-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .bg-glass-dark {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Performance optimizations for bingo card */
+  .bingo-grid {
+    contain: layout style paint;
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
