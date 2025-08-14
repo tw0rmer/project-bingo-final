@@ -90,6 +90,13 @@ Preferred communication style: Simple, everyday language.
 - **ADD BALANCE System**: Implemented full payment system with E-Transfer support and multiple payment options
 - **Navigation Improvements**: Fixed Winners section scrolling, navigation layout at various widths, and dashboard access from lobby
 - **Section IDs**: Added proper IDs to all navigation sections for smooth scrolling functionality
+- **Achievement System Implementation**: Built comprehensive achievement badge system with animated notifications, rarity-based styling, and progress tracking
+- **SubNav Creation**: Developed secondary navigation bar to reduce header crowding by moving Dashboard, Logout, and Welcome user info
+- **Achievement API Integration**: Added backend endpoints for fetching achievements, marking as viewed, and automatic unlocking triggers
+- **Automatic Achievement Triggers**: Implemented system for unlocking achievements on signup welcome and game wins
+- **Mobile-Responsive SubNav**: Created user-friendly subnav that works across all device sizes with compact design
+- **Login/Register Page Updates**: Modified auth pages to hide subnav for cleaner focused experience
+- **Achievement Categories**: Added multiple achievement types including games, social, milestone, and special categories with rarity levels
 
 ### User Preferences
 - **Communication Style**: Simple, everyday language

@@ -102,7 +102,7 @@ export default function LoginPage() {
   };
 
   return (
-    <SiteLayout>
+    <SiteLayout hideSubNav={true}>
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 mx-auto my-10">
         {/* Header */}
         <div className="text-center mb-8">

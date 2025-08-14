@@ -49,18 +49,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Achievement endpoints
   app.get("/api/achievements", async (req, res) => {
     try {
-      // For now, using session-based auth check
-      if (!req.session || !req.session.userId) {
+      // Use JWT auth check like other endpoints
+      if (!req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = req.session.userId;
+      const userId = parseInt(req.user.id);
       const achievements = achievementStorage.getAchievements();
       const userAchievements = achievementStorage.getUserAchievements(userId);
       
       // Check for new achievements based on user data
-      // For demo, we'll check with a default balance
-      const newAchievements = achievementStorage.checkAndUnlockAchievements(userId, 2000);
+      const newAchievements = achievementStorage.checkAndUnlockAchievements(userId, req.user.balance || 0);
       
       res.json({
         achievements,
@@ -74,15 +73,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/achievements/:achievementId/mark-viewed", async (req, res) => {
     try {
-      if (!req.session || !req.session.userId) {
+      if (!req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      achievementStorage.markAchievementAsViewed(req.session.userId, req.params.achievementId);
+      achievementStorage.markAchievementAsViewed(parseInt(req.user.id), req.params.achievementId);
       res.json({ success: true });
     } catch (error) {
       console.error("Mark achievement viewed error:", error);
       res.status(500).json({ message: "Failed to mark achievement as viewed" });
+    }
+  });
+
+  // Note: Welcome achievement will be triggered in the existing auth routes
+
+  // Trigger game win achievements (endpoint for game win events)
+  app.post("/api/achievements/game-win", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const newAchievements = achievementStorage.unlockGameWinAchievement(parseInt(req.user.id));
+      res.json({ newAchievements });
+    } catch (error) {
+      console.error("Game win achievement error:", error);
+      res.status(500).json({ message: "Failed to process game win achievements" });
     }
   });
 

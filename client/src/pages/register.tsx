@@ -57,7 +57,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <SiteLayout>
+    <SiteLayout hideSubNav={true}>
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md mx-auto my-10">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-casino-red">Create your account</h2>

@@ -60,6 +60,18 @@ export class AchievementStorage {
         createdAt: new Date().toISOString()
       },
       {
+        id: "welcome_aboard",
+        name: "Welcome Aboard!",
+        description: "Sign up and join the WildCard Bingo community",
+        icon: "🎉",
+        category: "milestone",
+        requirement: 1,
+        rarity: "common",
+        points: 5,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
         id: "balance_keeper",
         name: "Balance Keeper",
         description: "Add funds to your account",
@@ -68,6 +80,30 @@ export class AchievementStorage {
         requirement: 1,
         rarity: "common",
         points: 15,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "first_win",
+        name: "First Victory",
+        description: "Win your first bingo game",
+        icon: "🏆",
+        category: "games",
+        requirement: 1,
+        rarity: "rare",
+        points: 50,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "winning_streak",
+        name: "On Fire!",
+        description: "Win 3 games in a row",
+        icon: "🔥",
+        category: "games",
+        requirement: 3,
+        rarity: "epic",
+        points: 150,
         isActive: true,
         createdAt: new Date().toISOString()
       },
@@ -147,6 +183,39 @@ export class AchievementStorage {
 
     if (!unlockedIds.has("high_roller") && userBalance >= 5000) {
       newlyUnlocked.push(this.createUserAchievement(userId, "high_roller"));
+    }
+
+    return newlyUnlocked;
+  }
+
+  // Manual achievement unlocking methods
+  unlockWelcomeAchievement(userId: number): UserAchievement | null {
+    const userAchievements = this.getUserAchievements(userId);
+    const hasWelcome = userAchievements.some(ua => ua.achievementId === "welcome_aboard");
+    
+    if (!hasWelcome) {
+      return this.createUserAchievement(userId, "welcome_aboard");
+    }
+    return null;
+  }
+
+  unlockGameWinAchievement(userId: number): UserAchievement[] {
+    const userAchievements = this.getUserAchievements(userId);
+    const unlockedIds = new Set(userAchievements.map(ua => ua.achievementId));
+    const newlyUnlocked: UserAchievement[] = [];
+
+    // First win achievement
+    if (!unlockedIds.has("first_win")) {
+      newlyUnlocked.push(this.createUserAchievement(userId, "first_win"));
+    }
+
+    // Check for game master (simplified for demo)
+    const gameWins = userAchievements.filter(ua => 
+      ua.achievementId === "first_win" || ua.achievementId === "game_master"
+    ).length;
+    
+    if (!unlockedIds.has("game_master") && gameWins >= 5) {
+      newlyUnlocked.push(this.createUserAchievement(userId, "game_master"));
     }
 
     return newlyUnlocked;

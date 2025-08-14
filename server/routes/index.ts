@@ -244,5 +244,62 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Achievement endpoints
+  app.get("/api/achievements", async (req, res) => {
+    try {
+      // Use JWT auth check like other endpoints
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const userId = parseInt(req.user.id);
+      const { achievementStorage } = await import("../achievement-storage");
+      const achievements = achievementStorage.getAchievements();
+      const userAchievements = achievementStorage.getUserAchievements(userId);
+      
+      // Check for new achievements based on user data
+      const newAchievements = achievementStorage.checkAndUnlockAchievements(userId, req.user.balance || 0);
+      
+      res.json({
+        achievements,
+        userAchievements: [...userAchievements, ...newAchievements]
+      });
+    } catch (error) {
+      console.error("Achievement fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch achievements" });
+    }
+  });
+
+  app.post("/api/achievements/:achievementId/mark-viewed", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { achievementStorage } = await import("../achievement-storage");
+      achievementStorage.markAchievementAsViewed(parseInt(req.user.id), req.params.achievementId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Mark achievement viewed error:", error);
+      res.status(500).json({ message: "Failed to mark achievement as viewed" });
+    }
+  });
+
+  // Trigger game win achievements (endpoint for game win events)
+  app.post("/api/achievements/game-win", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { achievementStorage } = await import("../achievement-storage");
+      const newAchievements = achievementStorage.unlockGameWinAchievement(parseInt(req.user.id));
+      res.json({ newAchievements });
+    } catch (error) {
+      console.error("Game win achievement error:", error);
+      res.status(500).json({ message: "Failed to process game win achievements" });
+    }
+  });
+
   // Routes registered successfully
 }
