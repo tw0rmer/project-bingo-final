@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  requireAdmin?: boolean;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -14,8 +15,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     if (!loading && !user) {
       setLocation('/login');
+    } else if (!loading && user && requireAdmin && !user.isAdmin) {
+      setLocation('/dashboard');
     }
-  }, [user, loading, setLocation]);
+  }, [user, loading, setLocation, requireAdmin]);
 
   // Show loading while checking auth
   if (loading) {
@@ -30,7 +33,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // Return null while redirecting (don't render children until redirect is complete)
-  if (!user) {
+  if (!user || (requireAdmin && !user.isAdmin)) {
     return null;
   }
 
