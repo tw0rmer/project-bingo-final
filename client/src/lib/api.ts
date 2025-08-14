@@ -4,7 +4,8 @@
 
 // Get the base API URL based on the environment
 export const getApiBaseUrl = (): string => {
-  return import.meta.env.DEV ? 'http://localhost:5000/api' : '/api';
+  // In Replit, always use relative URLs since everything runs on the same domain
+  return '/api';
 };
 
 interface RequestOptions extends RequestInit {
