@@ -6,6 +6,7 @@ import authRoutes from './auth';
 import dashboardRoutes from './dashboard';
 import lobbiesRoutes from './lobbies';
 import adminRoutes from './admin';
+import achievementsRoutes from './achievements';
 import { storage } from '../storage';
 import { db } from '../db';
 import { winners as winnersTable, users as usersTable } from '../../shared/schema';
@@ -21,6 +22,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/lobbies', lobbiesRoutes);
   app.use('/api/admin', adminRoutes);
+  app.use('/api/achievements', achievementsRoutes);
 
   // Game control endpoints (minimal for 7A)
   app.post('/api/games/:lobbyId/start', async (req, res) => {
