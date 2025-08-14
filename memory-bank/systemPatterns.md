@@ -251,3 +251,118 @@ These patterns should be applied consistently across all routes and operations t
 - **Seat Locking Pattern**: Treat lobby `status` as join/leave gate. On start: set to `active` (block joins/leaves). On end: set to `finished` (allow leave, no refund). Pre‑game: `waiting` (allow join/leave with refund).
 - **Finished Snapshot Pattern**: Cache final game snapshot (drawnNumbers + cards) per lobby in memory; serve from snapshot endpoint when no active game so post‑game refresh still shows highlights. Option to persist to DB later for durability.
 - **Theme Consistency Pattern**: Introduce a `SiteLayout` wrapper that standardizes header/footer, base background, and color tokens across app pages to mirror the marketing site look.
+
+## 2025-08-14 – Mobile Responsiveness and Cross-Platform Patterns
+
+### **Mobile-First Responsive Design Pattern**:
+
+1. **Progressive Layout Enhancement**:
+   ```css
+   /* Mobile-first base styles (default) */
+   .container { flex-direction: column; }
+   
+   /* Small devices and up */
+   @media (min-width: 640px) { /* sm: */ }
+   
+   /* Large devices and up */  
+   @media (min-width: 1024px) { /* lg: */ 
+     .container { flex-direction: row; }
+   }
+   ```
+
+2. **Touch Target Compliance**:
+   - Minimum 44px height/width for all interactive elements
+   - `touch-manipulation` CSS for better touch response
+   - Scale feedback animations: `active:scale-95 transition-transform duration-100`
+   - Prevent zoom on double-tap with proper viewport settings
+
+3. **Responsive Breakpoint Strategy**:
+   - **Mobile**: `< 640px` (default styles, vertical stacking)
+   - **Small**: `sm: >= 640px` (small tablets, enhanced spacing)
+   - **Large**: `lg: >= 1024px` (desktop, side-by-side layouts)
+
+4. **Mobile Optimization Patterns**:
+   - Hide non-essential elements on mobile: `hidden lg:block`
+   - Responsive text sizing: `text-[9px] sm:text-[11px]`
+   - Flexible grid layouts: `grid-cols-2 lg:grid-cols-4`
+   - Touch-friendly spacing: `gap-1 sm:gap-2`
+
+### **Cross-Platform Authentication Pattern**:
+
+1. **JWT Secret Standardization**:
+   - Single source of truth for JWT secrets across all server components
+   - Centralized `verifyToken` function used by both REST and Socket.IO
+   - Consistent async handling in authentication middleware
+
+2. **Socket.IO Authentication Flow**:
+   ```typescript
+   // Standardized pattern for Socket.IO auth
+   import { verifyToken } from '../middleware/auth.js';
+   
+   io.use(async (socket, next) => {
+     try {
+       const user = await verifyToken(token);
+       socket.userId = user.id;
+       next();
+     } catch (error) {
+       next(new Error('Authentication failed'));
+     }
+   });
+   ```
+
+### **Mobile UX Enhancement Patterns**:
+
+1. **Visual Feedback for Touch**:
+   - Immediate visual response to touch interactions
+   - Scale animations for button presses
+   - Clear loading states for async operations
+   - Haptic-like feedback through CSS transitions
+
+2. **Space-Efficient Design**:
+   - Collapse non-essential information on mobile
+   - Use progressive disclosure (show details on larger screens)
+   - Horizontal scrolling for wide content
+   - Truncate text with ellipsis: `truncate` class
+
+3. **Accessibility-First Approach**:
+   - Proper viewport meta tags with zoom control
+   - Text selection control: `user-select: none` for game elements
+   - High contrast ratios maintained across all screen sizes
+   - Keyboard and screen reader compatibility preserved
+
+### **Performance Optimization for Mobile**:
+
+1. **CSS Containment Pattern**:
+   ```css
+   .game-container {
+     contain: layout style paint;
+     -webkit-overflow-scrolling: touch;
+   }
+   ```
+
+2. **Minimal DOM Updates**:
+   - Efficient re-rendering with React key props
+   - Memoization of expensive calculations
+   - Lazy loading of non-critical components
+
+3. **Touch Scrolling Optimization**:
+   - Native scrolling momentum: `-webkit-overflow-scrolling: touch`
+   - Proper scroll containers with defined heights
+   - Prevent scroll chaining where appropriate
+
+### **Future Mobile Enhancement Patterns**:
+
+1. **Progressive Web App (PWA) Ready**:
+   - Viewport meta tags already configured
+   - Web app capability meta tags in place
+   - Service worker implementation planned
+
+2. **Offline Support Pattern** (Future):
+   - Cache game state in localStorage
+   - Offline queue for critical actions
+   - Sync when connection restored
+
+3. **Device-Specific Optimizations** (Future):
+   - iOS Safari specific CSS fixes
+   - Android Chrome optimization
+   - Tablet-specific layouts between mobile and desktop
