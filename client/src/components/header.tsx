@@ -78,6 +78,11 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             >
               Contact
             </button>
+            {user && (
+              <Link href="/achievements" className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1">
+                🏆 Achievements
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -234,6 +239,18 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             >
               Contact
             </button>
+            
+            {/* Achievements link for logged in users */}
+            {user && (
+              <Link 
+                href="/achievements" 
+                className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+                data-testid="link-mobile-achievements"
+              >
+                🏆 Achievements
+              </Link>
+            )}
             
             {/* Auth buttons in mobile menu */}
             {!hideAuthButtons && user && (

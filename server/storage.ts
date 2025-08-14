@@ -1,34 +1,46 @@
-import { type User, type InsertUser, type GameRoom, type InsertGameRoom, type Winner, type InsertWinner, type FaqItem, type InsertFaqItem } from "@shared/schema";
+import { type User, type InsertUser, type Lobby, type InsertLobby, type Winner, type InsertWinner, type FaqItem, type InsertFaqItem, type Achievement, type InsertAchievement, type UserAchievement, type InsertUserAchievement } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  getGameRooms(): Promise<GameRoom[]>;
-  getGameRoom(id: string): Promise<GameRoom | undefined>;
-  createGameRoom(room: InsertGameRoom): Promise<GameRoom>;
-  updateGameRoom(id: string, updates: Partial<GameRoom>): Promise<GameRoom | undefined>;
+  getGameRooms(): Promise<Lobby[]>;
+  getGameRoom(id: number): Promise<Lobby | undefined>;
+  createGameRoom(room: InsertLobby): Promise<Lobby>;
+  updateGameRoom(id: number, updates: Partial<Lobby>): Promise<Lobby | undefined>;
   
   getWinners(): Promise<Winner[]>;
   createWinner(winner: InsertWinner): Promise<Winner>;
   
   getFaqItems(): Promise<FaqItem[]>;
   createFaqItem(faq: InsertFaqItem): Promise<FaqItem>;
+  
+  // Achievement methods
+  getAchievements(): Promise<Achievement[]>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  getUserAchievements(userId: number): Promise<UserAchievement[]>;
+  createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
+  markAchievementAsViewed(userId: number, achievementId: string): Promise<void>;
+  checkAndUnlockAchievements(userId: number): Promise<UserAchievement[]>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private gameRooms: Map<string, GameRoom>;
-  private winners: Map<string, Winner>;
+  private users: Map<number, User>;
+  private gameRooms: Map<number, Lobby>;
+  private winners: Map<number, Winner>;
   private faqItems: Map<string, FaqItem>;
+  private achievements: Map<string, Achievement>;
+  private userAchievements: Map<number, UserAchievement>;
 
   constructor() {
     this.users = new Map();
     this.gameRooms = new Map();
     this.winners = new Map();
     this.faqItems = new Map();
+    this.achievements = new Map();
+    this.userAchievements = new Map();
     
     // Initialize with sample data
     this.initializeSampleData();
@@ -36,7 +48,7 @@ export class MemStorage implements IStorage {
 
   private initializeSampleData() {
     // Sample game rooms
-    const sampleRooms: GameRoom[] = [
+    const sampleRooms: Lobby[] = [
       {
         id: "1",
         name: "Bingo-Go-The-Go!",
@@ -181,6 +193,100 @@ export class MemStorage implements IStorage {
     ];
 
     sampleFaqs.forEach(faq => this.faqItems.set(faq.id, faq));
+    
+    // Initialize sample achievements
+    this.initializeSampleAchievements();
+  }
+
+  private initializeSampleAchievements() {
+    const sampleAchievements: Achievement[] = [
+      {
+        id: "first_game",
+        name: "First Game",
+        description: "Play your first bingo game",
+        icon: "🎯",
+        category: "games",
+        requirement: 1,
+        rarity: "common",
+        points: 10,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "early_bird",
+        name: "Early Bird",
+        description: "Join a game room within 5 minutes of it opening",
+        icon: "🐦",
+        category: "games",
+        requirement: 1,
+        rarity: "rare",
+        points: 25,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "game_master",
+        name: "Game Master",
+        description: "Win 10 bingo games",
+        icon: "👑",
+        category: "games",
+        requirement: 10,
+        rarity: "epic",
+        points: 100,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "social_butterfly",
+        name: "Social Butterfly",
+        description: "Join 5 different game rooms",
+        icon: "🦋",
+        category: "social",
+        requirement: 5,
+        rarity: "rare",
+        points: 50,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "balance_keeper",
+        name: "Balance Keeper",
+        description: "Add funds to your account",
+        icon: "💰",
+        category: "milestone",
+        requirement: 1,
+        rarity: "common",
+        points: 15,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "high_roller",
+        name: "High Roller",
+        description: "Maintain a balance of $500 or more",
+        icon: "💎",
+        category: "milestone",
+        requirement: 500,
+        rarity: "legendary",
+        points: 200,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: "lucky_seven",
+        name: "Lucky Seven",
+        description: "Win 7 games in a row",
+        icon: "🍀",
+        category: "special",
+        requirement: 7,
+        rarity: "legendary",
+        points: 500,
+        isActive: true,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    sampleAchievements.forEach(achievement => this.achievements.set(achievement.id, achievement));
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -244,6 +350,89 @@ export class MemStorage implements IStorage {
     const faq: FaqItem = { ...insertFaq, id };
     this.faqItems.set(id, faq);
     return faq;
+  }
+
+  // Achievement methods
+  async getAchievements(): Promise<Achievement[]> {
+    return Array.from(this.achievements.values()).filter(a => a.isActive);
+  }
+
+  async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
+    const id = randomUUID();
+    const achievement: Achievement = { 
+      ...insertAchievement, 
+      id,
+      createdAt: new Date().toISOString()
+    };
+    this.achievements.set(id, achievement);
+    return achievement;
+  }
+
+  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
+    return Array.from(this.userAchievements.values()).filter(ua => ua.userId === userId);
+  }
+
+  async createUserAchievement(insertUserAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const id = Date.now(); // Simple ID for in-memory storage
+    const userAchievement: UserAchievement = { 
+      ...insertUserAchievement, 
+      id,
+      unlockedAt: new Date().toISOString()
+    };
+    this.userAchievements.set(id.toString(), userAchievement);
+    return userAchievement;
+  }
+
+  async markAchievementAsViewed(userId: number, achievementId: string): Promise<void> {
+    const userAchievement = Array.from(this.userAchievements.values())
+      .find(ua => ua.userId === userId && ua.achievementId === achievementId);
+    
+    if (userAchievement) {
+      userAchievement.isNew = false;
+      this.userAchievements.set(userAchievement.id.toString(), userAchievement);
+    }
+  }
+
+  async checkAndUnlockAchievements(userId: number): Promise<UserAchievement[]> {
+    const user = Array.from(this.users.values()).find(u => u.id === userId.toString());
+    if (!user) return [];
+
+    const userAchievements = await this.getUserAchievements(userId);
+    const unlockedAchievementIds = new Set(userAchievements.map(ua => ua.achievementId));
+    const allAchievements = await this.getAchievements();
+    const newlyUnlocked: UserAchievement[] = [];
+
+    for (const achievement of allAchievements) {
+      if (unlockedAchievementIds.has(achievement.id)) continue;
+
+      let shouldUnlock = false;
+      let progress = 0;
+
+      // Check achievement conditions
+      switch (achievement.id) {
+        case "balance_keeper":
+          shouldUnlock = user.balance > 0;
+          progress = user.balance > 0 ? 1 : 0;
+          break;
+        case "high_roller":
+          shouldUnlock = user.balance >= 500;
+          progress = Math.min(user.balance, 500);
+          break;
+        // Add more achievement logic here as needed
+      }
+
+      if (shouldUnlock) {
+        const newAchievement = await this.createUserAchievement({
+          userId,
+          achievementId: achievement.id,
+          progress: achievement.requirement,
+          isNew: true
+        });
+        newlyUnlocked.push(newAchievement);
+      }
+    }
+
+    return newlyUnlocked;
   }
 }
 

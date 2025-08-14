@@ -19,6 +19,7 @@ import AdminPage from './pages/admin';
 import LobbyPage from './pages/lobby';
 import AddBalancePage from './pages/add-balance';
 import ProfilePage from './pages/profile';
+import AchievementsPage from './pages/achievements';
 
 export default function App() {
   return (
@@ -55,6 +56,11 @@ export default function App() {
               <Route path="/profile">
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/achievements">
+                <ProtectedRoute>
+                  <AchievementsPage />
                 </ProtectedRoute>
               </Route>
               <Route component={NotFoundPage} />
