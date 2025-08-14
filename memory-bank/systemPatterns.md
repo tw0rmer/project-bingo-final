@@ -366,3 +366,117 @@ These patterns should be applied consistently across all routes and operations t
    - iOS Safari specific CSS fixes
    - Android Chrome optimization
    - Tablet-specific layouts between mobile and desktop
+
+### **2025-08-14 – SubNav Integration and Component Architecture Patterns**:
+
+#### **SiteLayout Component Pattern**:
+1. **Universal Layout Wrapper**:
+   ```typescript
+   // Pattern for consistent page layout
+   import SiteLayout from '@/components/SiteLayout';
+   
+   export default function PageComponent() {
+     return (
+       <SiteLayout>
+         {/* Page content */}
+       </SiteLayout>
+     );
+   }
+   ```
+
+2. **Conditional SubNav Visibility**:
+   ```typescript
+   // Pattern for selective SubNav display
+   const hideSubNav = ['/login', '/register'].includes(location);
+   {!hideSubNav && user && <SubNav />}
+   ```
+
+#### **Achievement System Pattern**:
+1. **Achievement Storage Architecture**:
+   - Centralized achievement definitions with categories and rarities
+   - Automatic trigger system for signup and game events
+   - Progress tracking with viewed/unviewed states
+
+2. **Achievement API Pattern**:
+   ```typescript
+   // Consistent achievement endpoint structure
+   GET /api/achievements - fetch user achievements
+   POST /api/achievements/:id/viewed - mark as viewed
+   POST /api/achievements/unlock/:category - trigger unlocks
+   ```
+
+#### **Admin User Management Pattern**:
+1. **Cascading Delete Safety**:
+   ```typescript
+   // Pattern for safe user deletion
+   // 1. Delete related transactions
+   await db.delete(walletTransactions).where(eq(walletTransactions.userId, userId));
+   // 2. Remove from lobby participants  
+   await db.delete(lobbyParticipants).where(eq(lobbyParticipants.userId, userId));
+   // 3. Delete user
+   await db.delete(users).where(eq(users.id, userId));
+   ```
+
+2. **Admin Protection Pattern**:
+   ```typescript
+   // Prevent deletion of admin users
+   if (user.isAdmin) {
+     return res.status(403).json({ message: 'Cannot delete admin users' });
+   }
+   ```
+
+#### **Mobile-First Responsive Pattern**:
+1. **Progressive Layout Enhancement**:
+   ```css
+   /* Base mobile styles (default) */
+   .game-container { 
+     flex-direction: column; 
+     height: auto; 
+   }
+   
+   /* Desktop enhancement */
+   @media (min-width: 1024px) {
+     .game-container { 
+       flex-direction: row; 
+       height: 780px; 
+     }
+   }
+   ```
+
+2. **Touch Target Optimization**:
+   ```css
+   /* Minimum 44px touch targets */
+   .touch-target {
+     min-height: 44px;
+     min-width: 44px;
+     touch-action: manipulation;
+   }
+   ```
+
+#### **Authentication Context Enhancement Pattern**:
+1. **Balance Integration**:
+   ```typescript
+   interface AuthUser extends User {
+     balance?: string; // Real-time balance display
+   }
+   ```
+
+2. **SubNav Context Sharing**:
+   ```typescript
+   // Pattern for sharing auth state with SubNav
+   const { user, logout } = useAuthContext();
+   // SubNav automatically receives user and balance updates
+   ```
+
+### **Updated API Endpoint Patterns (2025-08-14)**:
+
+#### **Admin User Management**:
+- `PUT /api/admin/users/:id/ban` - Ban/unban users
+- `DELETE /api/admin/users/:id` - Delete users (with cascading cleanup)
+- `PUT /api/admin/users/:id/username` - Update usernames
+
+#### **Achievement System**:
+- `GET /api/achievements` - Get user achievements
+- `POST /api/achievements/:id/viewed` - Mark achievement as viewed
+- `POST /api/achievements/unlock/welcome` - Trigger welcome achievements
+- `POST /api/achievements/unlock/game_win` - Trigger win achievements

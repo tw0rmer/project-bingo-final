@@ -146,6 +146,68 @@ router.put('/users/:id/username', authenticateToken, requireAdmin, async (req: A
   }
 });
 
+// Ban/Unban user (admin)
+router.put('/users/:id/ban', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { banned } = req.body;
+    
+    if (isNaN(userId) || typeof banned !== 'boolean') {
+      return res.status(400).json({ message: 'Invalid user ID or ban status' });
+    }
+    
+    const [updatedUser] = await db.update(users)
+      .set({ banned })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    res.json({
+      message: `User ${banned ? 'banned' : 'unbanned'} successfully`,
+      user: { ...updatedUser, password: undefined }
+    });
+  } catch (error) {
+    console.error('Ban/unban user error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete user (admin)
+router.delete('/users/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+    
+    // Check if user exists
+    const allUsers = await db.select().from(users);
+    const user = allUsers.find((u: any) => u.id === userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Don't allow deleting admin users
+    if (user.isAdmin) {
+      return res.status(403).json({ message: 'Cannot delete admin users' });
+    }
+    
+    // Delete user's transactions first (foreign key constraint)
+    await db.delete(walletTransactions).where(eq(walletTransactions.userId, userId));
+    
+    // Remove from lobby participants
+    await db.delete(lobbyParticipants).where(eq(lobbyParticipants.userId, userId));
+    
+    // Delete user
+    await db.delete(users).where(eq(users.id, userId));
+    
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Create new lobby (admin)
 router.post('/lobbies', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {

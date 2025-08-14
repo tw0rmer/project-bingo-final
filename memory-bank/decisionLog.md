@@ -1,5 +1,57 @@
 # Decision Log
 
+## 2025-08-14 - Major System Enhancement Decisions
+
+### **Achievement System Architecture Decision**
+- **Decision**: Implemented comprehensive achievement badge system with automatic triggers
+- **Rationale**: Enhance user engagement and provide gamification elements to the bingo platform
+- **Implementation**: 
+  - Server-side achievement storage with categories and rarities
+  - Client-side animated notifications with auto-hide functionality
+  - Automatic achievement unlocking on key events (signup, game wins)
+- **Impact**: Significantly improved user engagement and platform stickiness
+
+### **SubNav Creation Decision**
+- **Decision**: Created secondary navigation bar to address header overcrowding
+- **Problem**: Main header became cluttered with Dashboard, Logout, Welcome message
+- **Solution**: Dedicated SubNav component with authentication-aware visibility
+- **Implementation Details**:
+  - SubNav appears on all pages when user is logged in
+  - Hidden only on login/register pages for focused authentication
+  - Contains: Dashboard link, Logout button, Welcome message, Real-time balance
+- **Impact**: Cleaner main navigation, better user experience, improved visual hierarchy
+
+### **Admin API Enhancement Decision**
+- **Decision**: Added missing DELETE and BAN endpoints for user management
+- **Problem**: Admin panel had UI controls but missing backend API endpoints
+- **Solution**: 
+  - `DELETE /api/admin/users/:id` with cascading cleanup
+  - `PUT /api/admin/users/:id/ban` for ban/unban functionality
+- **Safety Measures**: 
+  - Prevents deletion of admin users
+  - Proper cascade deletion of transactions and participations
+  - Comprehensive error handling and validation
+- **Impact**: Complete admin functionality, improved platform moderation capabilities
+
+### **Mobile-First Responsive Design Decision**
+- **Decision**: Implemented comprehensive mobile-responsive design overhaul
+- **Problem**: Platform was only usable on desktop, excluding mobile users
+- **Solution**: 
+  - Mobile Game View component with tabbed navigation
+  - Compact Bingo component with pagination
+  - Touch-optimized interface with 44px minimum targets
+- **Technical Approach**: Progressive enhancement from mobile base styles
+- **Impact**: Dramatically expanded potential user base to include mobile players
+
+### **SiteLayout Standardization Decision**
+- **Decision**: Converted all pages to use consistent SiteLayout wrapper
+- **Problem**: Inconsistent styling and layout across different pages
+- **Solution**: Universal SiteLayout component with Header/Footer integration
+- **Implementation**: Updated home, games, dashboard, admin, and authentication pages
+- **Impact**: Consistent branding and user experience across entire platform
+
+# Previous Decision Log
+
 This file tracks important technical decisions made during development.
 2025-07-28 19:01:20 - Updated with comprehensive project architecture decisions
 2025-01-31 02:03:00 - CRITICAL DEBUG SESSION: Major findings and decisions for Phase 6A fixes
