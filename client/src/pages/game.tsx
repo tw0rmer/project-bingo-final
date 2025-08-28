@@ -257,29 +257,47 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Game Info Card */}
-        <div className="mb-6 rounded-xl bg-gradient-to-r from-casino-gold to-yellow-400 p-4 sm:p-6 shadow-lg">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Game Information</h2>
-              <div className="flex flex-wrap gap-4 text-yellow-100">
-                <div className="flex items-center gap-1">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-sm">Entry Fee: ${lobby.entryFee}</span>
+        {/* Game Status Banner */}
+        <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-900 via-casino-red to-red-900 p-8 shadow-2xl">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+              {/* Game Info */}
+              <div className="lg:col-span-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-300 font-medium">LIVE GAME</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm">{game.seatsTaken}/{game.maxSeats} Players</span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">{game.name}</h2>
+                <p className="text-purple-200 text-lg">{lobby.description}</p>
+              </div>
+              
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-black/30 rounded-xl p-4 text-center border border-white/10">
+                  <div className="text-2xl font-bold text-casino-gold">${lobby.entryFee}</div>
+                  <div className="text-purple-200 text-sm">Entry Fee</div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Trophy className="w-4 h-4" />
-                  <span className="text-sm">Prize Pool: ${(game.prizePool || 0).toFixed(2)}</span>
+                <div className="bg-black/30 rounded-xl p-4 text-center border border-white/10">
+                  <div className="text-2xl font-bold text-green-400">{game.seatsTaken}/{game.maxSeats}</div>
+                  <div className="text-purple-200 text-sm">Players</div>
+                </div>
+              </div>
+              
+              {/* Prize Pool */}
+              <div className="bg-gradient-to-br from-casino-gold/20 to-yellow-500/20 rounded-xl p-6 text-center border border-casino-gold/30">
+                <div className="text-casino-gold text-sm font-medium mb-1">PRIZE POOL</div>
+                <div className="text-3xl font-bold text-white">${(game.prizePool || 0).toFixed(2)}</div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Trophy className="w-4 h-4 text-casino-gold" />
+                  <span className="text-casino-gold text-xs">Winner Takes All</span>
                 </div>
               </div>
             </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <p className="text-yellow-100 text-sm mb-1">Game Status</p>
-              <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+            
+            {/* Status Badge */}
+            <div className="absolute top-4 right-4">
+              <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
                 game.status === 'waiting' ? 'bg-green-500 text-white' : 
                 game.status === 'active' ? 'bg-blue-500 text-white' : 
                 'bg-gray-500 text-white'
@@ -300,58 +318,109 @@ export default function GamePage() {
 
         {/* Join Game Section */}
         {!isUserInGame() && game.status === 'waiting' && availableSeats.length > 0 && (
-          <div className="mb-6 rounded-xl bg-white p-4 sm:p-6 shadow-lg border-2 border-casino-gold">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Join This Game</h2>
-            <p className="text-gray-600 text-sm mb-4">
-              Choose a seat to join this game. Entry fee of ${lobby.entryFee} will be deducted from your balance.
-            </p>
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              {availableSeats.slice(0, 10).map((seatNumber) => (
-                <Button
-                  key={seatNumber}
-                  onClick={() => handleJoinGame(seatNumber)}
-                  disabled={joining}
-                  className="bg-casino-gold hover:bg-yellow-500 text-white"
-                  size="sm"
-                >
-                  Seat {seatNumber}
-                </Button>
-              ))}
+          <div className="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-br from-casino-gold via-yellow-500 to-orange-500 p-8 shadow-2xl">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">🎯 Join This Game</h2>
+                <p className="text-yellow-100 text-lg">
+                  Select your lucky seat • Entry fee: <span className="font-bold">${lobby.entryFee}</span>
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-5 gap-3 mb-6">
+                {availableSeats.slice(0, 10).map((seatNumber) => (
+                  <button
+                    key={seatNumber}
+                    onClick={() => handleJoinGame(seatNumber)}
+                    disabled={joining}
+                    className="group relative bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/30 hover:border-white/50 rounded-xl p-4 text-white font-bold transition-all duration-200 hover:scale-105 disabled:opacity-50"
+                  >
+                    <div className="text-lg">{seatNumber}</div>
+                    <div className="text-xs opacity-80">SEAT</div>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </button>
+                ))}
+              </div>
+              
+              {availableSeats.length > 10 && (
+                <div className="text-center">
+                  <p className="text-yellow-100 text-sm bg-black/20 rounded-full px-4 py-2 inline-block">
+                    +{availableSeats.length - 10} more seats available
+                  </p>
+                </div>
+              )}
+              
+              {joining && (
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 bg-black/30 rounded-full px-4 py-2 text-white">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Joining game...
+                  </div>
+                </div>
+              )}
             </div>
-            {availableSeats.length > 10 && (
-              <p className="text-gray-500 text-sm">
-                +{availableSeats.length - 10} more seats available
-              </p>
-            )}
           </div>
         )}
 
         {/* Current Players */}
-        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-lg border border-gray-200">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Current Players</h2>
+        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black p-8 shadow-2xl border border-gray-700">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <Users className="w-6 h-6 text-casino-gold" />
+              Players in Game
+            </h2>
+            <div className="bg-casino-gold/20 rounded-full px-4 py-2">
+              <span className="text-casino-gold font-bold">{participants.length}/{game.maxSeats}</span>
+            </div>
+          </div>
+          
           {participants.length === 0 ? (
-            <p className="text-gray-600 text-center py-8">No players have joined yet. Be the first!</p>
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Users className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-400 text-lg mb-2">No players yet</p>
+              <p className="text-gray-500">Be the first to join this exciting game!</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {participants.map((participant) => (
                 <div 
                   key={participant.id} 
-                  className={`bg-gray-50 rounded-lg p-3 border ${
-                    participant.userId === userInfo.id ? 'border-green-300 bg-green-50' : 'border-gray-200'
+                  className={`relative overflow-hidden rounded-xl p-4 border transition-all duration-200 hover:scale-105 ${
+                    participant.userId === userInfo.id 
+                      ? 'bg-gradient-to-br from-casino-gold/20 to-yellow-500/20 border-casino-gold/50' 
+                      : 'bg-gradient-to-br from-gray-700/50 to-gray-800/50 border-gray-600/50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">
-                        {participant.user?.email?.split('@')[0] || `User ${participant.userId}`}
-                        {participant.userId === userInfo.id && ' (You)'}
-                      </p>
-                      <p className="text-sm text-gray-500">Seat #{participant.seatNumber}</p>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          participant.userId === userInfo.id ? 'bg-casino-gold' : 'bg-green-400'
+                        }`}></div>
+                        <p className={`font-bold ${
+                          participant.userId === userInfo.id ? 'text-casino-gold' : 'text-white'
+                        }`}>
+                          {participant.user?.email?.split('@')[0] || `Player ${participant.userId}`}
+                          {participant.userId === userInfo.id && ' (You)'}
+                        </p>
+                      </div>
+                      <p className="text-gray-400 text-sm mt-1">Seat #{participant.seatNumber}</p>
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-500">
                       {new Date(participant.joinedAt).toLocaleTimeString()}
                     </div>
                   </div>
+                  
+                  {participant.userId === userInfo.id && (
+                    <div className="absolute top-2 right-2">
+                      <span className="bg-casino-gold text-black text-xs font-bold px-2 py-1 rounded-full">
+                        YOU
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
