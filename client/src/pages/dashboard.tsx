@@ -238,12 +238,12 @@ export default function DashboardPage() {
                   {/* Lobby Stats */}
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Players:</span>
-                      <span className="font-semibold text-gray-900">{room.seatsTaken}/{room.maxSeats}</span>
+                      <span className="text-gray-600">Games:</span>
+                      <span className="font-semibold text-gray-900">4/4</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Prize Pool:</span>
-                      <span className="font-bold text-green-600">${(parseFloat(room.entryFee) * room.seatsTaken * 0.9).toFixed(2)}</span>
+                      <span className="font-bold text-green-600">$0.00</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Entry Fee:</span>
