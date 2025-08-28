@@ -62,8 +62,8 @@ const DEFAULT_TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     id: 'win',
-    title: '🏆 Claim Your Prize!',
-    content: 'When you complete a row, click the BINGO button or wait for automatic detection. Winners get 70% of the prize pool!',
+    title: '🏆 Automatic Win Detection!',
+    content: 'Winners are automatically detected when you complete a row! No need to click anything - just watch for the celebration. Winners get 70% of the prize pool!',
     target: '[data-tutorial="bingo-button"]',
     position: 'top'
   },

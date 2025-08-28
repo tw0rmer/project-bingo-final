@@ -214,7 +214,7 @@ export function MobileInfoView({
             </li>
             <li className="flex items-start gap-1">
               <span className="text-green-600">✓</span>
-              <span>Click "BINGO!" when you have a winning row</span>
+              <span>Winners are automatically detected when you complete a row</span>
             </li>
             <li className="flex items-start gap-1">
               <span className="text-green-600">✓</span>
