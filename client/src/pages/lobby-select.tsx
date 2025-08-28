@@ -168,8 +168,8 @@ export default function LobbySelectPage() {
         <div className="mb-6 rounded-xl bg-gradient-to-r from-casino-gold to-yellow-400 p-4 sm:p-6 shadow-lg">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Lobby Information</h2>
-              <div className="flex flex-wrap gap-4 text-yellow-100">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Lobby Information</h2>
+              <div className="flex flex-wrap gap-4 text-gray-800">
                 <div className="flex items-center gap-1">
                   <DollarSign className="w-4 h-4" />
                   <span className="text-sm">Entry Fee: ${lobby.entryFee}</span>
