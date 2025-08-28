@@ -25,6 +25,7 @@ interface MobileGameViewProps {
   lobbyId: number;
   serverRow?: number[];
   serverCardsBySeat?: Record<number, number[]>;
+  masterCard?: number[][] | null; // Server master card that ALL players see
   
   // Additional lobby info
   lobby: any;
@@ -62,6 +63,7 @@ export function MobileGameView({
   lobbyId,
   serverRow,
   serverCardsBySeat,
+  masterCard,
   lobby,
   user,
   currentUserParticipation,
@@ -147,6 +149,7 @@ export function MobileGameView({
                 lobbyId={lobbyId}
                 serverRow={serverRow}
                 serverCardsBySeat={serverCardsBySeat}
+                masterCard={masterCard}
               />
             </div>
           </div>

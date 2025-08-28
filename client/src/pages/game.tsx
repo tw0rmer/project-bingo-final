@@ -619,6 +619,7 @@ export default function GamePage() {
           myUserId={userInfo?.id}
           lobbyId={game?.id || 0}
           serverCardsBySeat={serverCardsBySeat}
+          masterCard={masterCard}
           user={userInfo}
           currentUserParticipation={participants.find(p => p.userId === userInfo?.id) || null}
           canAffordEntry={canAffordEntry}

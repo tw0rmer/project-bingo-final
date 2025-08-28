@@ -20,37 +20,10 @@ interface MobileBingoCardProps {
   lobbyId: number;
   serverRow?: number[];
   serverCardsBySeat?: Record<number, number[]>;
+  masterCard?: number[][] | null; // Server master card that ALL players see
 }
 
-// Generate a bingo card
-const generateNewBingoCard = (): BingoNumber[][] => {
-  const getRandomNumbersInRange = (start: number, end: number, count: number): number[] => {
-    const numbers = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-    for (let i = numbers.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-    }
-    return numbers.slice(0, count);
-  };
-
-  const bColumn = getRandomNumbersInRange(1, 15, 15);
-  const iColumn = getRandomNumbersInRange(16, 30, 15);
-  const nColumn = getRandomNumbersInRange(31, 45, 15);
-  const gColumn = getRandomNumbersInRange(46, 60, 15);
-  const oColumn = getRandomNumbersInRange(61, 75, 15);
-
-  const newCard: BingoNumber[][] = [];
-  for (let row = 0; row < 15; row++) {
-    newCard.push([
-      { value: bColumn[row], isMarked: false },
-      { value: iColumn[row], isMarked: false },
-      { value: nColumn[row], isMarked: false },
-      { value: gColumn[row], isMarked: false },
-      { value: oColumn[row], isMarked: false }
-    ]);
-  }
-  return newCard;
-};
+// REMOVED: Random card generation - All cards must come from server to ensure consistency
 
 export function MobileBingoCard({
   onSeatSelect,
@@ -65,53 +38,28 @@ export function MobileBingoCard({
   myUserId,
   lobbyId,
   serverRow,
-  serverCardsBySeat
+  serverCardsBySeat,
+  masterCard
 }: MobileBingoCardProps) {
-  const [bingoCard, setBingoCard] = useState<BingoNumber[][]>(() => generateNewBingoCard());
+  const [bingoCard, setBingoCard] = useState<BingoNumber[][]>([]);
   const winnerFiredRef = useRef(false);
 
-  // Restore persisted card
+  // Use ONLY server master card to ensure consistency
   useEffect(() => {
-    if (!selectedSeat || !lobbyId) return;
-    const key = `bingoCard_lobby_${lobbyId}_seat_${selectedSeat}`;
+    console.log('[MOBILE BINGO] Master card received:', masterCard ? `${masterCard.length} rows` : 'null');
     
-    if (serverCardsBySeat && Object.keys(serverCardsBySeat).length === 15) {
-      const full = Array.from({ length: 15 }, (_, idx) => {
-        const seat = idx + 1;
-        const row = serverCardsBySeat[seat] || [];
-        return row.length === 5 ? row.map(v => ({ value: v, isMarked: false })) : generateNewBingoCard()[idx];
-      });
-      setBingoCard(full);
-      try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
+    if (masterCard && masterCard.length === 15) {
+      const formattedCard = masterCard.map(row => 
+        row.map(value => ({ value, isMarked: false }))
+      );
+      setBingoCard(formattedCard);
+      console.log('[MOBILE BINGO] SUCCESS - Using server master card');
+      console.log('[MOBILE BINGO] First row should be [2, 30, 43, 53, 71]:', masterCard[0]);
       return;
     }
     
-    if (serverRow && serverRow.length === 5) {
-      setBingoCard(prev => {
-        const base = prev.length ? prev : generateNewBingoCard();
-        const updated = base.map((r, idx) =>
-          idx === selectedSeat - 1 ? serverRow.map(v => ({ value: v, isMarked: false })) : r
-        );
-        try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
-        return updated;
-      });
-      return;
-    }
-    
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        const parsed: BingoNumber[][] = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === 15) {
-          setBingoCard(parsed);
-        }
-      } catch {}
-    } else {
-      const fresh = generateNewBingoCard();
-      setBingoCard(fresh);
-      localStorage.setItem(key, JSON.stringify(fresh));
-    }
-  }, [selectedSeat, lobbyId, serverRow?.join(','), serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
+    console.log('[MOBILE BINGO] ERROR - No master card received, waiting...');
+  }, [masterCard]);
 
   // Auto-mark numbers
   useEffect(() => {
