@@ -64,6 +64,7 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
   // Use the master card from server ONLY - no fallbacks
   useEffect(() => {
     console.log('[BINGO CARD] Master card update:', masterCard ? `${masterCard.length} rows` : 'null');
+    console.log('[BINGO CARD] CRITICAL DEBUG - Full master card received:', masterCard);
     
     if (masterCard && masterCard.length === 15) {
       // Use the server's master card - this ensures ALL players see the same card
@@ -71,13 +72,15 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
         row.map(value => ({ value, isMarked: false }))
       );
       setBingoCard(formattedCard);
-      console.log('[BINGO CARD] Using master card from server - first row:', masterCard[0]);
+      console.log('[BINGO CARD] SUCCESS - Using master card from server');
+      console.log('[BINGO CARD] First row should be [2, 30, 43, 53, 71]:', masterCard[0]);
+      console.log('[BINGO CARD] Full first 3 rows:', masterCard.slice(0, 3));
       return;
     }
     
     // Do NOT use serverCardsBySeat or any other fallback
     // Only use the master card to ensure consistency
-    console.log('[BINGO CARD] No master card yet, waiting...');
+    console.log('[BINGO CARD] ERROR - No master card received, waiting...');
   }, [masterCard]);
 
   // Remove localStorage persistence as we always use server master card
