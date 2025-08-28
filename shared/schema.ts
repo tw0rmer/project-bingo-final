@@ -29,30 +29,34 @@ export const walletTransactions = sqliteTable("wallet_transactions", {
 // Winners table for public display and admin control
 export const winners = sqliteTable("winners", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  gameId: integer("game_id").references(() => games.id),
-  lobbyId: integer("lobby_id").references(() => lobbies.id).notNull(),
+  gameId: integer("game_id").references(() => games.id).notNull(),
+  lobbyId: integer("lobby_id").references(() => lobbies.id),
   userId: integer("user_id").references(() => users.id).notNull(),
   amount: real("amount").notNull().default(0),
   note: text("note"),
   createdAt: integer("created_at", { mode: 'timestamp' }).default(new Date()),
 });
 
-// Lobbies for game rooms
+// Lobbies for game room collections
 export const lobbies = sqliteTable("lobbies", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
+  description: text("description"),
   entryFee: real("entry_fee").notNull(),
-  maxSeats: integer("max_seats").notNull().default(15),
-  seatsTaken: integer("seats_taken").notNull().default(0),
-  status: text("status").notNull().default('waiting'), // 'waiting', 'active', 'finished'
+  maxGames: integer("max_games").notNull().default(4), // Maximum games in this lobby
+  status: text("status").notNull().default('active'), // 'active', 'inactive'
   createdAt: integer("created_at", { mode: 'timestamp' }).default(new Date()),
   updatedAt: integer("updated_at", { mode: 'timestamp' }).default(new Date()),
 });
 
-// Games for individual game sessions
+// Games for individual game sessions within lobbies
 export const games = sqliteTable("games", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   lobbyId: integer("lobby_id").references(() => lobbies.id).notNull(),
+  name: text("name").notNull(),
+  gameNumber: integer("game_number").notNull(), // Game 1, Game 2, etc. within the lobby
+  maxSeats: integer("max_seats").notNull().default(15),
+  seatsTaken: integer("seats_taken").notNull().default(0),
   winnerId: integer("winner_id").references(() => users.id),
   status: text("status").notNull().default('waiting'), // 'waiting', 'active', 'finished'
   drawnNumbers: text("drawn_numbers").default('[]'), // JSON array of drawn numbers
@@ -61,7 +65,7 @@ export const games = sqliteTable("games", {
   updatedAt: integer("updated_at", { mode: 'timestamp' }).default(new Date()),
 });
 
-// Game participants (many-to-many relationship)
+// Game participants (for seat management within specific games)
 export const gameParticipants = sqliteTable("game_participants", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   gameId: integer("game_id").references(() => games.id).notNull(),
@@ -72,7 +76,7 @@ export const gameParticipants = sqliteTable("game_participants", {
   joinedAt: integer("joined_at", { mode: 'timestamp' }).default(new Date()),
 });
 
-// Lobby participants (for seat management)
+// Legacy lobby participants table - keep for backward compatibility during migration
 export const lobbyParticipants = sqliteTable("lobby_participants", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   lobbyId: integer("lobby_id").references(() => lobbies.id).notNull(),

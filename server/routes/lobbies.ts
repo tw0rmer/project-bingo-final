@@ -1,18 +1,28 @@
 // Lobby routes for the bingo game application
 import { Router } from 'express';
 import { db } from '../db';
-import { lobbies, lobbyParticipants, users, walletTransactions } from '../../shared/schema';
+import { lobbies, games, gameParticipants, users, walletTransactions } from '../../shared/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { InsertLobbyParticipant, InsertWalletTransaction } from '../../shared/types';
 
 const router = Router();
 
-// Get all lobbies
+// Get all lobbies (with backward compatibility)
 router.get('/', async (req, res) => {
   try {
+    // Try the new schema first
     const allLobbies = await db.select().from(lobbies);
-    res.json(allLobbies);
+    
+    // Add computed fields for lobby list compatibility
+    const lobbiesWithStats = allLobbies.map((lobby: any) => ({
+      ...lobby,
+      maxGames: lobby.maxGames || 4,
+      gamesCount: 0, // TODO: Count actual games when schema is migrated
+      totalPlayers: 0 // TODO: Count actual players when schema is migrated
+    }));
+    
+    res.json(lobbiesWithStats);
   } catch (error) {
     console.error('Get lobbies error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -614,6 +624,34 @@ router.post('/:id/fix-seats', authenticateToken, async (req: AuthRequest, res) =
     console.error('[DEBUG ENDPOINT] Fix seats error:', error);
     console.error('[DEBUG ENDPOINT] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     res.status(500).json({ message: 'Failed to fix seats', error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
+// Add new route for getting games within a lobby
+router.get('/:id/games', async (req, res) => {
+  try {
+    const lobbyId = parseInt(req.params.id);
+    if (isNaN(lobbyId)) {
+      return res.status(400).json({ message: 'Invalid lobby ID' });
+    }
+
+    const allGames = await db.select().from(games);
+    const lobbyGames = allGames.filter((game: any) => game.lobbyId === lobbyId);
+
+    // Calculate prize pools for each game
+    const allLobbies = await db.select().from(lobbies);
+    const lobby = allLobbies.find((l: any) => l.id === lobbyId);
+    const entryFee = lobby?.entryFee || 0;
+    
+    const gamesWithPrizePool = lobbyGames.map((game: any) => ({
+      ...game,
+      prizePool: entryFee * game.seatsTaken
+    }));
+
+    res.json(gamesWithPrizePool);
+  } catch (error) {
+    console.error('Error fetching lobby games:', error);
+    res.status(500).json({ message: 'Failed to fetch lobby games' });
   }
 });
 

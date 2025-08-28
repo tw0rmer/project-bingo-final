@@ -5,6 +5,7 @@ import path from 'path';
 import authRoutes from './auth';
 import dashboardRoutes from './dashboard';
 import lobbiesRoutes from './lobbies';
+import gamesRoutes from './games';
 import adminRoutes from './admin';
 import achievementsRoutes from './achievements';
 import { storage } from '../storage';
@@ -22,6 +23,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.use('/api/auth', authRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/lobbies', lobbiesRoutes);
+  app.use('/api/games', gamesRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/achievements', achievementsRoutes);
 
