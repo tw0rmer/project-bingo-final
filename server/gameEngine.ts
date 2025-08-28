@@ -254,15 +254,35 @@ class GameEngine {
       if (!gameState.isRunning) return;
       const participants = gameState.participants;
       if (!participants || participants.length === 0) return;
+      
+      // Find ALL winning seats, not just the first one
+      const winningSeats: Array<{ userId: number; seatNumber: number; card: number[]; completedAt: number }> = [];
+      
       for (const p of participants) {
         // Check for row win (5 consecutive numbers in a row)
         const isRowWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
         if (isRowWinner) {
-          console.log(`[GAME ENGINE] Row winner detected! User ${p.userId}, Seat ${p.seatNumber}, Numbers: ${p.card.join(', ')}`);
-          // End game with server-detected winner
-          await this.endGame(gameId, p.userId, p.seatNumber, p.card);
-          break;
+          // Find when this seat completed (the last number that made it complete)
+          const lastNumberIndex = Math.max(...p.card.map(n => gameState.drawnNumbers.indexOf(n)));
+          winningSeats.push({
+            userId: p.userId,
+            seatNumber: p.seatNumber,
+            card: p.card,
+            completedAt: lastNumberIndex
+          });
         }
+      }
+      
+      if (winningSeats.length > 0) {
+        // Sort by completion time - earliest winner wins
+        winningSeats.sort((a, b) => a.completedAt - b.completedAt);
+        const winner = winningSeats[0];
+        
+        console.log(`[GAME ENGINE] Winner detected! User ${winner.userId}, Seat ${winner.seatNumber}, Numbers: ${winner.card.join(', ')}`);
+        console.log(`[GAME ENGINE] Completed at drawn number index ${winner.completedAt} out of ${winningSeats.length} winning seats`);
+        
+        // End game with the FIRST winner chronologically
+        await this.endGame(gameId, winner.userId, winner.seatNumber, winner.card);
       }
     } catch (e) {
       console.error('[GAME ENGINE] Winner detection error:', e);
