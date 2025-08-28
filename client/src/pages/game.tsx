@@ -571,8 +571,8 @@ export default function GamePage() {
         />
       )}
       
-      {/* Emoji Reactions - Only show during active games */}
-      {gameStatus === 'active' && game && lobby && userInfo && (
+      {/* Emoji Reactions - Only show during active games and when authenticated */}
+      {gameStatus === 'active' && game && lobby && userInfo && isConnected && (
         <EmojiReactions
           gameId={gameId}
           lobbyId={lobby.id}
@@ -580,8 +580,8 @@ export default function GamePage() {
         />
       )}
       
-      {/* Pattern Indicator - Show for selected seats */}
-      {selectedSeats.length > 0 && patternProgress.length > 0 && (
+      {/* Pattern Indicator - Show for selected seats when authenticated */}
+      {selectedSeats.length > 0 && patternProgress.length > 0 && userInfo && (
         <div className="fixed bottom-20 right-4 z-30 max-w-xs">
           <PatternIndicator
             patterns={patternProgress.filter(p => selectedSeats.includes(p.seat))}
