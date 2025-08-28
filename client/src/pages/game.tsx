@@ -257,10 +257,10 @@ export default function GamePage() {
         // Refresh participant data in real-time
         const token = localStorage.getItem('token');
         if (token) {
-          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+          apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }).then(participantsResponse => {
-            setParticipants(participantsResponse);
+            setParticipants(participantsResponse.participants || []);
           }).catch(console.error);
         }
       }
@@ -272,10 +272,10 @@ export default function GamePage() {
         // Refresh participant data in real-time
         const token = localStorage.getItem('token');
         if (token) {
-          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+          apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }).then(participantsResponse => {
-            setParticipants(participantsResponse);
+            setParticipants(participantsResponse.participants || []);
           }).catch(console.error);
         }
       }
@@ -344,10 +344,10 @@ export default function GamePage() {
       });
 
       // Refresh participant data
-      const participantsResponse = await apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+      const participantsResponse = await apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setParticipants(participantsResponse);
+      setParticipants(participantsResponse.participants || []);
 
     } catch (error: any) {
       console.error('[GAME PAGE] Join error:', error);
@@ -484,14 +484,14 @@ export default function GamePage() {
 
         // Refresh participant data AND game data (for updated seat counts)
         const [participantsResponse, updatedGameResponse] = await Promise.all([
-          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+          apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
           apiRequest<Game>(`/games/${gameId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
         ]);
-        setParticipants(participantsResponse);
+        setParticipants(participantsResponse.participants || []);
         setGame(updatedGameResponse);
       } catch (error: any) {
         setError(error.message || 'Failed to leave game');
