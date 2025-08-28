@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation, useParams } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import { apiRequest } from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Users, DollarSign, Trophy, Play } from 'lucide-react';
+import { BingoCard } from '../components/BingoCard';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { MobileGameView } from '../components/MobileGameView';
 
 interface Game {
   id: number;
@@ -52,7 +54,8 @@ export default function GamePage() {
   const gameId = parseInt(params.id || '0');
   const [, setLocation] = useLocation();
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
+  const isMobile = useIsMobile(1024);
   
   const [game, setGame] = useState<Game | null>(null);
   const [lobby, setLobby] = useState<Lobby | null>(null);
@@ -61,6 +64,12 @@ export default function GamePage() {
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState('');
+  const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
+  const [winner, setWinner] = useState<{ seatNumber: number; userId: number } | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
+  const [serverCardsBySeat, setServerCardsBySeat] = useState<Record<number, number[]>>({});
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -226,207 +235,157 @@ export default function GamePage() {
     return null;
   }
 
-  const availableSeats = getAvailableSeats();
-  const userSeat = getUserSeat();
+  const getBalanceAsNumber = (balance: number | string): number => {
+    return typeof balance === 'string' ? parseFloat(balance) || 0 : balance;
+  };
 
-  return (
-    <SiteLayout hideAuthButtons>
-      <div className="max-w-7xl mx-auto p-3 sm:p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button 
-              onClick={handleBackToLobby} 
-              variant="outline" 
-              size="sm"
-              className="shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Lobby
-            </Button>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{game.name}</h1>
-              <p className="text-gray-600 text-sm">{lobby.name}</p>
+  const currentUserParticipations = participants.filter(p => p.userId === userInfo?.id);
+  const selectedSeats = currentUserParticipations.map(p => p.seatNumber);
+  const canAffordEntry = userInfo ? getBalanceAsNumber(userInfo.balance) >= parseFloat(lobby?.entryFee?.toString() || '0') : false;
+
+  const handleSeatSelection = async (seatNumber: number) => {
+    if (!game || !userInfo || joining) return;
+
+    // Check if seat is already selected by this user
+    const isAlreadySelected = selectedSeats.includes(seatNumber);
+    
+    if (isAlreadySelected) {
+      // Deselect seat (leave game for this seat)
+      try {
+        setJoining(true);
+        const token = localStorage.getItem('token');
+        await apiRequest(`/games/${gameId}/leave`, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ seatNumber })
+        });
+
+        // Refresh participant data
+        const participantsResponse = await apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setParticipants(participantsResponse);
+      } catch (error: any) {
+        setError(error.message || 'Failed to leave game');
+      } finally {
+        setJoining(false);
+      }
+    } else {
+      // Select seat (join game)
+      await handleJoinGame(seatNumber);
+    }
+  };
+
+  const renderBingoCard = () => {
+    if (!game || !lobby) return null;
+
+    const gamePhase = gameStatus || game.status === 'waiting' ? 'lobby' : game.status === 'active' ? 'playing' : 'finished';
+
+    return (
+      <div className="w-full">
+        <BingoCard
+          onSeatSelect={(seatNumber) => {
+            if (gamePhase === 'lobby' && !joining) {
+              handleSeatSelection(seatNumber);
+            }
+          }}
+          selectedSeats={selectedSeats}
+          participants={participants}
+          isJoining={joining}
+          gamePhase={gamePhase}
+          calledNumbers={calledNumbers}
+          onWin={(pattern, rowNumbers) => {
+            if (selectedSeats.length === 0) return;
+            const token = localStorage.getItem('token');
+            const primarySeat = selectedSeats[0];
+            apiRequest(`/games/${gameId}/claim`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
+            }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+          }}
+          winnerSeatNumber={winner?.seatNumber}
+          winnerUserId={winner?.userId}
+          myUserId={userInfo?.id}
+          lobbyId={game.id}
+          serverCardsBySeat={serverCardsBySeat}
+        />
+      </div>
+    );
+  };
+
+  // Desktop view
+  if (!isMobile) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white">
+        {/* Header with navigation */}
+        <div className="bg-gray-800 border-b border-gray-700 p-4">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button 
+                onClick={handleBackToLobby} 
+                variant="outline" 
+                size="sm"
+                className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Lobby
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold text-white">{game?.name}</h1>
+                <p className="text-gray-400 text-sm">{lobby?.name}</p>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Your Balance</p>
-            <p className="text-xl font-bold text-green-600">
-              ${typeof userInfo.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo.balance?.toString() || '0').toFixed(2)}
-            </p>
+            <div className="text-right">
+              <p className="text-sm text-gray-400">Your Balance</p>
+              <p className="text-xl font-bold text-green-400">
+                ${typeof userInfo?.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo?.balance?.toString() || '0').toFixed(2)}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Game Status Banner */}
-        <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-900 via-casino-red to-red-900 p-8 shadow-2xl">
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
-              {/* Game Info */}
-              <div className="lg:col-span-2">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-green-300 font-medium">LIVE GAME</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">{game.name}</h2>
-                <p className="text-purple-200 text-lg">{lobby.description}</p>
-              </div>
-              
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-black/30 rounded-xl p-4 text-center border border-white/10">
-                  <div className="text-2xl font-bold text-casino-gold">${lobby.entryFee}</div>
-                  <div className="text-purple-200 text-sm">Entry Fee</div>
-                </div>
-                <div className="bg-black/30 rounded-xl p-4 text-center border border-white/10">
-                  <div className="text-2xl font-bold text-green-400">{game.seatsTaken}/{game.maxSeats}</div>
-                  <div className="text-purple-200 text-sm">Players</div>
-                </div>
-              </div>
-              
-              {/* Prize Pool */}
-              <div className="bg-gradient-to-br from-casino-gold/20 to-yellow-500/20 rounded-xl p-6 text-center border border-casino-gold/30">
-                <div className="text-casino-gold text-sm font-medium mb-1">PRIZE POOL</div>
-                <div className="text-3xl font-bold text-white">${(game.prizePool || 0).toFixed(2)}</div>
-                <div className="flex items-center justify-center gap-1 mt-2">
-                  <Trophy className="w-4 h-4 text-casino-gold" />
-                  <span className="text-casino-gold text-xs">Winner Takes All</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Status Badge */}
-            <div className="absolute top-4 right-4">
-              <span className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
-                game.status === 'waiting' ? 'bg-green-500 text-white' : 
-                game.status === 'active' ? 'bg-blue-500 text-white' : 
-                'bg-gray-500 text-white'
-              }`}>
-                {game.status.toUpperCase()}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* User Status */}
-        {isUserInGame() && userSeat && (
-          <div className="mb-6 rounded-lg bg-green-50 border border-green-200 p-4">
-            <h3 className="text-green-800 font-semibold mb-1">You're in this game!</h3>
-            <p className="text-green-600 text-sm">Seat #{userSeat.seatNumber}</p>
-          </div>
-        )}
-
-        {/* Join Game Section */}
-        {!isUserInGame() && game.status === 'waiting' && availableSeats.length > 0 && (
-          <div className="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-br from-casino-gold via-yellow-500 to-orange-500 p-8 shadow-2xl">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative z-10">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">🎯 Join This Game</h2>
-                <p className="text-yellow-100 text-lg">
-                  Select your lucky seat • Entry fee: <span className="font-bold">${lobby.entryFee}</span>
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-5 gap-3 mb-6">
-                {availableSeats.slice(0, 10).map((seatNumber) => (
-                  <button
-                    key={seatNumber}
-                    onClick={() => handleJoinGame(seatNumber)}
-                    disabled={joining}
-                    className="group relative bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/30 hover:border-white/50 rounded-xl p-4 text-white font-bold transition-all duration-200 hover:scale-105 disabled:opacity-50"
-                  >
-                    <div className="text-lg">{seatNumber}</div>
-                    <div className="text-xs opacity-80">SEAT</div>
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </button>
-                ))}
-              </div>
-              
-              {availableSeats.length > 10 && (
-                <div className="text-center">
-                  <p className="text-yellow-100 text-sm bg-black/20 rounded-full px-4 py-2 inline-block">
-                    +{availableSeats.length - 10} more seats available
-                  </p>
-                </div>
-              )}
-              
-              {joining && (
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-black/30 rounded-full px-4 py-2 text-white">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Joining game...
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Current Players */}
-        <div className="rounded-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-black p-8 shadow-2xl border border-gray-700">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-              <Users className="w-6 h-6 text-casino-gold" />
-              Players in Game
-            </h2>
-            <div className="bg-casino-gold/20 rounded-full px-4 py-2">
-              <span className="text-casino-gold font-bold">{participants.length}/{game.maxSeats}</span>
-            </div>
-          </div>
-          
-          {participants.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <Users className="w-8 h-8 text-gray-400" />
-              </div>
-              <p className="text-gray-400 text-lg mb-2">No players yet</p>
-              <p className="text-gray-500">Be the first to join this exciting game!</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {participants.map((participant) => (
-                <div 
-                  key={participant.id} 
-                  className={`relative overflow-hidden rounded-xl p-4 border transition-all duration-200 hover:scale-105 ${
-                    participant.userId === userInfo.id 
-                      ? 'bg-gradient-to-br from-casino-gold/20 to-yellow-500/20 border-casino-gold/50' 
-                      : 'bg-gradient-to-br from-gray-700/50 to-gray-800/50 border-gray-600/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${
-                          participant.userId === userInfo.id ? 'bg-casino-gold' : 'bg-green-400'
-                        }`}></div>
-                        <p className={`font-bold ${
-                          participant.userId === userInfo.id ? 'text-casino-gold' : 'text-white'
-                        }`}>
-                          {participant.user?.email?.split('@')[0] || `Player ${participant.userId}`}
-                          {participant.userId === userInfo.id && ' (You)'}
-                        </p>
-                      </div>
-                      <p className="text-gray-400 text-sm mt-1">Seat #{participant.seatNumber}</p>
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(participant.joinedAt).toLocaleTimeString()}
-                    </div>
-                  </div>
-                  
-                  {participant.userId === userInfo.id && (
-                    <div className="absolute top-2 right-2">
-                      <span className="bg-casino-gold text-black text-xs font-bold px-2 py-1 rounded-full">
-                        YOU
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Main game content */}
+        <div className="max-w-7xl mx-auto p-6">
+          {renderBingoCard()}
         </div>
       </div>
-    </SiteLayout>
+    );
+  }
+
+  // Mobile view
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      <MobileGameView
+        lobby={lobby}
+        participants={participants}
+        selectedSeats={selectedSeats}
+        onSeatSelect={handleSeatSelection}
+        isJoining={joining}
+        gamePhase={gameStatus || (game?.status === 'waiting' ? 'lobby' : game?.status === 'active' ? 'playing' : 'finished')}
+        calledNumbers={calledNumbers}
+        onWin={(pattern, rowNumbers) => {
+          if (selectedSeats.length === 0) return;
+          const token = localStorage.getItem('token');
+          const primarySeat = selectedSeats[0];
+          apiRequest(`/games/${gameId}/claim`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
+          }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+        }}
+        winnerSeatNumber={winner?.seatNumber}
+        winnerUserId={winner?.userId}
+        myUserId={userInfo?.id}
+        lobbyId={game?.id || 0}
+        serverCardsBySeat={serverCardsBySeat}
+        onBackToLobby={handleBackToLobby}
+        user={userInfo}
+        canAffordEntry={canAffordEntry}
+      />
+    </div>
   );
 }
