@@ -19,6 +19,7 @@ interface BingoCardProps {
   myUserId?: number; // current user id for coloring
   lobbyId?: number; // used to persist card per lobby/seat
   serverCardsBySeat?: Record<number, number[]>; // optional full mapping when available
+  masterCard?: number[][] | null; // The single 5x15 master card from server that ALL players see
 }
 
 interface BingoNumber {
@@ -55,38 +56,39 @@ const generateNewBingoCard = (): BingoNumber[][] => {
   return newCard;
 };
 
-export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJoining, gamePhase = 'lobby', calledNumbers, onWin, winnerSeatNumber, winnerUserId, myUserId, lobbyId, serverCardsBySeat }: BingoCardProps) {
+export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJoining, gamePhase = 'lobby', calledNumbers, onWin, winnerSeatNumber, winnerUserId, myUserId, lobbyId, serverCardsBySeat, masterCard }: BingoCardProps) {
   const [bingoCard, setBingoCard] = useState<BingoNumber[][]>(() => generateNewBingoCard());
   const winnerFiredRef = useRef(false);
 
-  // Restore persisted card for all seats
+  // Use the master card from server or generate a local one
   useEffect(() => {
-    if (!lobbyId) return;
+    if (masterCard && masterCard.length === 15) {
+      // Use the server's master card - this ensures ALL players see the same card
+      const formattedCard = masterCard.map(row => 
+        row.map(value => ({ value, isMarked: false }))
+      );
+      setBingoCard(formattedCard);
+      console.log('[BINGO CARD] Using master card from server');
+      return;
+    }
     
     if (serverCardsBySeat && Object.keys(serverCardsBySeat).length === 15) {
-      // Build entire card from server mapping
+      // Build entire card from server mapping (legacy support)
       const full = Array.from({ length: 15 }, (_, idx) => {
         const seat = idx + 1;
         const row = serverCardsBySeat[seat] || [];
         return row.length === 5 ? row.map(v => ({ value: v, isMarked: false })) : generateNewBingoCard()[idx];
       });
       setBingoCard(full);
-      // Store for each selected seat
-      selectedSeats.forEach(seatNum => {
-        const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
-        try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
-      });
       return;
     }
     
-    // Load existing card or generate new one
-    const fresh = generateNewBingoCard();
-    setBingoCard(fresh);
-    selectedSeats.forEach(seatNum => {
-      const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
-      localStorage.setItem(key, JSON.stringify(fresh));
-    });
-  }, [selectedSeats.join(','), lobbyId, serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
+    // Only generate a new card if we don't have server data
+    if (gamePhase === 'lobby' && !masterCard) {
+      const fresh = generateNewBingoCard();
+      setBingoCard(fresh);
+    }
+  }, [masterCard, serverCardsBySeat, gamePhase]);
 
   // Persist on change (in case of manual toggles)
   useEffect(() => {

@@ -37,25 +37,28 @@ function seededShuffle<T>(arr: T[], rand: () => number): T[] {
   return a;
 }
 
-function buildDeterministicLobbyCards(lobbyId: number): Record<number, number[]> {
-  const rand = makeSeededRng(lobbyId * 2654435761);
+// Generate a single 5x15 master bingo card that ALL players will see
+function buildDeterministicMasterCard(gameId: number): number[][] {
+  const rand = makeSeededRng(gameId * 2654435761);
   const bColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 1 + i), rand);
   const iColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 16 + i), rand);
   const nColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 31 + i), rand);
   const gColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 46 + i), rand);
   const oColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 61 + i), rand);
-  const cards: Record<number, number[]> = {};
+  
+  // Return a 15x5 array representing the full master card
+  const masterCard: number[][] = [];
   for (let row = 0; row < 15; row++) {
-    cards[row + 1] = [bColumn[row], iColumn[row], nColumn[row], gColumn[row], oColumn[row]];
+    masterCard.push([bColumn[row], iColumn[row], nColumn[row], gColumn[row], oColumn[row]]);
   }
-  return cards;
+  return masterCard;
 }
 
 class GameEngine {
   private io: SocketIOServer;
   private gamesMap: Map<number, GameState> = new Map(); // key: gameId
   private lobbyToGameId: Map<number, number> = new Map(); // key: lobbyId
-  private lobbyCardsCache: Map<number, Record<number, number[]>> = new Map();
+  private masterCardsCache: Map<number, number[][]> = new Map(); // Store master cards by gameId
   private lastSnapshotByLobby: Map<number, any> = new Map();
 
   constructor(io: SocketIOServer) {
@@ -72,11 +75,11 @@ class GameEngine {
     return this.gamesMap.get(id) || null;
   }
 
-  getOrGenerateLobbyCards(lobbyId: number): Record<number, number[]> {
-    if (!this.lobbyCardsCache.has(lobbyId)) {
-      this.lobbyCardsCache.set(lobbyId, buildDeterministicLobbyCards(lobbyId));
+  getOrGenerateMasterCard(gameId: number): number[][] {
+    if (!this.masterCardsCache.has(gameId)) {
+      this.masterCardsCache.set(gameId, buildDeterministicMasterCard(gameId));
     }
-    return this.lobbyCardsCache.get(lobbyId)!;
+    return this.masterCardsCache.get(gameId)!;
   }
 
   // Start a specific game by ID (new architecture)
@@ -98,15 +101,16 @@ class GameEngine {
       throw new Error('No participants in game');
     }
 
-    // Generate deterministic cards for this game
-    const lobbyCards = this.getOrGenerateLobbyCards(game.lobbyId);
+    // Generate a single master card for this game that ALL players will see
+    const masterCard = this.getOrGenerateMasterCard(gameId);
+    console.log(`[GAME ENGINE] Generated master card for game ${gameId}`);
     
-    // Store the generated cards in participant records
+    // Store each participant's selected row from the master card
     for (const participant of participants) {
-      const card = lobbyCards[participant.seatNumber] || [];
+      const selectedRow = masterCard[participant.seatNumber - 1] || [];
       try {
         await db.update(gameParticipants)
-          .set({ card: JSON.stringify(card) })
+          .set({ card: JSON.stringify(selectedRow) })
           .where(and(eq(gameParticipants.gameId, gameId), eq(gameParticipants.seatNumber, participant.seatNumber)))
           .run();
       } catch (e) {
@@ -127,7 +131,7 @@ class GameEngine {
       participants: participants.map((p: any) => ({
         userId: p.userId,
         seatNumber: p.seatNumber,
-        card: lobbyCards[p.seatNumber] || []
+        card: masterCard[p.seatNumber - 1] || []
       }))
     };
 
@@ -136,10 +140,11 @@ class GameEngine {
     // Start number calling interval
     gameState.intervalId = setInterval(() => this.drawNumber(game.id), gameState.callIntervalMs);
     
-    // Emit game started event
+    // Emit game started event with the master card so all clients see the same card
     this.io.to(`lobby_${game.lobbyId}`).emit('gameStarted', {
       gameId: game.id,
-      lobbyId: game.lobbyId
+      lobbyId: game.lobbyId,
+      masterCard: masterCard // Send the full 5x15 card to all players
     });
     
     console.log(`[GAME ENGINE] Game ${gameId} started with ${participants.length} participants`);

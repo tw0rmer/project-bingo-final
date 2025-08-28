@@ -53,7 +53,14 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Game not found' });
     }
 
-    res.json(game);
+    // Get the master card if game is active or finished
+    let masterCard = null;
+    const gameEngine = req.app.get('gameEngine');
+    if (gameEngine && (game.status === 'active' || game.status === 'finished')) {
+      masterCard = gameEngine.getOrGenerateMasterCard(gameId);
+    }
+
+    res.json({ ...game, masterCard });
   } catch (error) {
     console.error('Error fetching game:', error);
     res.status(500).json({ message: 'Failed to fetch game' });
@@ -83,7 +90,19 @@ router.get('/:id/participants', async (req, res) => {
       })
     );
 
-    res.json(participantsWithUsers);
+    // Also get the master card if game has started
+    const allGames = await db.select().from(games);
+    const game = allGames.find((g: any) => g.id === gameId);
+    
+    let masterCard = null;
+    if (game && (game.status === 'active' || game.status === 'finished')) {
+      const gameEngine = req.app.get('gameEngine');
+      if (gameEngine) {
+        masterCard = gameEngine.getOrGenerateMasterCard(gameId);
+      }
+    }
+
+    res.json({ participants: participantsWithUsers, masterCard });
   } catch (error) {
     console.error('Error fetching game participants:', error);
     res.status(500).json({ message: 'Failed to fetch game participants' });

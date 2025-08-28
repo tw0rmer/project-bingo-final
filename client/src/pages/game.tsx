@@ -56,6 +56,11 @@ interface Participant {
   };
 }
 
+interface ParticipantsResponse {
+  participants: Participant[];
+  masterCard: number[][] | null;
+}
+
 export default function GamePage() {
   const params = useParams();
   const gameId = parseInt(params.id || '0');
@@ -68,6 +73,7 @@ export default function GamePage() {
   const [game, setGame] = useState<Game | null>(null);
   const [lobby, setLobby] = useState<Lobby | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [masterCard, setMasterCard] = useState<number[][] | null>(null);
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
@@ -117,8 +123,8 @@ export default function GamePage() {
         setLobby(lobbyResponse);
 
         // Fetch participants and user data
-        const [participantsResponse, userResponse] = await Promise.all([
-          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+        const [participantsData, userResponse] = await Promise.all([
+          apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
           apiRequest<{ user: User }>('/dashboard', {
@@ -126,14 +132,16 @@ export default function GamePage() {
           }).then(data => data.user)
         ]);
 
-        setParticipants(participantsResponse);
+        setParticipants(participantsData.participants || []);
+        setMasterCard(participantsData.masterCard);
         setUserInfo(userResponse);
 
         console.log('[GAME PAGE] Data loaded:', {
           game: gameResponse.name,
           lobby: lobbyResponse.name,
-          participants: participantsResponse.length,
-          userEmail: userResponse.email
+          participants: participantsData.participants?.length || 0,
+          userEmail: userResponse.email,
+          hasMasterCard: !!participantsData.masterCard
         });
 
       } catch (error) {
@@ -474,6 +482,7 @@ export default function GamePage() {
           isJoining={joining}
           gamePhase={gamePhase}
           calledNumbers={calledNumbers}
+          masterCard={masterCard}
           onWin={(pattern, rowNumbers) => {
             if (selectedSeats.length === 0) return;
             const token = localStorage.getItem('token');

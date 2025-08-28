@@ -231,28 +231,22 @@ export function MobileInfoView({
             {/* Game Speed Control */}
             <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded">
               <label className="block text-blue-800 font-medium text-xs mb-2">
-                🎯 Number Call Speed: {currentCallSpeed}s intervals
+                🎯 Number Call Speed
               </label>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-blue-600 font-medium">⚡ 1s</span>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  value={currentCallSpeed}
-                  onChange={(e) => handleSpeedChange(parseInt(e.target.value))}
-                  className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-                  data-testid="admin-speed-slider"
-                />
-                <span className="text-xs text-blue-600 font-medium">🐌 5s</span>
-              </div>
-              <div className="text-xs text-blue-600 mt-2 text-center font-medium">
-                {currentCallSpeed === 1 && '⚡ Lightning Fast - 1 second'}
-                {currentCallSpeed === 2 && '🚀 Fast Pace - 2 seconds'}
-                {currentCallSpeed === 3 && '⚡ Quick Game - 3 seconds'}
-                {currentCallSpeed === 4 && '🎯 Standard - 4 seconds'}
-                {currentCallSpeed === 5 && '🐌 Relaxed - 5 seconds'}
+              <select
+                value={currentCallSpeed}
+                onChange={(e) => handleSpeedChange(parseInt(e.target.value))}
+                className="w-full px-3 py-2 text-sm bg-white border border-blue-300 rounded-md text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                data-testid="admin-speed-dropdown"
+              >
+                <option value="1">⚡ 1 second - Lightning Fast</option>
+                <option value="2">🚀 2 seconds - Fast Pace</option>
+                <option value="3">⏱️ 3 seconds - Quick Game</option>
+                <option value="4">🎯 4 seconds - Standard</option>
+                <option value="5">🐌 5 seconds - Relaxed</option>
+              </select>
+              <div className="text-xs text-blue-600 mt-2 text-center">
+                Numbers called every {currentCallSpeed} second{currentCallSpeed > 1 ? 's' : ''}
               </div>
             </div>
           </div>
