@@ -109,19 +109,26 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(400).json({ message: 'Lobby is full' });
     }
 
-    // Check if user already joined
+    // Check user's current participation in this lobby
     const allParticipants = await db.select().from(lobbyParticipants);
-    const existingParticipant = allParticipants.find((p: any) => 
+    const userParticipations = allParticipants.filter((p: any) => 
       p.lobbyId === lobbyId && p.userId === req.user!.id
     );
     
-    if (existingParticipant) {
-      return res.status(400).json({ message: 'You have already joined this lobby' });
+    // Check if user already has this specific seat
+    const alreadyHasSeat = userParticipations.some((p: any) => p.seatNumber === seatNumber);
+    if (alreadyHasSeat) {
+      return res.status(400).json({ message: 'You already have this seat' });
+    }
+    
+    // Check if user already has maximum seats (2)
+    if (userParticipations.length >= 2) {
+      return res.status(400).json({ message: 'You can only select up to 2 seats' });
     }
 
-    // Check if seat is already taken
+    // Check if seat is taken by another user
     const seatTaken = allParticipants.find((p: any) => 
-      p.lobbyId === lobbyId && p.seatNumber === seatNumber
+      p.lobbyId === lobbyId && p.seatNumber === seatNumber && p.userId !== req.user!.id
     );
     
     if (seatTaken) {
@@ -325,11 +332,15 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
     console.log('[DEBUG ENDPOINT] Lobby ID:', req.params.id);
     console.log('[DEBUG ENDPOINT] User ID:', req.user?.id);
     console.log('[DEBUG ENDPOINT] User email:', req.user?.email);
+    console.log('[DEBUG ENDPOINT] Request body:', req.body);
     
     const lobbyId = parseInt(req.params.id);
     if (isNaN(lobbyId)) {
       return res.status(400).json({ message: 'Invalid lobby ID' });
     }
+
+    // Get seat number from request body (optional - if not provided, leave all seats)
+    const { seatNumber } = req.body;
 
     // Get lobby with manual filtering for mock database
     const allLobbies = await db.select().from(lobbies);
@@ -344,44 +355,65 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
       return res.status(400).json({ message: 'Cannot leave lobby once game has started' });
     }
 
-    // Find user's participation
+    // Find user's participation(s)
     const allParticipants = await db.select().from(lobbyParticipants);
-    const participation = allParticipants.find((p: any) => 
+    const userParticipations = allParticipants.filter((p: any) => 
       p.lobbyId === lobbyId && p.userId === req.user!.id
     );
     
-    if (!participation) {
+    if (userParticipations.length === 0) {
       return res.status(400).json({ message: 'You are not in this lobby' });
     }
 
-    console.log('[LOBBY] Found participation:', participation);
+    // Determine which participations to remove
+    let participationsToRemove = userParticipations;
+    if (seatNumber) {
+      // Leave specific seat only
+      participationsToRemove = userParticipations.filter((p: any) => p.seatNumber === seatNumber);
+      if (participationsToRemove.length === 0) {
+        return res.status(400).json({ message: 'You do not have this seat' });
+      }
+    }
 
-    // Refund entry fee only if lobby is still waiting (pre-game)
+    console.log('[LOBBY] Found participations to remove:', participationsToRemove.length);
+
+    // Refund entry fee for each seat being left (only if lobby is still waiting)
     const entryFee = parseFloat(lobby.entryFee);
+    const totalRefund = entryFee * participationsToRemove.length;
     const allUsers = await db.select().from(users);
     const user = allUsers.find((u: any) => u.id === req.user!.id);
     
     if (user && lobby.status === 'waiting') {
       const currentBalance = parseFloat(user.balance);
-      const newBalance = currentBalance + entryFee;
+      const newBalance = currentBalance + totalRefund;
       
       try {
         await db.update(users)
           .set({ balance: newBalance.toString() })
           .where(eq(users.id, req.user!.id));
         
-        console.log('[LOBBY] Refunded balance:', { userId: user.id, oldBalance: currentBalance, newBalance });
+        console.log('[LOBBY] Refunded balance:', { 
+          userId: user.id, 
+          oldBalance: currentBalance, 
+          newBalance, 
+          refundAmount: totalRefund,
+          seatsLeft: participationsToRemove.length
+        });
       } catch (error) {
         console.error('[LOBBY] Error refunding balance:', error);
       }
 
       // Create refund transaction
       try {
+        const description = seatNumber 
+          ? `Left seat ${seatNumber} in lobby ${lobby.name} - entry fee refunded`
+          : `Left lobby ${lobby.name} - entry fees refunded`;
+          
         await db.insert(walletTransactions).values({
           userId: req.user!.id,
-          amount: entryFee.toString(),
+          amount: totalRefund.toString(),
           type: 'withdrawal',
-          description: `Left lobby ${lobby.name} - entry fee refunded`
+          description
         } as InsertWalletTransaction);
       } catch (error) {
         console.error('[LOBBY] Error creating refund transaction:', error);
@@ -392,28 +424,32 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
     let actualSeatsTaken = 0;
     let updatedLobby: any = null;
     
-    // Remove participant
+    // Remove specific participations
     try {
-      // First, try to delete the participant using the standard database API
-      try {
-        await db.delete(lobbyParticipants)
-          .where(and(
-            eq(lobbyParticipants.lobbyId, lobbyId),
-            eq(lobbyParticipants.userId, req.user!.id)
-          ));
-        console.log('[LOBBY] Deleted participant using database API');
-      } catch (deleteError) {
-        console.warn('[LOBBY] Could not delete participant using database API, likely using mock database:', deleteError);
-        // This is expected with mock database as it doesn't fully implement delete
+      // Remove each participation that should be removed
+      for (const participation of participationsToRemove) {
+        try {
+          await db.delete(lobbyParticipants)
+            .where(and(
+              eq(lobbyParticipants.lobbyId, lobbyId),
+              eq(lobbyParticipants.userId, req.user!.id),
+              eq(lobbyParticipants.seatNumber, participation.seatNumber)
+            ));
+          console.log('[LOBBY] Deleted participation for seat:', participation.seatNumber);
+        } catch (deleteError) {
+          console.warn('[LOBBY] Could not delete participation using database API, likely using mock database:', deleteError);
+          // This is expected with mock database as it doesn't fully implement delete
+        }
       }
       
       // For both real and mock database, get the updated participants list
       const allParticipantsAfter = await db.select().from(lobbyParticipants);
+      const seatsToRemove = participationsToRemove.map(p => p.seatNumber);
       const updatedParticipants = allParticipantsAfter.filter((p: any) =>
-        !(p.lobbyId === lobbyId && p.userId === req.user!.id)
+        !(p.lobbyId === lobbyId && p.userId === req.user!.id && seatsToRemove.includes(p.seatNumber))
       );
       
-      console.log('[LOBBY] Removed participant:', participation.id);
+      console.log('[LOBBY] Removed participations for seats:', seatsToRemove);
       console.log('[LOBBY] Updated participants count:', updatedParticipants.length);
       
       // Update the seat count based on actual participants
