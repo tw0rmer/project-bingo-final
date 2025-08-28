@@ -1,11 +1,13 @@
 # Replit.md
 
 ## Overview
-WildCard Premium Bingo is a full-stack web application for an online bingo platform. It features a React frontend and a Node.js/Express backend, utilizing PostgreSQL with Drizzle ORM. The platform aims to provide an engaging casino-themed experience, displaying game rooms, real-time bingo gameplay, winners, and an FAQ section. The architecture supports multiple simultaneous bingo games within lobby containers and includes comprehensive admin controls for game and prize management.
+WildCard Premium Bingo is a fully functional, real-time multiplayer bingo platform with 15-seat lobbies, entry fees, prize pools, user authentication, admin management, and wallet system. Features mobile-responsive design with casino-themed styling, cross-device real-time gameplay, automatic number calling, winner celebration system, admin-controlled speed settings, pattern recognition, social interactions, and comprehensive error handling. All critical bugs have been resolved and the system is production-ready.
 
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Mobile Priority: Focus on mobile-responsive design and playability
+- Production Quality: All features must work reliably without bugs
+- Real-time Performance: Instant updates and smooth gameplay experience
 
 ## System Architecture
 
@@ -23,7 +25,9 @@ WildCard Premium Bingo is a full-stack web application for an online bingo platf
 - **Database**: PostgreSQL with Drizzle ORM
 - **Database Client**: Neon serverless PostgreSQL client
 - **Real-Time Communication**: Socket.IO for live game events (number calling, winner detection)
-- **Game Engine**: Centralized GameEngine class managing game state, number drawing, and winner detection across multiple lobby instances.
+- **Game Engine**: Centralized GameEngine class with fixed winner detection logic that properly handles multiple seats and chronological winner determination
+- **Authentication**: Replit Auth integration with secure session management
+- **Performance**: Optimized real-time updates with proper error handling
 
 ### Key Components
 
@@ -35,27 +39,41 @@ WildCard Premium Bingo is a full-stack web application for an online bingo platf
 - **FAQ Items**: Frequently asked questions.
 
 #### API Endpoints
-- `GET /api/game-rooms`: List all available game rooms.
-- `GET /api/game-rooms/:id`: Get specific game room details.
-- `GET /api/winners`: List recent winners.
-- `GET /api/faq`: Get FAQ items.
-- `POST /api/admin/distribute-prize/:lobbyId`: Distribute prize with 30% house take.
-- `GET /api/admin/prize-pool/:lobbyId`: Get detailed prize pool information.
-- Admin game management endpoints for creating, starting, deleting games, and resetting lobbies.
+- `GET /api/games/:id`: Get specific game details and state
+- `GET /api/games/:id/participants`: Get game participants and seat information
+- `POST /api/games/:id/join`: Join a game with seat selection
+- `POST /api/games/:id/claim`: Claim a win with validation
+- `POST /api/games/:id/set-interval`: Admin speed control (1-5 seconds)
+- `GET /api/lobbies`: List all available lobbies
+- `GET /api/lobbies/:id/games`: Get games within a specific lobby
+- `GET /api/winners`: List recent winners with prize amounts
+- `GET /api/faq`: Get FAQ items
+- `GET /api/dashboard`: User dashboard with balance and lobby info
+- Admin endpoints for game management, prize distribution, and lobby control
 
 #### Frontend Pages & Components
-- **Home Page**: Landing page with game lobby, how-to-play, winners, and FAQ.
-- **Game Lobby**: Display of available bingo rooms and game instances within them.
-- **HALL OF CHAMPIONS**: Showcase of winners with tiered system.
-- **Admin Panel**: Comprehensive management interface for Users, Lobbies, Transactions, and Prize Pools, supporting the "lobby-as-container" architecture. Includes real-time game controls (start, speed adjustment, reset).
-- **Mobile Design**: Dedicated mobile interfaces for game view, admin panel, and navigation, with touch-optimized components and conditional rendering for optimal experience.
+- **Home Page**: Landing page with live lobby status, winner showcase, and FAQ
+- **Game View**: Real-time bingo game interface with pattern indicators, emoji reactions, and winner celebration
+- **Lobby Selection**: Choose and join specific lobbies with different entry fees
+- **Admin Panel**: Comprehensive management with real-time game controls and prize distribution
+- **Winner Celebration Modal**: Animated celebration with confetti and prize display
+- **Pattern Indicators**: Live progress tracking showing how close each seat is to winning
+- **Emoji Reactions**: Social interaction system with floating animations
+- **Mobile Optimization**: Touch-friendly interface with responsive design and mobile-specific navigation
+- **Real-time Features**: Live number calling, instant winner detection, and synchronized game state
 
 ### Data Flow
-1. Frontend components fetch data from REST endpoints using TanStack Query.
-2. Express server routes handle API requests.
-3. Storage layer abstracts database operations using Drizzle ORM.
-4. Socket.IO manages real-time communication for live game updates.
-5. Frontend reactively updates based on server state and real-time events.
+1. Frontend components fetch data from REST endpoints using TanStack Query
+2. Express server routes handle API requests with authentication
+3. Drizzle ORM manages database operations with proper transaction handling
+4. Socket.IO provides real-time communication for:
+   - Live number calling with countdown timers
+   - Instant winner detection and celebration
+   - Game state synchronization across all clients
+   - Admin controls (speed changes, game management)
+   - Social features (emoji reactions)
+5. Frontend reactively updates with optimistic UI and error handling
+6. Game Engine manages deterministic card generation and fair winner detection
 
 ### Deployment Strategy
 - **Development**: Vite dev server with Express API proxy.
@@ -63,9 +81,33 @@ WildCard Premium Bingo is a full-stack web application for an online bingo platf
 - **Database**: Drizzle migrations for schema management.
 - **Environment**: Uses `DATABASE_URL` environment variable for PostgreSQL connection.
 
+## Recent Critical Fixes (August 2025)
+### Winner Detection System
+- **Issue**: Multiple seat winners were incorrectly detected due to loop-break logic
+- **Solution**: Implemented chronological winner detection that finds ALL winning seats and declares the seat that completed first as the winner
+- **Impact**: Fair and accurate winner determination for users with multiple seats
+
+### Emoji Reactions
+- **Issue**: Floating emoji animations not disappearing properly
+- **Solution**: Fixed animation timing and cleanup logic (2.5 second duration)
+- **Impact**: Smooth social interactions without UI clutter
+
+### Admin Speed Control
+- **Issue**: Incorrect API endpoint prevented live speed adjustments
+- **Solution**: Corrected endpoint from `/api/admin/games/` to `/api/games/` 
+- **Impact**: Real-time game speed control during active games
+
+### Pattern Indicators
+- **Issue**: Pattern progress calculations not updating during gameplay
+- **Solution**: Added proper useEffect dependencies for real-time pattern tracking
+- **Impact**: Live feedback showing players how close they are to winning
+
 ## External Dependencies
 - **Database**: PostgreSQL (configured for Neon serverless)
-- **UI Library**: Radix UI primitives
+- **UI Library**: Radix UI primitives with Shadcn/ui components
 - **Icons**: Lucide React
-- **Styling**: Tailwind CSS
-- **Real-Time**: Socket.IO
+- **Styling**: Tailwind CSS with custom casino theme
+- **Real-Time**: Socket.IO for live gameplay
+- **Authentication**: Replit Auth integration
+- **State Management**: TanStack Query for server state
+- **Animations**: Framer Motion for celebrations and transitions
