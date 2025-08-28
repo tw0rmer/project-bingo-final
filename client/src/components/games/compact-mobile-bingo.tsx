@@ -199,8 +199,8 @@ export function CompactMobileBingo({
               <div key={seatNumber} className="grid grid-cols-6 gap-1">
                 {/* Seat Cell */}
                 <button
-                  onClick={() => (canSelect || canDeselect) && onSeatSelect(seatNumber)}
-                  disabled={isOccupiedByOther || (isJoining && !isMySelection) || (!canSelect && !canDeselect)}
+                  onClick={() => (canSelect || canDeselect) && gamePhase !== 'playing' && onSeatSelect(seatNumber)}
+                  disabled={isOccupiedByOther || (isJoining && !isMySelection) || (!canSelect && !canDeselect) || gamePhase === 'playing'}
                   className={cn(
                     "rounded p-1 font-medium text-xs transition-all touch-manipulation h-12",
                     "focus:outline-none focus:ring-2 focus:ring-blue-500",

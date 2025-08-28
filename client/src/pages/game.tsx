@@ -135,6 +135,58 @@ export default function GamePage() {
     }
   }, [gameId, setLocation]);
 
+  // Socket connection for real-time game updates
+  useEffect(() => {
+    if (!socket || !isConnected || !game?.id) return;
+
+    console.log(`[SOCKET] Game page connected to game ${game.id}`);
+    socket.emit('join_lobby', { lobbyId: game.lobbyId });
+
+    // Listen for real-time game events
+    const handleNumberCalled = (data: any) => {
+      console.log('[SOCKET] Number called:', data);
+      if (data.gameId === game.id) {
+        setCalledNumbers(data.drawnNumbers || []);
+      }
+    };
+
+    const handleGameStarted = (data: any) => {
+      console.log('[SOCKET] Game started:', data);
+      if (data.gameId === game.id) {
+        setGameStatus('active');
+        setCalledNumbers([]);
+        setWinner(null);
+      }
+    };
+
+    const handlePlayerWon = (data: any) => {
+      console.log('[SOCKET] Player won:', data);
+      if (data.gameId === game.id) {
+        setWinner({ userId: data.userId, seatNumber: data.seatNumber });
+        setGameStatus('finished');
+      }
+    };
+
+    const handleGameEnded = (data: any) => {
+      console.log('[SOCKET] Game ended:', data);
+      if (data.gameId === game.id) {
+        setGameStatus('finished');
+      }
+    };
+
+    socket.on('number_called', handleNumberCalled);
+    socket.on('gameStarted', handleGameStarted);
+    socket.on('player_won', handlePlayerWon);
+    socket.on('game_ended', handleGameEnded);
+
+    return () => {
+      socket.off('number_called', handleNumberCalled);
+      socket.off('gameStarted', handleGameStarted);
+      socket.off('player_won', handlePlayerWon);
+      socket.off('game_ended', handleGameEnded);
+    };
+  }, [socket, isConnected, game?.id, game?.lobbyId]);
+
   const handleJoinGame = async (seatNumber: number) => {
     if (!game || !userInfo) return;
 

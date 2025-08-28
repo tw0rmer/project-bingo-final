@@ -212,11 +212,14 @@ export function MobileBingoCard({
             const isMyRow = selectedSeat === seatNumber;
 
             return (
-              <div key={rowIndex} className="grid grid-cols-6 gap-1 mb-2">
+              <div key={rowIndex} className={cn(
+                "grid grid-cols-6 gap-1 mb-2 rounded-lg p-1 transition-all",
+                isMyRow && winnerSeatNumber === seatNumber && "bg-yellow-100 ring-4 ring-yellow-400 animate-pulse shadow-xl"
+              )}>
                 {/* Seat button - compact but touch-friendly */}
                 <button
-                  onClick={() => !isOccupied && !isJoining && onSeatSelect(seatNumber)}
-                  disabled={isOccupied || isJoining}
+                  onClick={() => !isOccupied && !isJoining && gamePhase !== 'playing' && onSeatSelect(seatNumber)}
+                  disabled={isOccupied || isJoining || gamePhase === 'playing'}
                   className={cn(
                     "flex flex-col items-center justify-center rounded h-11 font-bold transition-all",
                     "focus:outline-none focus:ring-2 focus:ring-blue-500",

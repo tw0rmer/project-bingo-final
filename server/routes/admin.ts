@@ -759,6 +759,12 @@ router.post('/games/:id/start', authenticateToken, requireAdmin, async (req: Aut
       return res.status(400).json({ message: 'Invalid game ID' });
     }
 
+    // Start the actual game engine
+    const gameEngine = req.app.get('gameEngine');
+    if (gameEngine) {
+      await gameEngine.startGameById(gameId);
+    }
+
     // Update game status
     const [updatedGame] = await db.update(games)
       .set({ status: 'active' })

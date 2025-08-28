@@ -79,7 +79,61 @@ class GameEngine {
     return this.lobbyCardsCache.get(lobbyId)!;
   }
 
-  // Start a game for a lobby
+  // Start a specific game by ID (new architecture)
+  async startGameById(gameId: number) {
+    console.log(`[GAME ENGINE] Starting game ${gameId}`);
+    
+    // Get game details
+    const [game] = await db.select().from(games).where(eq(games.id, gameId));
+    if (!game) throw new Error('Game not found');
+    
+    if (game.status !== 'waiting') {
+      throw new Error('Game is not in waiting status');
+    }
+
+    // Get game participants
+    const participants = await db.select().from(gameParticipants).where(eq(gameParticipants.gameId, gameId));
+    
+    if (participants.length === 0) {
+      throw new Error('No participants in game');
+    }
+
+    // Generate deterministic cards for this game
+    const lobbyCards = this.getOrGenerateLobbyCards(game.lobbyId);
+    
+    const gameState: GameState = {
+      gameId: game.id,
+      lobbyId: game.lobbyId,
+      currentNumber: null,
+      drawnNumbers: [],
+      isRunning: true,
+      intervalId: null,
+      winnerId: null,
+      isPaused: false,
+      callIntervalMs: 5000, // 5 seconds
+      participants: participants.map(p => ({
+        userId: p.userId,
+        seatNumber: p.seatNumber,
+        card: lobbyCards[p.seatNumber] || []
+      }))
+    };
+
+    this.gamesMap.set(game.id, gameState);
+
+    // Start number calling interval
+    gameState.intervalId = setInterval(() => this.drawNumber(game.id), gameState.callIntervalMs);
+    
+    // Emit game started event
+    this.io.emit('gameStarted', {
+      gameId: game.id,
+      lobbyId: game.lobbyId
+    });
+    
+    console.log(`[GAME ENGINE] Game ${gameId} started with ${participants.length} participants`);
+    return game;
+  }
+
+  // Start a game for a lobby (legacy method)
   async startGame(lobbyId: number) {
     const [lobby] = await db.select().from(lobbies).where(eq(lobbies.id, lobbyId));
     if (!lobby) throw new Error('Lobby not found');
@@ -210,8 +264,13 @@ class GameEngine {
     // Persist winner row for public page if present
     try {
       if (winnerId) {
-        const pool = 0; // placeholder: can compute entryFee*seatsTaken when we wire payouts
-        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: pool, note: 'Auto-recorded' }).run();
+        // Calculate actual prize: 70% of total entry fees
+        const [gameWithLobby] = await db.select().from(games).innerJoin(lobbies, eq(games.lobbyId, lobbies.id)).where(eq(games.id, gameId));
+        const entryFee = gameWithLobby ? gameWithLobby.lobbies.entryFee : 5;
+        const participantCount = gameState.participants.length;
+        const prizeAmount = Math.floor(entryFee * participantCount * 0.7 * 100) / 100; // 70% for winner
+        
+        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: prizeAmount, note: 'Auto-recorded' }).run();
       }
     } catch {}
 

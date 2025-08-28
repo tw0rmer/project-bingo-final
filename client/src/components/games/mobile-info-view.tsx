@@ -9,6 +9,7 @@ interface MobileInfoViewProps {
   isPaused: boolean;
   calledNumbers: number[];
   currentUserParticipation?: any;
+  participants?: any[];
   onLeaveLobby?: () => void;
 }
 
@@ -19,6 +20,7 @@ export function MobileInfoView({
   isPaused,
   calledNumbers,
   currentUserParticipation,
+  participants = [],
   onLeaveLobby
 }: MobileInfoViewProps) {
   return (
@@ -118,7 +120,7 @@ export function MobileInfoView({
           <div className="text-center">
             <div className="text-xs font-medium text-yellow-800 mb-1">Prize Pool</div>
             <div className="text-2xl font-bold text-yellow-600">
-              ${(lobby.entryFee * lobby.seatsTaken * 0.9).toFixed(0)}
+              ${(lobby.entryFee * participants.length * 0.7).toFixed(2)}
             </div>
             <div className="text-[10px] text-yellow-700 mt-1">
               Winner takes all!

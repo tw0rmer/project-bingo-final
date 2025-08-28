@@ -35,6 +35,7 @@ interface MobileGameViewProps {
   // Admin functionality
   onStartGame?: () => void;
   gameData?: any;
+  participants?: any[];
 }
 
 type MobileTab = 'card' | 'master' | 'players' | 'info';
@@ -62,7 +63,8 @@ export function MobileGameView({
   gameStatus,
   onLeaveLobby,
   onStartGame,
-  gameData
+  gameData,
+  participants: gameParticipants
 }: MobileGameViewProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>('card');
 
@@ -164,6 +166,7 @@ export function MobileGameView({
           <MobileInfoView
             lobby={lobby}
             gameStatus={gameStatus}
+            participants={gameParticipants}
             isConnected={isConnected}
             isPaused={isPaused}
             calledNumbers={calledNumbers}
