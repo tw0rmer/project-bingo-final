@@ -10,6 +10,10 @@ import { BingoCard } from '../components/games/bingo-card';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { MobileGameView } from '../components/games/mobile-game-view';
 import { WinnerCelebrationModal } from '../components/games/winner-celebration-modal';
+import { EmojiReactions } from '../components/games/EmojiReactions';
+import { PatternIndicator } from '../components/games/PatternIndicator';
+import { detectRowPatternProgress } from '../utils/patternDetection';
+import { GameCardSkeleton } from '../components/GameCardSkeleton';
 
 interface Game {
   id: number;
@@ -81,6 +85,7 @@ export default function GamePage() {
   const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
   const [serverCardsBySeat, setServerCardsBySeat] = useState<Record<number, number[]>>({});
   const [isPaused, setIsPaused] = useState(false);
+  const [patternProgress, setPatternProgress] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -216,6 +221,15 @@ export default function GamePage() {
     socket.on('player_won', handlePlayerWon);
     socket.on('game_ended', handleGameEnded);
     socket.on('call_speed_changed', handleCallSpeedChanged);
+    
+    // Update pattern progress when numbers are called
+    if (serverCardsBySeat && calledNumbers.length > 0) {
+      const patterns = Object.entries(serverCardsBySeat).map(([seat, card]) => {
+        const progress = detectRowPatternProgress(card, calledNumbers);
+        return { seat: parseInt(seat), ...progress };
+      });
+      setPatternProgress(patterns);
+    }
 
     return () => {
       socket.off('number_called', handleNumberCalled);
@@ -555,6 +569,25 @@ export default function GamePage() {
           winningRow={celebrationData.winningRow}
           duration={30}
         />
+      )}
+      
+      {/* Emoji Reactions - Only show during active games */}
+      {gameStatus === 'active' && game && lobby && userInfo && (
+        <EmojiReactions
+          gameId={gameId}
+          lobbyId={lobby.id}
+          userId={userInfo.id}
+        />
+      )}
+      
+      {/* Pattern Indicator - Show for selected seats */}
+      {selectedSeats.length > 0 && patternProgress.length > 0 && (
+        <div className="fixed bottom-20 right-4 z-30 max-w-xs">
+          <PatternIndicator
+            patterns={patternProgress.filter(p => selectedSeats.includes(p.seat))}
+            compact={isMobile}
+          />
+        </div>
       )}
     </div>
   );

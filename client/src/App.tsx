@@ -4,6 +4,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
 import { queryClient } from './lib/queryClient';
 import { Toaster } from './components/ui/toaster';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { ConnectionStatus } from './components/ConnectionStatus';
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -25,11 +27,13 @@ import AchievementsPage from './pages/achievements';
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SocketProvider>
-          <Router>
-            <Switch>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SocketProvider>
+            <ConnectionStatus />
+            <Router>
+              <Switch>
               <Route path="/" component={HomePage} />
               <Route path="/login" component={LoginPage} />
               <Route path="/register" component={RegisterPage} />
@@ -77,11 +81,11 @@ export default function App() {
               </Route>
               <Route component={NotFoundPage} />
             </Switch>
-          </Router>
-          <Toaster />
-
-        </SocketProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+            </Router>
+            <Toaster />
+          </SocketProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

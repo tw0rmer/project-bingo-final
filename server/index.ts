@@ -153,6 +153,24 @@ app.use((req, res, next) => {
       });
     });
     
+    // Handle emoji reactions
+    socket.on('send_emoji', (data: { gameId: number; lobbyId: number; userId: number; emoji: string }) => {
+      const userName = userEmail?.split('@')[0] || 'Player';
+      io.to(`lobby_${data.lobbyId}`).emit('emoji_reaction', {
+        ...data,
+        userName
+      });
+    });
+
+    // Handle quick chat messages
+    socket.on('send_quick_chat', (data: { gameId: number; lobbyId: number; userId: number; message: string }) => {
+      const userName = userEmail?.split('@')[0] || 'Player';
+      io.to(`lobby_${data.lobbyId}`).emit('quick_chat', {
+        ...data,
+        userName
+      });
+    });
+    
     // Handle disconnection
     socket.on('disconnect', (reason) => {
       console.log(`[SOCKET] User disconnected: ${userEmail} (Reason: ${reason})`);
