@@ -222,6 +222,11 @@ class GameEngine {
     }
     if (!gameState.isRunning) {
       console.log(`[GAME ENGINE] Game ${gameId} is not running`);
+      // Clear interval if somehow still running
+      if (gameState.intervalId) {
+        clearInterval(gameState.intervalId);
+        gameState.intervalId = null;
+      }
       return;
     }
 
@@ -293,8 +298,12 @@ class GameEngine {
     const gameState = this.gamesMap.get(gameId);
     if (!gameState) throw new Error('Game not found');
 
-    if (gameState.intervalId) clearInterval(gameState.intervalId);
+    // Stop the game IMMEDIATELY to prevent any more number calls
     gameState.isRunning = false;
+    if (gameState.intervalId) {
+      clearInterval(gameState.intervalId);
+      gameState.intervalId = null;
+    }
     gameState.winnerId = winnerId ?? null;
 
     await db

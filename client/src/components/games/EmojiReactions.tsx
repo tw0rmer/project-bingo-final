@@ -137,15 +137,15 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
   return (
     <>
       {/* Floating Reactions */}
-      <div className="fixed inset-0 pointer-events-none z-30">
+      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
         {floatingReactions.map(reaction => (
           <div
             key={reaction.id}
-            className="absolute text-4xl"
+            className="absolute text-4xl animate-float-up"
             style={{
               left: `${reaction.x}%`,
               bottom: `${reaction.y}px`,
-              animation: 'floatUp 2.5s ease-out forwards'
+              animationDuration: '2.5s'
             }}
           >
             {reaction.emoji}
@@ -203,7 +203,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
                     <button
                       key={index}
                       onClick={() => sendQuickChat(message)}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 rounded-lg transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
                       data-testid={`button-chat-${index}`}
                     >
                       {message}
@@ -244,6 +244,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
           100% {
             transform: translateY(-200px) scale(1.5);
             opacity: 0;
+            display: none;
           }
         }
         
