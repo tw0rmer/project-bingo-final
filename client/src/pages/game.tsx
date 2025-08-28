@@ -181,12 +181,10 @@ export default function GamePage() {
         
         // Show celebration modal if the current user won
         if (data.userId === userInfo?.id) {
-          // Calculate prize based on lobby entry fee and seat count
+          // Calculate prize: 70% of total pot (NOT multiplied by seat count)
           const entryFee = lobby?.entryFee || 5;
-          const seatCount = data.seatCount || selectedSeats.length || 1;
           const participantCount = participants.length;
-          const basePrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
-          const totalPrize = Math.floor(basePrize * seatCount * 100) / 100;
+          const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
           
           setCelebrationData({
             prizeAmount: totalPrize,

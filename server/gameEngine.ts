@@ -311,17 +311,16 @@ class GameEngine {
     // Persist winner row for public page if present and update balance
     try {
       if (winnerId) {
-        // Calculate actual prize: 70% of total entry fees multiplied by user's seat count
+        // Calculate actual prize: 70% of total entry fees (seats don't multiply prize)
         const [gameWithLobby] = await db.select().from(games).innerJoin(lobbies, eq(games.lobbyId, lobbies.id)).where(eq(games.id, gameId));
         const entryFee = gameWithLobby ? gameWithLobby.lobbies.entryFee : 5;
         const participantCount = gameState.participants?.length || 0;
         const userSeats = gameState.participants?.filter(p => p.userId === winnerId) || [];
-        const seatMultiplier = userSeats.length || 1; // Multiple seats = multiple prizes
         
-        const basePrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100; // 70% for winner
-        const totalPrize = Math.floor(basePrize * seatMultiplier * 100) / 100; // Multiply by seat count
+        // Prize is 70% of total pot - NOT multiplied by seat count
+        const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100; // 70% for winner
         
-        console.log(`[GAME ENGINE] Prize calculation: ${entryFee} × ${participantCount} × 0.7 × ${seatMultiplier} = $${totalPrize}`);
+        console.log(`[GAME ENGINE] Prize calculation: ${entryFee} × ${participantCount} × 0.7 = $${totalPrize} (User had ${userSeats.length} seats)`);
         
         // Update winner's balance
         const { users } = await import('../shared/schema');
@@ -335,7 +334,7 @@ class GameEngine {
           console.log(`[GAME ENGINE] Updated balance for user ${winnerId}: $${currentUser.balance} + $${totalPrize} = $${newBalance}`);
         }
         
-        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: totalPrize, note: `Auto-recorded (${seatMultiplier} seats)` }).run();
+        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: totalPrize, note: `Auto-recorded (${userSeats.length} seats)` }).run();
       }
     } catch {}
 
