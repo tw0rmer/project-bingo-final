@@ -51,25 +51,63 @@ export function WinnerCelebrationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      {/* Confetti Animation */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-900/90 via-blue-900/90 to-indigo-900/90 backdrop-blur-sm">
+      {/* Animated Background Stars */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 100 }).map((_, i) => (
+          <div
+            key={`star-${i}`}
+            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${1 + Math.random() * 2}s`,
+              opacity: Math.random() * 0.8 + 0.2
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Floating Golden Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={`orb-${i}`}
+            className="absolute rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 opacity-70 animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${20 + Math.random() * 40}px`,
+              height: `${20 + Math.random() * 40}px`,
+              animationDelay: `${Math.random() * 4}s`,
+              animationDuration: `${3 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Enhanced Confetti Animation */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 50 }).map((_, i) => (
+          {Array.from({ length: 80 }).map((_, i) => (
             <div
-              key={i}
+              key={`confetti-${i}`}
               className={cn(
-                "absolute w-2 h-2 animate-bounce",
-                i % 4 === 0 && "bg-yellow-400",
-                i % 4 === 1 && "bg-amber-400", 
-                i % 4 === 2 && "bg-orange-400",
-                i % 4 === 3 && "bg-red-400"
+                "absolute animate-confetti-fall",
+                i % 6 === 0 && "bg-yellow-400 w-3 h-1",
+                i % 6 === 1 && "bg-amber-400 w-2 h-2 rounded-full", 
+                i % 6 === 2 && "bg-orange-400 w-1 h-3",
+                i % 6 === 3 && "bg-red-400 w-2 h-2",
+                i % 6 === 4 && "bg-pink-400 w-3 h-1",
+                i % 6 === 5 && "bg-purple-400 w-2 h-2 rounded-full"
               )}
               style={{
                 left: `${Math.random() * 100}%`,
-                top: `-10px`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 3}s`
+                top: `-20px`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+                transform: `rotate(${Math.random() * 360}deg)`
               }}
             />
           ))}
@@ -77,9 +115,12 @@ export function WinnerCelebrationModal({
       )}
 
       {/* Main Modal */}
-      <div className="relative bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-3xl p-8 max-w-lg w-full mx-4 border-4 border-yellow-400 shadow-2xl animate-pulse">
-        {/* Golden Glow Border */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 opacity-20 blur-xl"></div>
+      <div className="relative bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-3xl p-8 max-w-lg w-full mx-4 border-4 border-yellow-400 shadow-2xl animate-modal-bounce">
+        {/* Golden Glow Border Animation */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 opacity-30 blur-xl animate-glow-pulse"></div>
+        
+        {/* Secondary Glow Ring */}
+        <div className="absolute inset-[-10px] rounded-3xl bg-gradient-to-r from-yellow-300 via-amber-300 to-yellow-300 opacity-20 blur-2xl animate-spin-slow"></div>
         
         {/* Close Timer */}
         <div className="absolute top-4 right-4 bg-white/90 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
@@ -151,16 +192,32 @@ export function WinnerCelebrationModal({
 
       <style jsx>{`
         @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
         }
+        @keyframes confetti-fall {
+          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes modal-bounce {
+          0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+          50% { transform: scale(1.05) rotate(2deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.02); }
+        }
+        
+        .animate-spin-slow { animation: spin-slow 6s linear infinite; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-confetti-fall { animation: confetti-fall linear forwards; }
+        .animate-modal-bounce { animation: modal-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
       `}</style>
     </div>
   );
