@@ -21,6 +21,9 @@ interface Lobby {
   seatsTaken: number;
   status: string;
   createdAt: string;
+  gamesCount?: number;
+  maxGames?: number;
+  description?: string;
 }
 
 interface Transaction {
@@ -53,6 +56,10 @@ export default function AdminPage() {
   const [showEditUser, setShowEditUser] = useState<User | null>(null);
   const [showEditLobby, setShowEditLobby] = useState<Lobby | null>(null);
   const [showBanConfirm, setShowBanConfirm] = useState<any>(null);
+  
+  // Game management states
+  const [showGamesModal, setShowGamesModal] = useState<{lobbyId: number, lobbyName: string, games: any[]} | null>(null);
+  const [loadingGames, setLoadingGames] = useState(false);
   
   // Prize pool states
   const [prizePoolInfo, setPrizePoolInfo] = useState<Record<number, any>>({});
@@ -215,6 +222,78 @@ export default function AdminPage() {
       fetchData();
     } catch (error: any) {
       setError(error.message || 'Failed to reset lobby');
+    }
+  };
+
+  // New game management functions
+  const viewLobbyGames = async (lobbyId: number) => {
+    try {
+      setLoadingGames(true);
+      const [lobby, games] = await Promise.all([
+        authApiRequest<Lobby>(`/lobbies/${lobbyId}`),
+        authApiRequest<any[]>(`/lobbies/${lobbyId}/games`)
+      ]);
+      
+      setShowGamesModal({
+        lobbyId,
+        lobbyName: lobby.name,
+        games
+      });
+    } catch (error: any) {
+      console.error('Failed to fetch lobby games:', error);
+      setError('Failed to load lobby games');
+    } finally {
+      setLoadingGames(false);
+    }
+  };
+
+  const addGameToLobby = async (lobbyId: number) => {
+    try {
+      await authApiRequest(`/admin/lobbies/${lobbyId}/games`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}) // Let backend auto-generate game details
+      });
+      
+      await fetchData(); // Refresh lobby data
+      
+      // If games modal is open, refresh it too
+      if (showGamesModal && showGamesModal.lobbyId === lobbyId) {
+        await viewLobbyGames(lobbyId);
+      }
+    } catch (error: any) {
+      console.error('Failed to add game to lobby:', error);
+      setError('Failed to add game to lobby');
+    }
+  };
+
+  const deleteGame = async (gameId: number) => {
+    try {
+      await authApiRequest(`/admin/games/${gameId}`, { method: 'DELETE' });
+      
+      await fetchData(); // Refresh lobby data
+      
+      // Refresh games modal if open
+      if (showGamesModal) {
+        await viewLobbyGames(showGamesModal.lobbyId);
+      }
+    } catch (error: any) {
+      console.error('Failed to delete game:', error);
+      setError('Failed to delete game');
+    }
+  };
+
+  const startGame = async (gameId: number) => {
+    try {
+      await authApiRequest(`/admin/games/${gameId}/start`, { method: 'POST' });
+      
+      // Refresh games modal if open
+      if (showGamesModal) {
+        await viewLobbyGames(showGamesModal.lobbyId);
+      }
+    } catch (error: any) {
+      console.error('Failed to start game:', error);
+      setError('Failed to start game');
     }
   };
 
@@ -718,55 +797,32 @@ export default function AdminPage() {
                       <div className="font-bold text-casino-red">${lobby.entryFee}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-500">Players</div>
-                      <div className="font-bold text-gray-900">{lobby.seatsTaken}/{lobby.maxSeats}</div>
+                      <div className="text-xs text-gray-500">Games</div>
+                      <div className="font-bold text-gray-900">{lobby.gamesCount || 0}/4</div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-500">Prize</div>
-                      <div className="font-bold text-green-600">${(parseFloat(lobby.entryFee) * lobby.seatsTaken * 0.9).toFixed(0)}</div>
+                      <div className="text-xs text-gray-500">Max Games</div>
+                      <div className="font-bold text-green-600">{lobby.maxGames || 4}</div>
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    {lobby.status === 'waiting' && (
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => startLobbyGame(lobby.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white py-1.5 px-2 rounded text-xs font-medium"
-                        >
-                          Start
-                        </button>
-                        <button
-                          onClick={() => fillLobbyWithBots(lobby.id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-2 rounded text-xs font-medium"
-                        >
-                          Add Bots
-                        </button>
-                      </div>
-                    )}
+                    {/* Game Management - View Games in this Lobby */}
+                    <button
+                      onClick={() => viewLobbyGames(lobby.id)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded text-sm font-medium"
+                    >
+                      🎮 Manage Games ({lobby.gamesCount || 0})
+                    </button>
                     
-                    {lobby.status === 'active' && (
-                      <div className="grid grid-cols-3 gap-1">
-                        <button
-                          onClick={() => gameMetaByLobby[lobby.id]?.isPaused ? resumeLobbyGame(lobby.id) : pauseLobbyGame(lobby.id)}
-                          className="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-1 rounded text-xs font-medium"
-                        >
-                          {gameMetaByLobby[lobby.id]?.isPaused ? 'Resume' : 'Pause'}
-                        </button>
-                        <button
-                          onClick={() => setLobbySpeed(lobby.id)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-1 rounded text-xs font-medium"
-                        >
-                          Speed
-                        </button>
-                        <button
-                          onClick={() => stopLobbyGame(lobby.id)}
-                          className="bg-yellow-600 hover:bg-yellow-700 text-white py-1.5 px-1 rounded text-xs font-medium"
-                        >
-                          Stop
-                        </button>
-                      </div>
-                    )}
+                    {/* Add New Game to Lobby */}
+                    <button
+                      onClick={() => addGameToLobby(lobby.id)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-1.5 px-3 rounded text-sm font-medium"
+                      disabled={(lobby.gamesCount || 0) >= (lobby.maxGames || 4)}
+                    >
+                      ➕ Add Game {(lobby.gamesCount || 0) >= (lobby.maxGames || 4) ? '(Max Reached)' : ''}
+                    </button>
                     
                     <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-100">
                       <button
@@ -1029,6 +1085,102 @@ export default function AdminPage() {
           onClose={() => setShowEditLobby(null)}
           onSubmit={(updates) => updateLobby(showEditLobby.id, updates)}
         />
+      )}
+
+      {/* Games Management Modal */}
+      {showGamesModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">
+                🎮 Games in {showGamesModal.lobbyName}
+              </h3>
+              <button
+                onClick={() => setShowGamesModal(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            {loadingGames ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading games...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-600">
+                    {showGamesModal.games.length} game(s) in this lobby
+                  </p>
+                  <button
+                    onClick={() => addGameToLobby(showGamesModal.lobbyId)}
+                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium"
+                  >
+                    ➕ Add New Game
+                  </button>
+                </div>
+                
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {showGamesModal.games.map((game) => (
+                    <div key={game.id} className="bg-gray-50 rounded-lg border p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{game.name}</h4>
+                          <p className="text-sm text-gray-600">Game #{game.gameNumber}</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          game.status === 'waiting' ? 'bg-yellow-100 text-yellow-800' :
+                          game.status === 'active' ? 'bg-green-100 text-green-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {game.status}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Players:</span>
+                          <span className="font-medium">{game.seatsTaken}/{game.maxSeats}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Prize Pool:</span>
+                          <span className="font-medium text-green-600">${game.prizePool}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        {game.status === 'waiting' && (
+                          <button
+                            onClick={() => startGame(game.id)}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium"
+                          >
+                            🚀 Start Game
+                          </button>
+                        )}
+                        
+                        <button
+                          onClick={() => deleteGame(game.id)}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded text-sm font-medium"
+                        >
+                          🗑️ Delete Game
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {showGamesModal.games.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p className="text-lg mb-2">No games in this lobby yet</p>
+                    <p className="text-sm">Add games to start managing individual game sessions</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </SiteLayout>
   );

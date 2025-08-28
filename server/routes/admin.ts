@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { db } from '../db';
-import { users, lobbies, walletTransactions, lobbyParticipants, winners } from '../../shared/schema';
+import { users, lobbies, walletTransactions, lobbyParticipants, winners, games, gameParticipants } from '../../shared/schema';
 import { eq, gte, lte } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
@@ -669,6 +669,113 @@ router.get('/prize-pool/:lobbyId', async (req, res) => {
   } catch (error: any) {
     console.error('Prize pool info error:', error);
     res.status(500).json({ message: 'Failed to get prize pool info', error: error.message });
+  }
+});
+
+// Game Management Endpoints
+
+// Add new game to lobby (admin)
+router.post('/lobbies/:id/games', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const lobbyId = parseInt(req.params.id);
+    if (isNaN(lobbyId)) {
+      return res.status(400).json({ message: 'Invalid lobby ID' });
+    }
+
+    // Get lobby details
+    const lobby = await db.select().from(lobbies).where(eq(lobbies.id, lobbyId)).limit(1);
+    if (!lobby.length) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Get existing games count
+    const existingGames = await db.select().from(games).where(eq(games.lobbyId, lobbyId));
+    const gameNumber = existingGames.length + 1;
+    
+    if (gameNumber > (lobby[0].maxGames || 4)) {
+      return res.status(400).json({ message: 'Maximum games reached for this lobby' });
+    }
+
+    // Create new game
+    const [newGame] = await db.insert(games).values({
+      lobbyId,
+      name: `${lobby[0].name} - Game ${gameNumber}`,
+      gameNumber,
+      maxSeats: lobby[0].maxSeats,
+      seatsTaken: 0,
+      status: 'waiting',
+      drawnNumbers: '[]',
+      currentNumber: null
+    }).returning();
+
+    res.status(201).json({
+      message: 'Game created successfully',
+      game: newGame
+    });
+  } catch (error) {
+    console.error('Create game error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete game (admin)
+router.delete('/games/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const gameId = parseInt(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid game ID' });
+    }
+
+    // Check if game has players - prevent deletion if active
+    const game = await db.select().from(games).where(eq(games.id, gameId)).limit(1);
+    if (!game.length) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    if (game[0].seatsTaken > 0) {
+      return res.status(400).json({ 
+        message: 'Cannot delete game with active players. Remove players first.' 
+      });
+    }
+
+    // Remove any participants
+    await db.delete(gameParticipants).where(eq(gameParticipants.gameId, gameId));
+    
+    // Delete the game
+    await db.delete(games).where(eq(games.id, gameId));
+
+    res.json({ message: 'Game deleted successfully' });
+  } catch (error) {
+    console.error('Delete game error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Start game (admin)
+router.post('/games/:id/start', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const gameId = parseInt(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid game ID' });
+    }
+
+    // Update game status
+    const [updatedGame] = await db.update(games)
+      .set({ status: 'active' })
+      .where(eq(games.id, gameId))
+      .returning();
+
+    if (!updatedGame) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    res.json({
+      message: 'Game started successfully',
+      game: updatedGame
+    });
+  } catch (error) {
+    console.error('Start game error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
