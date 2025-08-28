@@ -1,7 +1,7 @@
 // Lobby routes for the bingo game application
 import { Router } from 'express';
 import { db } from '../db';
-import { lobbies, games, gameParticipants, users, walletTransactions } from '../../shared/schema';
+import { lobbies, games, gameParticipants, users, walletTransactions, lobbyParticipants } from '../../shared/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { InsertLobbyParticipant, InsertWalletTransaction } from '../../shared/types';
@@ -106,7 +106,15 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
     }
 
     // Check user's current participation in this lobby
-    const allParticipants = await db.select().from(lobbyParticipants);
+    console.log('[LOBBY] About to query lobby participants...');
+    let allParticipants;
+    try {
+      allParticipants = await db.select().from(lobbyParticipants);
+      console.log('[LOBBY] Successfully queried participants:', allParticipants.length);
+    } catch (queryError) {
+      console.error('[LOBBY] Error querying participants:', queryError);
+      return res.status(500).json({ message: 'Database query error' });
+    }
     const userParticipations = allParticipants.filter((p: any) => 
       p.lobbyId === lobbyId && p.userId === req.user!.id
     );
@@ -168,7 +176,7 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
     try {
     await db.insert(walletTransactions).values({
       userId: req.user!.id,
-      amount: (-entryFee).toString(),
+      amount: -entryFee,
       type: 'game_entry',
       description: `Joined lobby ${lobby.name}`
     } as InsertWalletTransaction);
@@ -407,7 +415,7 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
           
         await db.insert(walletTransactions).values({
           userId: req.user!.id,
-          amount: totalRefund.toString(),
+          amount: totalRefund,
           type: 'withdrawal',
           description
         } as InsertWalletTransaction);
@@ -441,7 +449,7 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
       // For both real and mock database, get the updated participants list
       const allParticipantsAfter = await db.select().from(lobbyParticipants);
       const seatsToRemove = participationsToRemove.map(p => p.seatNumber);
-      const updatedParticipants = allParticipantsAfter.filter((p: any) =>
+      const updatedParticipants = allParticipantsAfter.filter((p) =>
         !(p.lobbyId === lobbyId && p.userId === req.user!.id && seatsToRemove.includes(p.seatNumber))
       );
       
@@ -510,7 +518,7 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
       // Notify all users in the lobby about the seat being freed
       io.to(lobbyRoom).emit('seat_freed', {
         lobbyId,
-        seatNumber: participation.seatNumber,
+        seatNumber: participationsToRemove[0]?.seatNumber || seatNumber,
         userId: req.user!.id,
         newSeatsTaken: currentSeatsTaken,
         timestamp: new Date().toISOString()
@@ -541,7 +549,7 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
         message: 'Successfully left lobby',
         refundAmount: entryFee.toString(),
         lobbyId: lobbyId,
-        participationRemoved: participation.id,
+        participationRemoved: participationsToRemove[0]?.id || 'unknown',
         lobby: updatedLobby || { ...lobby, seatsTaken: actualSeatsTaken }
       };
       

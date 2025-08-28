@@ -150,14 +150,14 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
             <div className="text-sm text-gray-600 mt-1">
-              Welcome back, {user.username || user.email?.split('@')[0]}
-              {user.isAdmin && <span className="ml-2 bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>}
+              Welcome back, {user?.username || user?.email?.split('@')[0]}
+              {user?.isAdmin && <span className="ml-2 bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>}
             </div>
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
             <ConnectionStatus showDetails={true} className="text-xs sm:text-sm" />
-            {user.isAdmin && (
+            {user?.isAdmin && (
               <button
                 onClick={() => setLocation('/admin')}
                 className="bg-casino-red hover:opacity-90 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-xs sm:text-sm font-medium text-white"

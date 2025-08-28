@@ -43,6 +43,8 @@ export const lobbies = sqliteTable("lobbies", {
   name: text("name").notNull(),
   description: text("description"),
   entryFee: real("entry_fee").notNull(),
+  maxSeats: integer("max_seats").notNull().default(15),
+  seatsTaken: integer("seats_taken").notNull().default(0),
   maxGames: integer("max_games").notNull().default(4), // Maximum games in this lobby
   status: text("status").notNull().default('active'), // 'active', 'inactive'
   createdAt: integer("created_at", { mode: 'timestamp' }).default(new Date()),

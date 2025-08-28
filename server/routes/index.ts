@@ -1,5 +1,5 @@
 // Main routes file for the bingo game application
-import { Express } from 'express';
+import { Express, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import authRoutes from './auth';
@@ -12,6 +12,9 @@ import { storage } from '../storage';
 import { db } from '../db';
 import { winners as winnersTable, users as usersTable, lobbies } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
+import { authenticateToken } from '../middleware/auth';
+
+// Type declarations are now included directly in the build
 
 export async function registerRoutes(app: Express): Promise<void> {
   app.use('/api', (req, res, next) => {
@@ -218,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.get("/api/game-rooms/:id", async (req, res) => {
     try {
-      const room = await storage.getGameRoom(req.params.id);
+      const room = await storage.getGameRoom(parseInt(req.params.id, 10));
       if (!room) {
         return res.status(404).json({ message: "Game room not found" });
       }
@@ -261,14 +264,14 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Achievement endpoints
-  app.get("/api/achievements", async (req, res) => {
+  app.get("/api/achievements", authenticateToken, async (req: Request, res: Response) => {
     try {
       // Use JWT auth check like other endpoints
       if (!req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = parseInt(req.user.id);
+      const userId = parseInt(req.user.id.toString());
       const { achievementStorage } = await import("../achievement-storage");
       const achievements = achievementStorage.getAchievements();
       const userAchievements = achievementStorage.getUserAchievements(userId);
@@ -286,14 +289,14 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post("/api/achievements/:achievementId/mark-viewed", async (req, res) => {
+  app.post("/api/achievements/:achievementId/mark-viewed", authenticateToken, async (req: Request, res: Response) => {
     try {
       if (!req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
       const { achievementStorage } = await import("../achievement-storage");
-      achievementStorage.markAchievementAsViewed(parseInt(req.user.id), req.params.achievementId);
+      achievementStorage.markAchievementAsViewed(parseInt(req.user.id.toString()), req.params.achievementId);
       res.json({ success: true });
     } catch (error) {
       console.error("Mark achievement viewed error:", error);
@@ -302,14 +305,14 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Trigger game win achievements (endpoint for game win events)
-  app.post("/api/achievements/game-win", async (req, res) => {
+  app.post("/api/achievements/game-win", authenticateToken, async (req: Request, res: Response) => {
     try {
       if (!req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
       const { achievementStorage } = await import("../achievement-storage");
-      const newAchievements = achievementStorage.unlockGameWinAchievement(parseInt(req.user.id));
+      const newAchievements = achievementStorage.unlockGameWinAchievement(parseInt(req.user.id.toString()));
       res.json({ newAchievements });
     } catch (error) {
       console.error("Game win achievement error:", error);

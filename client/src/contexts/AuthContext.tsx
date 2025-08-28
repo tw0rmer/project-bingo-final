@@ -80,6 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           balance: string;
           isAdmin: boolean;
           createdAt: string;
+          username?: string;
         }
         
         console.log('[AUTH] Validating stored token...');
@@ -130,6 +131,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         balance: string;
         isAdmin: boolean;
         createdAt: string;
+        username?: string;
       }
       
       const userData = await apiRequest<UserData>('/auth/me', {
