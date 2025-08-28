@@ -230,12 +230,8 @@ export default function DashboardPage() {
                       <h3 className="text-base sm:text-lg font-bold text-casino-red">{room.name}</h3>
                       <p className="text-xs text-gray-500">Lobby #{room.id}</p>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                      room.status === 'active' ? 'bg-green-100 text-green-700' : 
-                      room.status === 'finished' ? 'bg-purple-100 text-purple-700' : 
-                      'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {room.status.toUpperCase()}
+                    <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                      AVAILABLE
                     </span>
                   </div>
                   
@@ -258,15 +254,9 @@ export default function DashboardPage() {
                   {/* Action Button */}
                   <button 
                     onClick={() => handleViewLobby(room.id)} 
-                    className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                      (room.status === 'waiting' || room.status === 'active')
-                        ? 'bg-casino-gold text-white hover:bg-yellow-500' 
-                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
-                    }`}
-                    disabled={room.status === 'finished'}
+                    className="w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors bg-casino-gold text-white hover:bg-yellow-500"
                   >
-                    {(room.status === 'waiting' || room.status === 'active') ? 'Enter Lobby' : 
-                     'Game Finished'}
+                    Enter Lobby
                   </button>
                 </div>
               ))}

@@ -64,6 +64,34 @@ export default function AdminPage() {
     fetchData();
   }, []);
 
+  // Create new lobby
+  const handleCreateLobby = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
+    try {
+      const lobbyData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        entryFee: formData.get('entryFee'),
+        maxGames: formData.get('maxGames')
+      };
+
+      await authApiRequest('/lobbies/admin/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lobbyData)
+      });
+
+      setShowCreateLobby(false);
+      await fetchData(); // Refresh data
+    } catch (error) {
+      console.error('Create lobby error:', error);
+      setError('Failed to create lobby');
+    }
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);

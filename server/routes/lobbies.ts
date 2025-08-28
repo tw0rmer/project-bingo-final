@@ -641,4 +641,90 @@ router.get('/:id/games', async (req, res) => {
   }
 });
 
+// Admin: Create new lobby
+router.post('/admin/create', async (req, res) => {
+  try {
+    const { name, description, entryFee, maxGames } = req.body;
+
+    if (!name || !entryFee) {
+      return res.status(400).json({ message: 'Name and entry fee are required' });
+    }
+
+    console.log('[ADMIN] Creating new lobby:', { name, description, entryFee, maxGames });
+
+    // Create the lobby
+    const newLobby = await db.insert(lobbies).values({
+      name,
+      description: description || null,
+      entryFee: parseFloat(entryFee),
+      maxGames: maxGames || 4,
+      status: 'active'
+    }).returning();
+
+    const lobby = newLobby[0];
+    console.log('[ADMIN] Created lobby:', lobby);
+
+    // Create games for the lobby
+    const lobbyGames = [];
+    for (let i = 1; i <= (maxGames || 4); i++) {
+      lobbyGames.push({
+        lobbyId: lobby.id,
+        name: `${name} - Game ${i}`,
+        gameNumber: i,
+        maxSeats: 15,
+        seatsTaken: 0,
+        winnerId: null,
+        status: 'waiting',
+        drawnNumbers: '[]',
+        currentNumber: null
+      });
+    }
+    
+    await db.insert(games).values(lobbyGames);
+    console.log('[ADMIN] Created', lobbyGames.length, 'games for lobby');
+
+    res.json({ lobby, gamesCreated: lobbyGames.length });
+  } catch (error) {
+    console.error('[ADMIN] Create lobby error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Admin: Delete lobby and all its games
+router.delete('/admin/:id', async (req, res) => {
+  try {
+    const lobbyId = parseInt(req.params.id);
+    
+    console.log('[ADMIN] Deleting lobby:', lobbyId);
+
+    // Get all games in this lobby first
+    const allGames = await db.select().from(games);
+    const lobbyGames = allGames.filter((game: any) => game.lobbyId === lobbyId);
+
+    // Delete all participants from the games
+    for (const game of lobbyGames) {
+      const allParticipants = await db.select().from(gameParticipants);
+      const gameParticipantsList = allParticipants.filter((p: any) => p.gameId === game.id);
+      
+      for (const participant of gameParticipantsList) {
+        await db.delete(gameParticipants).where(eq(gameParticipants.id, participant.id));
+      }
+    }
+
+    // Delete all games in the lobby
+    for (const game of lobbyGames) {
+      await db.delete(games).where(eq(games.id, game.id));
+    }
+
+    // Delete the lobby
+    await db.delete(lobbies).where(eq(lobbies.id, lobbyId));
+
+    console.log('[ADMIN] Deleted lobby', lobbyId, 'and', lobbyGames.length, 'games');
+    res.json({ message: 'Lobby deleted successfully', gamesDeleted: lobbyGames.length });
+  } catch (error) {
+    console.error('[ADMIN] Delete lobby error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;
