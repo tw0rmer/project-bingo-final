@@ -211,6 +211,20 @@ const LobbyPage: React.FC = () => {
       setGameStatus('finished');
       setIsPaused(false);
     };
+    
+    const handleGameReset = (data: any) => {
+      console.log('[GAME] Reset:', data);
+      setToastMsg('Game has been reset. Join to play again!');
+      setGameStatus('waiting');
+      setCalledNumbers([]);
+      setWinner(null);
+      setIsPaused(false);
+      // Refresh lobby data to get updated status
+      fetchParticipants();
+      if (lobby) {
+        setLobby(prev => prev ? { ...prev, status: 'active', seatsTaken: 0 } : prev);
+      }
+    };
 
     // Listen for seat taken events
     const handleSeatTaken = (data: any) => {
@@ -251,6 +265,7 @@ const LobbyPage: React.FC = () => {
     socket.on('game_started', handleGameStarted);
     socket.on('number_called', handleNumberCalled);
     socket.on('game_ended', handleGameEnded);
+    socket.on('game_reset', handleGameReset);
     socket.on('player_won', (data: any) => {
       console.log('[GAME] Player won:', data);
       // find seatNumber for winner from participants
@@ -289,6 +304,7 @@ const LobbyPage: React.FC = () => {
       socket.off('game_started', handleGameStarted);
       socket.off('number_called', handleNumberCalled);
       socket.off('game_ended', handleGameEnded);
+      socket.off('game_reset', handleGameReset);
       socket.off('seat_taken', handleSeatTaken);
       socket.off('seat_freed', handleSeatFreed);
       socket.off('lobby_joined', handleLobbyJoined);

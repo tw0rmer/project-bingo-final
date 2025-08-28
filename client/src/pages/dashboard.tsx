@@ -64,8 +64,8 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.log('[PATTERN_POPUP] Preference check failed:', error);
-      // Default to showing popup if API fails
-      setShowPatternPopup(true);
+      // Don't show popup if API fails or endpoint doesn't exist
+      setShowPatternPopup(false);
     }
   };
 
