@@ -121,7 +121,18 @@ router.put('/users/:id/admin', authenticateToken, requireAdmin, async (req: Auth
 router.get('/lobbies', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const allLobbies = await db.select().from(lobbies);
-    res.json(allLobbies);
+    const allGames = await db.select().from(games);
+    
+    // Add gamesCount to each lobby
+    const lobbiesWithGameCount = allLobbies.map(lobby => {
+      const gameCount = allGames.filter(game => game.lobbyId === lobby.id).length;
+      return {
+        ...lobby,
+        gamesCount: gameCount
+      };
+    });
+    
+    res.json(lobbiesWithGameCount);
   } catch (error) {
     console.error('Get lobbies error:', error);
     res.status(500).json({ message: 'Internal server error' });

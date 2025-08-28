@@ -393,6 +393,56 @@ class GameEngine {
 
     this.gamesMap.delete(gameId);
     this.lobbyToGameId.delete(gameState.lobbyId);
+
+    // Automatically reset game state after 30 seconds
+    console.log(`[GAME ENGINE] Scheduling automatic reset for game ${gameId} in 30 seconds`);
+    setTimeout(() => {
+      this.autoResetGame(gameId, gameState.lobbyId).catch(error => {
+        console.error(`[GAME ENGINE] Auto-reset failed for game ${gameId}:`, error);
+      });
+    }, 30000); // 30 seconds delay
+  }
+
+  // Automatically reset a game state for a new round
+  async autoResetGame(gameId: number, lobbyId: number) {
+    try {
+      console.log(`[GAME ENGINE] Auto-resetting game ${gameId} for lobby ${lobbyId}`);
+      
+      // Clear all participants from the game
+      await db.delete(gameParticipants).where(eq(gameParticipants.gameId, gameId));
+      
+      // Reset the game to waiting state
+      await db.update(games)
+        .set({ 
+          status: 'waiting', 
+          winnerId: null, 
+          currentNumber: null, 
+          drawnNumbers: '[]',
+          seatsTaken: 0
+        })
+        .where(eq(games.id, gameId));
+      
+      // Reset lobby status to active for new players
+      await db.update(lobbies)
+        .set({ status: 'active', seatsTaken: 0 })
+        .where(eq(lobbies.id, lobbyId));
+      
+      // Clear any cached snapshots for the lobby
+      this.lastSnapshotByLobby.delete(lobbyId);
+      this.lobbyCardsCache.delete(lobbyId);
+      
+      // Emit reset event to all lobby participants
+      this.io.to(`lobby_${lobbyId}`).emit('game_reset', {
+        gameId,
+        lobbyId,
+        message: 'Game has been automatically reset. Join to play again!',
+        resetAt: Date.now()
+      });
+      
+      console.log(`[GAME ENGINE] Successfully auto-reset game ${gameId} for lobby ${lobbyId}`);
+    } catch (error) {
+      console.error(`[GAME ENGINE] Error auto-resetting game ${gameId}:`, error);
+    }
   }
 
   async claimWin(lobbyId: number, userId: number, seatNumber: number, numbers: number[]) {
