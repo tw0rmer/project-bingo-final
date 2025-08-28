@@ -9,6 +9,7 @@ import { ArrowLeft, Users, DollarSign, Trophy, Play } from 'lucide-react';
 import { BingoCard } from '../components/games/bingo-card';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { MobileGameView } from '../components/games/mobile-game-view';
+import { WinnerCelebrationModal } from '../components/games/winner-celebration-modal';
 
 interface Game {
   id: number;
@@ -70,6 +71,12 @@ export default function GamePage() {
   const [nextCallIn, setNextCallIn] = useState<number>(5);
   const [currentCallSpeed, setCurrentCallSpeed] = useState<number>(5);
   const [winner, setWinner] = useState<{ seatNumber: number; userId: number } | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState<{
+    prizeAmount: number;
+    winningSeats: number[];
+    winningRow: number[];
+  } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
   const [serverCardsBySeat, setServerCardsBySeat] = useState<Record<number, number[]>>({});
@@ -169,8 +176,25 @@ export default function GamePage() {
     const handlePlayerWon = (data: any) => {
       console.log('[SOCKET] Player won:', data);
       if (data.gameId === game.id) {
-        setWinner({ userId: data.userId, seatNumber: data.seatNumber });
+        setWinner({ userId: data.userId, seatNumber: data.winningSeat || data.seatNumber });
         setGameStatus('finished');
+        
+        // Show celebration modal if the current user won
+        if (data.userId === userInfo?.id) {
+          // Calculate prize based on lobby entry fee and seat count
+          const entryFee = lobby?.entryFee || 5;
+          const seatCount = data.seatCount || selectedSeats.length || 1;
+          const participantCount = participants.length;
+          const basePrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
+          const totalPrize = Math.floor(basePrize * seatCount * 100) / 100;
+          
+          setCelebrationData({
+            prizeAmount: totalPrize,
+            winningSeats: data.userSeats || selectedSeats,
+            winningRow: data.winningNumbers || []
+          });
+          setShowCelebration(true);
+        }
       }
     };
 
@@ -522,6 +546,18 @@ export default function GamePage() {
           gameData={game}
         />
       </div>
+
+      {/* Winner Celebration Modal */}
+      {showCelebration && celebrationData && (
+        <WinnerCelebrationModal
+          isOpen={showCelebration}
+          onClose={() => setShowCelebration(false)}
+          prizeAmount={celebrationData.prizeAmount}
+          winningSeats={celebrationData.winningSeats}
+          winningRow={celebrationData.winningRow}
+          duration={30}
+        />
+      )}
     </div>
   );
 }

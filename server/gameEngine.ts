@@ -255,19 +255,21 @@ class GameEngine {
       const participants = gameState.participants;
       if (!participants || participants.length === 0) return;
       for (const p of participants) {
-        const isWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
-        if (isWinner) {
+        // Check for row win (5 consecutive numbers in a row)
+        const isRowWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
+        if (isRowWinner) {
+          console.log(`[GAME ENGINE] Row winner detected! User ${p.userId}, Seat ${p.seatNumber}, Numbers: ${p.card.join(', ')}`);
           // End game with server-detected winner
-          await this.endGame(gameId, p.userId);
+          await this.endGame(gameId, p.userId, p.seatNumber, p.card);
           break;
         }
       }
-    } catch (_e) {
-      // ignore detection errors
+    } catch (e) {
+      console.error('[GAME ENGINE] Winner detection error:', e);
     }
   }
 
-  async endGame(gameId: number, winnerId?: number) {
+  async endGame(gameId: number, winnerId?: number, winningSeat?: number, winningNumbers?: number[]) {
     const gameState = this.gamesMap.get(gameId);
     if (!gameState) throw new Error('Game not found');
 
@@ -282,26 +284,58 @@ class GameEngine {
       .run();
 
     if (winnerId) {
-      this.io.to(`lobby_${gameState.lobbyId}`).emit('player_won', { gameId, lobbyId: gameState.lobbyId, userId: winnerId });
+      // Count how many seats this user has for prize calculation
+      const userSeats = gameState.participants?.filter(p => p.userId === winnerId) || [];
+      const userSeatNumbers = userSeats.map(p => p.seatNumber);
+      
+      this.io.to(`lobby_${gameState.lobbyId}`).emit('player_won', { 
+        gameId, 
+        lobbyId: gameState.lobbyId, 
+        userId: winnerId,
+        winningSeat,
+        winningNumbers,
+        userSeats: userSeatNumbers,
+        seatCount: userSeats.length
+      });
     }
 
     this.io.to(`lobby_${gameState.lobbyId}`).emit('game_ended', {
       gameId,
       lobbyId: gameState.lobbyId,
       winners: winnerId ? [winnerId] : [],
+      winningSeat,
+      winningNumbers,
       endedAt: Date.now(),
     });
 
-    // Persist winner row for public page if present
+    // Persist winner row for public page if present and update balance
     try {
       if (winnerId) {
-        // Calculate actual prize: 70% of total entry fees
+        // Calculate actual prize: 70% of total entry fees multiplied by user's seat count
         const [gameWithLobby] = await db.select().from(games).innerJoin(lobbies, eq(games.lobbyId, lobbies.id)).where(eq(games.id, gameId));
         const entryFee = gameWithLobby ? gameWithLobby.lobbies.entryFee : 5;
-        const participantCount = gameState.participants.length;
-        const prizeAmount = Math.floor(entryFee * participantCount * 0.7 * 100) / 100; // 70% for winner
+        const participantCount = gameState.participants?.length || 0;
+        const userSeats = gameState.participants?.filter(p => p.userId === winnerId) || [];
+        const seatMultiplier = userSeats.length || 1; // Multiple seats = multiple prizes
         
-        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: prizeAmount, note: 'Auto-recorded' }).run();
+        const basePrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100; // 70% for winner
+        const totalPrize = Math.floor(basePrize * seatMultiplier * 100) / 100; // Multiply by seat count
+        
+        console.log(`[GAME ENGINE] Prize calculation: ${entryFee} × ${participantCount} × 0.7 × ${seatMultiplier} = $${totalPrize}`);
+        
+        // Update winner's balance
+        const { users } = await import('../shared/schema');
+        const [currentUser] = await db.select().from(users).where(eq(users.id, winnerId));
+        if (currentUser) {
+          const newBalance = (currentUser.balance || 0) + totalPrize;
+          await db.update(users)
+            .set({ balance: newBalance })
+            .where(eq(users.id, winnerId))
+            .run();
+          console.log(`[GAME ENGINE] Updated balance for user ${winnerId}: $${currentUser.balance} + $${totalPrize} = $${newBalance}`);
+        }
+        
+        await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: totalPrize, note: `Auto-recorded (${seatMultiplier} seats)` }).run();
       }
     } catch {}
 
