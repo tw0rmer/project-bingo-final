@@ -115,9 +115,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import database functions
       const { userNotificationPrefs } = await import("../shared/schema");
       const { db } = await import("./db");
-      const { eq } = await import("drizzle-orm");
-      
-      const [preference] = await db.select().from(userNotificationPrefs).where(eq(userNotificationPrefs.userId, userId));
+      const { eq, and } = await import("drizzle-orm");
+      const [preference] = await db.select().from(userNotificationPrefs).where(
+        and(
+          eq(userNotificationPrefs.userId, userId),
+          eq(userNotificationPrefs.notificationType, notificationType)
+        )
+      );
       
       if (!preference) {
         // Default to showing popup if no preference exists
@@ -154,16 +158,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import database functions
       const { userNotificationPrefs } = await import("../shared/schema");
       const { db } = await import("./db");
-      const { eq } = await import("drizzle-orm");
+      const { eq, and } = await import("drizzle-orm");
       
       // Try to update existing record or create new one
-      const [existing] = await db.select().from(userNotificationPrefs).where(eq(userNotificationPrefs.userId, userId));
+      const [existing] = await db.select().from(userNotificationPrefs).where(
+        and(
+          eq(userNotificationPrefs.userId, userId),
+          eq(userNotificationPrefs.notificationType, notificationType)
+        )
+      );
       
       if (existing) {
         // Update existing record
         await db.update(userNotificationPrefs)
           .set({ dismissedAt: new Date().toISOString() })
-          .where(eq(userNotificationPrefs.userId, userId));
+          .where(
+            and(
+              eq(userNotificationPrefs.userId, userId),
+              eq(userNotificationPrefs.notificationType, notificationType)
+            )
+          );
       } else {
         // Create new record
         await db.insert(userNotificationPrefs).values({
