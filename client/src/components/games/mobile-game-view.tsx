@@ -7,6 +7,8 @@ import { MobileInfoView } from './mobile-info-view';
 import { Eye, Grid3X3, Users, Info } from 'lucide-react';
 
 interface MobileGameViewProps {
+  currentNumber?: number | null;
+  nextCallIn?: number;
   // BingoCard props
   onSeatSelect: (seatNumber: number) => void;
   selectedSeats?: number[];
@@ -41,6 +43,8 @@ interface MobileGameViewProps {
 type MobileTab = 'card' | 'master' | 'players' | 'info';
 
 export function MobileGameView({
+  currentNumber,
+  nextCallIn,
   onSeatSelect,
   selectedSeats = [],
   participants,
@@ -148,6 +152,8 @@ export function MobileGameView({
         return (
           <MobileMasterCard 
             calledNumbers={calledNumbers}
+            currentNumber={currentNumber}
+            nextCallIn={nextCallIn}
           />
         );
       

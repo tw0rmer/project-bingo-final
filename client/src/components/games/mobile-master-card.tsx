@@ -3,9 +3,11 @@ import { cn } from '@/lib/utils';
 
 interface MobileMasterCardProps {
   calledNumbers: number[];
+  currentNumber?: number;
+  nextCallIn?: number;
 }
 
-export function MobileMasterCard({ calledNumbers }: MobileMasterCardProps) {
+export function MobileMasterCard({ calledNumbers, currentNumber, nextCallIn }: MobileMasterCardProps) {
   const isNumberCalled = (num: number) => calledNumbers.includes(num);
   
   // Create 5 columns for B, I, N, G, O
@@ -19,9 +21,24 @@ export function MobileMasterCard({ calledNumbers }: MobileMasterCardProps) {
 
   return (
     <div className="w-full h-full flex flex-col p-1">
-      {/* Header */}
+      {/* Header with Current Number */}
       <div className="flex-shrink-0 text-center mb-2">
         <h3 className="text-sm font-bold text-gray-900">Master Card (1-75)</h3>
+        
+        {/* Current Number Display */}
+        {currentNumber && (
+          <div className="my-2 p-2 bg-green-100 border border-green-300 rounded">
+            <div className="text-lg font-bold text-green-800">
+              Current: {currentNumber}
+            </div>
+            {nextCallIn !== undefined && (
+              <div className="text-xs text-green-600">
+                Next call in {nextCallIn}s
+              </div>
+            )}
+          </div>
+        )}
+        
         <div className="flex items-center justify-center gap-4 text-xs mt-1">
           <span className="flex items-center gap-1">
             <div className="w-4 h-4 bg-yellow-400 rounded border border-gray-400"></div>

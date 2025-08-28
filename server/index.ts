@@ -124,7 +124,8 @@ app.use((req, res, next) => {
     socket.join(`user_${userId}`);
     
     // Handle lobby-specific events
-    socket.on('join_lobby', (lobbyId) => {
+    socket.on('join_lobby', (data) => {
+      const lobbyId = typeof data === 'object' ? data.lobbyId : data;
       const lobbyRoom = `lobby_${lobbyId}`;
       socket.join(lobbyRoom);
       console.log(`[SOCKET] User ${userEmail} joined lobby room: ${lobbyRoom}`);

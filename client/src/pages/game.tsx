@@ -66,6 +66,8 @@ export default function GamePage() {
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState('');
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
+  const [currentNumber, setCurrentNumber] = useState<number | null>(null);
+  const [nextCallIn, setNextCallIn] = useState<number>(5);
   const [winner, setWinner] = useState<{ seatNumber: number; userId: number } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
@@ -140,13 +142,17 @@ export default function GamePage() {
     if (!socket || !isConnected || !game?.id) return;
 
     console.log(`[SOCKET] Game page connected to game ${game.id}`);
-    socket.emit('join_lobby', { lobbyId: game.lobbyId });
+    socket.emit('join_lobby', game.lobbyId);
 
     // Listen for real-time game events
     const handleNumberCalled = (data: any) => {
       console.log('[SOCKET] Number called:', data);
       if (data.gameId === game.id) {
+        console.log('[SOCKET] Updating called numbers:', data.drawnNumbers);
         setCalledNumbers(data.drawnNumbers || []);
+        setCurrentNumber(data.number);
+        setNextCallIn(5); // Reset countdown
+        setGameStatus('active');
       }
     };
 
@@ -186,6 +192,22 @@ export default function GamePage() {
       socket.off('game_ended', handleGameEnded);
     };
   }, [socket, isConnected, game?.id, game?.lobbyId]);
+
+  // Countdown timer for next number call
+  useEffect(() => {
+    if (gameStatus !== 'active') return;
+    
+    const interval = setInterval(() => {
+      setNextCallIn(prev => {
+        if (prev <= 1) {
+          return 5; // Reset to 5 seconds
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameStatus]);
 
   const handleJoinGame = async (seatNumber: number) => {
     if (!game || !userInfo) return;
@@ -452,6 +474,8 @@ export default function GamePage() {
       {/* Tabbed game interface for both desktop and mobile */}
       <div className={!isMobile ? "max-w-7xl mx-auto" : "h-full"}>
         <MobileGameView
+          currentNumber={currentNumber}
+          nextCallIn={nextCallIn}
           lobby={lobby}
           participants={participants}
           selectedSeats={selectedSeats}
