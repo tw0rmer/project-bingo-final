@@ -31,7 +31,7 @@ interface Lobby {
 interface User {
   id: number;
   email: string;
-  balance: number;
+  balance: number | string;
   isAdmin?: boolean;
 }
 
@@ -251,7 +251,9 @@ export default function GamePage() {
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-500">Your Balance</p>
-            <p className="text-xl font-bold text-green-600">${userInfo.balance.toFixed(2)}</p>
+            <p className="text-xl font-bold text-green-600">
+              ${typeof userInfo.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo.balance?.toString() || '0').toFixed(2)}
+            </p>
           </div>
         </div>
 
@@ -271,7 +273,7 @@ export default function GamePage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <Trophy className="w-4 h-4" />
-                  <span className="text-sm">Prize Pool: ${game.prizePool.toFixed(2)}</span>
+                  <span className="text-sm">Prize Pool: ${(game.prizePool || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
