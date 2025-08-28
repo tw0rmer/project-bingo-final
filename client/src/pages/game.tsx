@@ -68,6 +68,7 @@ export default function GamePage() {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [nextCallIn, setNextCallIn] = useState<number>(5);
+  const [currentCallSpeed, setCurrentCallSpeed] = useState<number>(5);
   const [winner, setWinner] = useState<{ seatNumber: number; userId: number } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
@@ -180,16 +181,26 @@ export default function GamePage() {
       }
     };
 
+    const handleCallSpeedChanged = (data: any) => {
+      console.log('[SOCKET] Call speed changed:', data);
+      if (data.lobbyId === game.lobbyId) {
+        setCurrentCallSpeed(data.intervalSeconds);
+        setNextCallIn(data.intervalSeconds); // Reset countdown with new interval
+      }
+    };
+
     socket.on('number_called', handleNumberCalled);
     socket.on('gameStarted', handleGameStarted);
     socket.on('player_won', handlePlayerWon);
     socket.on('game_ended', handleGameEnded);
+    socket.on('call_speed_changed', handleCallSpeedChanged);
 
     return () => {
       socket.off('number_called', handleNumberCalled);
       socket.off('gameStarted', handleGameStarted);
       socket.off('player_won', handlePlayerWon);
       socket.off('game_ended', handleGameEnded);
+      socket.off('call_speed_changed', handleCallSpeedChanged);
     };
   }, [socket, isConnected, game?.id, game?.lobbyId]);
 
@@ -476,6 +487,7 @@ export default function GamePage() {
         <MobileGameView
           currentNumber={currentNumber}
           nextCallIn={nextCallIn}
+          currentCallSpeed={currentCallSpeed}
           lobby={lobby}
           participants={participants}
           selectedSeats={selectedSeats}

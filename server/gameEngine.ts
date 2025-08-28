@@ -410,10 +410,17 @@ class GameEngine {
     this.io.to(`lobby_${lobbyId}`).emit('game_resumed', { gameId, lobbyId });
   }
 
-  setCallInterval(lobbyId: number, ms: number) {
+  setCallInterval(lobbyId: number, seconds: number) {
     const state = this.getStateByLobby(lobbyId);
     if (!state || !state.isRunning) throw new Error('No active game');
-    state.callIntervalMs = Math.max(500, Math.floor(ms));
+    
+    // Convert seconds to milliseconds, minimum 1 second, maximum 5 seconds
+    const ms = Math.max(1000, Math.min(5000, Math.floor(seconds * 1000)));
+    const actualSeconds = ms / 1000;
+    
+    console.log(`[GAME ENGINE] Changing call interval for lobby ${lobbyId} from ${state.callIntervalMs}ms to ${ms}ms (${actualSeconds}s)`);
+    state.callIntervalMs = ms;
+    
     if (state.intervalId) {
       clearInterval(state.intervalId);
       state.intervalId = null;
@@ -421,8 +428,13 @@ class GameEngine {
     if (!state.isPaused) {
       const gameId = state.gameId;
       state.intervalId = setInterval(() => this.drawNumber(gameId), state.callIntervalMs);
+      console.log(`[GAME ENGINE] Restarted interval for game ${gameId} with ${actualSeconds}s interval`);
     }
-    this.io.to(`lobby_${lobbyId}`).emit('call_speed_changed', { lobbyId, ms: state.callIntervalMs });
+    this.io.to(`lobby_${lobbyId}`).emit('call_speed_changed', { 
+      lobbyId, 
+      intervalMs: state.callIntervalMs, 
+      intervalSeconds: actualSeconds 
+    });
   }
 }
 

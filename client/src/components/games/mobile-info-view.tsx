@@ -11,6 +11,9 @@ interface MobileInfoViewProps {
   currentUserParticipation?: any;
   participants?: any[];
   onLeaveLobby?: () => void;
+  user?: any;
+  gameId?: number;
+  currentCallSpeed?: number;
 }
 
 export function MobileInfoView({ 
@@ -21,8 +24,36 @@ export function MobileInfoView({
   calledNumbers,
   currentUserParticipation,
   participants = [],
-  onLeaveLobby
+  onLeaveLobby,
+  user,
+  gameId,
+  currentCallSpeed = 5
 }: MobileInfoViewProps) {
+  
+  const handleSpeedChange = async (seconds: number) => {
+    if (!gameId || !user?.isAdmin) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/admin/games/${gameId}/set-interval`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ seconds })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Failed to change speed:', error.message);
+      } else {
+        console.log(`[ADMIN] Changed call speed to ${seconds} seconds`);
+      }
+    } catch (error) {
+      console.error('[ADMIN] Error changing speed:', error);
+    }
+  };
   return (
     <div className="w-full h-full flex flex-col p-2">
       {/* Lobby Header */}
@@ -191,6 +222,41 @@ export function MobileInfoView({
             </li>
           </ul>
         </div>
+
+        {/* ADMIN CONTROLS - Only visible to admins during active games */}
+        {user?.isAdmin && gameStatus === 'active' && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <h4 className="text-red-800 font-semibold mb-3 text-sm">⚙️ Admin Controls</h4>
+            
+            {/* Game Speed Control */}
+            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded">
+              <label className="block text-blue-800 font-medium text-xs mb-2">
+                🎯 Number Call Speed: {currentCallSpeed}s intervals
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-blue-600 font-medium">⚡ 1s</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  step="1"
+                  value={currentCallSpeed}
+                  onChange={(e) => handleSpeedChange(parseInt(e.target.value))}
+                  className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                  data-testid="admin-speed-slider"
+                />
+                <span className="text-xs text-blue-600 font-medium">🐌 5s</span>
+              </div>
+              <div className="text-xs text-blue-600 mt-2 text-center font-medium">
+                {currentCallSpeed === 1 && '⚡ Lightning Fast - 1 second'}
+                {currentCallSpeed === 2 && '🚀 Fast Pace - 2 seconds'}
+                {currentCallSpeed === 3 && '⚡ Quick Game - 3 seconds'}
+                {currentCallSpeed === 4 && '🎯 Standard - 4 seconds'}
+                {currentCallSpeed === 5 && '🐌 Relaxed - 5 seconds'}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Back to Lobby Button */}
         {onLeaveLobby && (

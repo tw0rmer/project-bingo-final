@@ -921,4 +921,40 @@ router.post('/lobbies/:id/reset-games', authenticateToken, requireAdmin, async (
   }
 });
 
+// Change game calling interval (admin only)
+router.post('/games/:gameId/set-interval', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    const { seconds } = req.body;
+    
+    if (!seconds || seconds < 1 || seconds > 5) {
+      return res.status(400).json({ message: 'Interval must be between 1 and 5 seconds' });
+    }
+    
+    // Find the game and its lobby
+    const gameResult = await db.select().from(games).where(eq(games.id, parseInt(gameId))).limit(1);
+    if (gameResult.length === 0) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+    
+    const game = gameResult[0];
+    const gameEngine = req.app.get('gameEngine');
+    
+    try {
+      gameEngine.setCallInterval(game.lobbyId, seconds);
+      res.json({ 
+        message: 'Call interval updated successfully',
+        intervalSeconds: seconds,
+        gameId: parseInt(gameId),
+        lobbyId: game.lobbyId
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  } catch (error) {
+    console.error('[ADMIN] Error setting call interval:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;
