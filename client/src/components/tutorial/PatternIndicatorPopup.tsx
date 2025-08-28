@@ -40,8 +40,8 @@ export function PatternIndicatorPopup({
               <Target className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Pattern Indicator</h2>
-              <p className="text-purple-100 text-sm">Track your progress to winning!</p>
+              <h2 className="text-xl font-bold">Pattern Indicator Feature</h2>
+              <p className="text-purple-100 text-sm">Learn how progress tracking works during games</p>
             </div>
           </div>
         </div>
@@ -75,15 +75,21 @@ export function PatternIndicatorPopup({
           {/* Visual Example */}
           <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-bold text-orange-800">📋 Example During Game:</span>
+            </div>
+            <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">➡️</span>
               <span className="text-sm font-medium text-orange-700">Row Pattern</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-orange-600">2 numbers to go</span>
-              <span className="text-xs font-bold text-orange-700">80% complete</span>
+              <span className="text-xs text-orange-600 italic">e.g. "2 numbers to go"</span>
+              <span className="text-xs font-bold text-orange-700 italic">e.g. "80% complete"</span>
             </div>
             <div className="mt-2 h-1 bg-orange-200 rounded-full overflow-hidden">
               <div className="h-full bg-orange-500 rounded-full w-4/5 transition-all duration-500" />
+            </div>
+            <div className="text-[10px] text-orange-600 mt-2 text-center italic">
+              This is what you'll see when you're actually playing
             </div>
           </div>
 
