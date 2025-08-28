@@ -6,6 +6,90 @@ It is optional, but recommended to be updated as the project evolves.
 2025-07-28 20:47:06 - Added API utility pattern for consistent API calls
 2025-01-27 23:32:00 - Added admin dashboard patterns and lobby system preparation
 2025-07-30 22:19:00 - Added robust error handling patterns for lobby operations
+2025-08-28 06:25:00 - Added real-time Socket.IO patterns and GameEngine architecture
+
+## Real-Time Game Engine Patterns - 2025-08-28
+
+### **Socket.IO Real-Time Communication Pattern**
+
+1. **Room-Based Event Broadcasting**:
+   ```typescript
+   // Join lobby-specific room
+   socket.join(`lobby_${lobbyId}`);
+   
+   // Broadcast to specific lobby
+   io.to(`lobby_${lobbyId}`).emit('number_called', {
+     number: drawnNumber,
+     gameId: gameId,
+     lobbyId: lobbyId
+   });
+   ```
+
+2. **Authentication Middleware**:
+   ```typescript
+   io.use((socket, next) => {
+     const token = socket.handshake.auth.token;
+     const decoded = jwt.verify(token, JWT_SECRET);
+     socket.userId = decoded.id;
+     next();
+   });
+   ```
+
+3. **Game State Synchronization**:
+   - Emit events immediately after state changes
+   - Include relevant context (gameId, lobbyId) in all events
+   - Use consistent event naming conventions
+   - Handle both success and error states in socket events
+
+### **Centralized GameEngine Pattern**
+
+1. **Game Instance Management**:
+   ```typescript
+   class GameEngine {
+     private gameTimers = new Map<number, NodeJS.Timeout>();
+     private gameStates = new Map<number, GameState>();
+     
+     startGame(gameId: number, intervalSeconds = 5) {
+       const timer = setInterval(() => {
+         this.callNextNumber(gameId);
+       }, intervalSeconds * 1000);
+       
+       this.gameTimers.set(gameId, timer);
+     }
+   }
+   ```
+
+2. **Real-Time State Persistence**:
+   - Update database immediately after state changes
+   - Broadcast socket events after successful database updates
+   - Maintain in-memory state for performance
+   - Sync memory state with database on server restart
+
+3. **Winner Detection Pattern**:
+   - Check win conditions after each number call
+   - Immediately end game when winner detected
+   - Broadcast winner announcement to all players
+   - Clean up game timers and state
+
+### **Mobile-First Real-Time UI Pattern**
+
+1. **Socket Event Handling**:
+   ```typescript
+   useEffect(() => {
+     socket.on('number_called', (data) => {
+       setCalledNumbers(prev => [...prev, data.number]);
+       setCurrentNumber(data.number);
+     });
+     
+     return () => socket.off('number_called');
+   }, [socket]);
+   ```
+
+2. **Real-Time Visual Updates**:
+   - Use React state for immediate UI updates
+   - Apply CSS transitions for smooth number highlighting
+   - Implement countdown timers for next number call
+   - Ensure mobile touch targets remain accessible
 
 *
 

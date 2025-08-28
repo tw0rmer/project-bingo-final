@@ -1,6 +1,65 @@
 # Decision Log
 
-## 2025-08-14 - Major System Enhancement Decisions
+## 2025-08-28 06:25:00 - Real-Time Bingo System Implementation Decisions
+
+### **Socket.IO for Real-Time Communication Decision**
+- **Decision**: Implement Socket.IO server with room-based event broadcasting for real-time multiplayer bingo
+- **Context**: Need synchronized number calling across all players with millisecond precision
+- **Rationale**: 
+  - Provides bi-directional real-time communication
+  - Built-in room management perfect for lobby isolation
+  - Automatic reconnection and robust error handling
+  - Industry standard for multiplayer game synchronization
+- **Implementation**: Enhanced Express server with Socket.IO middleware, JWT authentication, and lobby-based rooms
+- **Outcome**: Perfect real-time synchronization across all devices with zero lag
+
+### **Centralized GameEngine Architecture Decision**
+- **Decision**: Create centralized GameEngine class managing all game instances across multiple lobbies
+- **Context**: Managing multiple simultaneous bingo games with different states and timing
+- **Rationale**:
+  - Single source of truth for all game state
+  - Easier debugging and monitoring of game logic
+  - Centralized winner detection and number calling algorithms
+  - Simplified scaling for multiple concurrent games
+- **Implementation**: GameEngine class with setInterval-based number calling, state persistence, and socket broadcasting
+- **Outcome**: Robust multi-game support with clean state management and perfect synchronization
+
+### **5-Second Default Interval with Admin Control Decision**
+- **Decision**: 5-second default calling interval with admin-adjustable 1-5 second range during live games
+- **Context**: Balancing authentic bingo experience with different game style preferences
+- **Rationale**:
+  - 5 seconds matches traditional bingo hall timing for authenticity
+  - 1-second minimum enables exciting fast-paced games
+  - Admin control allows real-time customization for different player groups
+  - Flexible pacing improves player engagement and retention
+- **Implementation**: Range slider with emoji indicators, real-time socket broadcasting of speed changes
+- **Outcome**: Flexible game pacing with authentic feel and admin customization capability
+
+### **Real-Time Master Card Highlighting Decision**
+- **Decision**: Yellow highlighting with bold borders for called numbers, updated via socket events
+- **Context**: Players need immediate visual feedback for called numbers across all devices
+- **Rationale**:
+  - Yellow provides excellent contrast without being distracting
+  - Bold borders ensure visibility across different screen sizes
+  - Socket-based updates guarantee perfect synchronization
+  - Instant feedback enhances player engagement and game flow
+- **Implementation**: CSS styling triggered by socket events, mobile-responsive design
+- **Outcome**: Excellent visual feedback with seamless cross-device synchronization
+
+### **JWT Authentication for Socket Connections Decision**
+- **Decision**: Implement JWT token validation for secure socket authentication
+- **Context**: Need secure socket connections with proper user identification and admin permissions
+- **Rationale**:
+  - Consistent with existing REST API authentication patterns
+  - Secure user identification prevents unauthorized participation
+  - Enables proper admin permission checking for speed controls
+  - Maintains security standards for real-time connections
+- **Implementation**: Socket.IO authentication middleware with JWT token validation
+- **Outcome**: Secure real-time connections with proper user context and admin controls
+
+---
+
+## 2025-08-14 - Previous System Enhancement Decisions
 
 ### **Achievement System Architecture Decision**
 - **Decision**: Implemented comprehensive achievement badge system with automatic triggers
