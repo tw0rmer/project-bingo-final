@@ -36,10 +36,10 @@ async function cleanupStaleData() {
     }
 
     // Reset lobby seat counts
-    await db.update(lobbies).set({ seatsTaken: 0 }).run();
+    await db.update(lobbies).set({ seatsTaken: 0 });
 
     // Finish any active games and clear game participants (dev convenience)
-    await db.update(games).set({ status: 'finished', currentNumber: null }).where(eq(games.status as any, 'active' as any)).run();
+    await db.update(games).set({ status: 'finished', currentNumber: null }).where(eq(games.status as any, 'active' as any));
     await db.delete(gameParticipants);
 
     const remainingParticipants = await db.select().from(lobbyParticipants);

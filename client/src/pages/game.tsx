@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation, useParams } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import { apiRequest } from '../lib/api';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Users, DollarSign, Trophy, Play } from 'lucide-react';
-import { BingoCard } from '../components/BingoCard';
+import { BingoCard } from '../components/games/bingo-card';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { MobileGameView } from '../components/MobileGameView';
+import { MobileGameView } from '../components/games/mobile-game-view';
 
 interface Game {
   id: number;
@@ -293,7 +294,7 @@ export default function GamePage() {
             }
           }}
           selectedSeats={selectedSeats}
-          participants={participants}
+          participants={participants.map(p => ({ ...p, user: p.user || null }))}
           isJoining={joining}
           gamePhase={gamePhase}
           calledNumbers={calledNumbers}
@@ -365,7 +366,7 @@ export default function GamePage() {
         selectedSeats={selectedSeats}
         onSeatSelect={handleSeatSelection}
         isJoining={joining}
-        gamePhase={gameStatus || (game?.status === 'waiting' ? 'lobby' : game?.status === 'active' ? 'playing' : 'finished')}
+        gamePhase={gameStatus === 'waiting' ? 'lobby' : gameStatus === 'active' ? 'playing' : 'finished'}
         calledNumbers={calledNumbers}
         onWin={(pattern, rowNumbers) => {
           if (selectedSeats.length === 0) return;
@@ -382,9 +383,13 @@ export default function GamePage() {
         myUserId={userInfo?.id}
         lobbyId={game?.id || 0}
         serverCardsBySeat={serverCardsBySeat}
-        onBackToLobby={handleBackToLobby}
         user={userInfo}
+        currentUserParticipation={participants.find(p => p.userId === userInfo?.id) || null}
         canAffordEntry={canAffordEntry}
+        isConnected={isConnected}
+        isPaused={isPaused}
+        gameStatus={gameStatus}
+        onLeaveLobby={handleBackToLobby}
       />
     </div>
   );

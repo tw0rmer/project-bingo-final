@@ -372,7 +372,7 @@ const LobbyPage: React.FC = () => {
     console.log('[DEBUG BUTTON] Leave lobby button clicked!');
     console.log('[DEBUG BUTTON] Current user:', user);
     console.log('[DEBUG BUTTON] Current lobby ID:', lobbyId);
-    console.log('[DEBUG BUTTON] Current participation:', currentUserParticipation);
+    console.log('[DEBUG BUTTON] Current participation:', currentUserParticipations);
     console.log('[DEBUG BUTTON] Joining state:', joining);
     
     if (!user || joining) {
@@ -646,7 +646,7 @@ const LobbyPage: React.FC = () => {
                 </div>
                 <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded p-2 border border-yellow-200">
                   <div className="text-[11px] text-yellow-800">Prize Pool</div>
-                  <div className="text-base font-bold text-yellow-600">${(lobby.entryFee * lobby.seatsTaken * 0.9).toFixed(0)}</div>
+                  <div className="text-base font-bold text-yellow-600">${(parseFloat(lobby.entryFee) * lobby.seatsTaken * 0.9).toFixed(0)}</div>
                 </div>
                 <div className="bg-gray-100 rounded p-2">
                   <div className="text-[11px] text-gray-600">Game Phase</div>
@@ -673,7 +673,7 @@ const LobbyPage: React.FC = () => {
                   </div>
                 </div>
                 {/* Prominent Leave Lobby Button */}
-                {currentUserParticipation && (
+                {currentUserParticipations.length > 0 && (
                   <div className="bg-red-50 rounded p-2 border border-red-200 flex items-center justify-center">
                     <button
                       onClick={handleLeaveLobby}
@@ -806,9 +806,9 @@ const LobbyPage: React.FC = () => {
 
                   {/* Join/Seat area */}
                   <div className="mb-2">
-                    {currentUserParticipation ? (
+                    {currentUserParticipations.length > 0 ? (
                       <div className="bg-green-50 rounded p-2 text-center border border-green-200">
-                        <p className="text-green-700 text-sm font-medium">You are in seat {currentUserParticipation.seatNumber}</p>
+                        <p className="text-green-700 text-sm font-medium">You are in seat {currentUserParticipations.map(p => p.seatNumber).join(', ')}</p>
                       </div>
                     ) : (
                       <div className="bg-gray-50 rounded p-2 text-center text-gray-700 text-sm border border-gray-200">
