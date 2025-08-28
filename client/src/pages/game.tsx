@@ -88,6 +88,8 @@ export default function GamePage() {
     prizeAmount: number;
     winningSeats: number[];
     winningRow: number[];
+    totalPrizePool?: number;
+    houseFee?: number;
   } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'active' | 'finished'>('waiting');
@@ -213,25 +215,52 @@ export default function GamePage() {
             winningRow: data.winningNumbers || []
           });
           
+          // Calculate breakdown for display
+          const totalPool = entryFee * participantCount;
+          const houseAmount = Math.floor(totalPool * 0.3 * 100) / 100;
+          
           setCelebrationData({
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
-            winningRow: data.winningNumbers || []
+            winningRow: data.winningNumbers || [],
+            totalPrizePool: totalPool,
+            houseFee: houseAmount
           });
           setShowCelebration(true);
+          
+          // CRITICAL: Refresh user balance after winning
+          const token = localStorage.getItem('token');
+          if (token) {
+            console.log('[WIN] Refreshing user balance after winning...');
+            apiRequest<User>('/auth/me', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            }).then(updatedUser => {
+              console.log('[WIN] Balance updated:', updatedUser.balance);
+              setUserInfo(updatedUser);
+              toast({
+                title: "🎉 Congratulations! You Won!",
+                description: `Prize: $${totalPrize.toFixed(2)} added to your balance!`,
+                duration: 8000,
+              });
+            }).catch(console.error);
+          }
           
           // Auto-close celebration after 30 seconds
           setTimeout(() => {
             setShowCelebration(false);
           }, 30000);
         } else {
-          // If someone else won, show a toast message
+          // If someone else won, show prominent announcement
+          const winnerParticipant = participants.find(p => p.userId === data.userId);
+          const winnerEmail = winnerParticipant?.user?.email || 'Unknown Player';
+          const winnerDisplay = winnerEmail.split('@')[0];
+          
           toast({
-            title: "Game Over! 🎉",
-            description: `Seat ${data.winningSeat || data.seatNumber} won the game!`,
-            duration: 5000,
+            title: "🎉 Game Over! We Have a Winner!",
+            description: `${winnerDisplay} (Seat ${data.winningSeat || data.seatNumber}) won the game!`,
+            duration: 8000,
           });
-          setToastMsg(`🎉 Game won by seat ${data.winningSeat || data.seatNumber}!`);
+          setToastMsg(`🏆 ${winnerDisplay} won on seat ${data.winningSeat || data.seatNumber}!`);
         }
       }
     };
@@ -641,6 +670,8 @@ export default function GamePage() {
           winningSeats={celebrationData.winningSeats}
           winningRow={celebrationData.winningRow}
           duration={30}
+          totalPrizePool={celebrationData.totalPrizePool}
+          houseFee={celebrationData.houseFee}
         />
       )}
       

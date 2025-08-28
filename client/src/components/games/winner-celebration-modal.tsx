@@ -9,6 +9,8 @@ interface WinnerCelebrationModalProps {
   winningSeats: number[];
   winningRow: number[];
   duration?: number; // Duration in seconds, default 30
+  totalPrizePool?: number;
+  houseFee?: number;
 }
 
 export function WinnerCelebrationModal({
@@ -17,7 +19,9 @@ export function WinnerCelebrationModal({
   prizeAmount,
   winningSeats,
   winningRow,
-  duration = 30
+  duration = 30,
+  totalPrizePool,
+  houseFee
 }: WinnerCelebrationModalProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -151,13 +155,31 @@ export function WinnerCelebrationModal({
 
           {/* Prize Display */}
           <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-6 border-2 border-green-300">
-            <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="flex items-center justify-center gap-2 mb-3">
               <DollarSign className="w-8 h-8 text-green-600" />
               <span className="text-4xl font-bold text-green-700">
                 ${prizeAmount.toFixed(2)}
               </span>
             </div>
-            <p className="text-green-600 font-medium">Prize Added to Your Balance!</p>
+            <p className="text-green-600 font-medium mb-3">Prize Added to Your Balance!</p>
+            
+            {/* Prize Breakdown */}
+            {totalPrizePool && houseFee !== undefined && (
+              <div className="bg-white/70 rounded-lg p-3 text-sm space-y-1">
+                <div className="flex justify-between text-gray-700">
+                  <span>Total Prize Pool:</span>
+                  <span className="font-medium">${totalPrizePool.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                  <span>House Fee (30%):</span>
+                  <span className="font-medium">-${houseFee.toFixed(2)}</span>
+                </div>
+                <div className="border-t pt-1 flex justify-between text-green-700 font-bold">
+                  <span>Your Prize (70%):</span>
+                  <span>${prizeAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Winning Details */}
@@ -190,7 +212,7 @@ export function WinnerCelebrationModal({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
