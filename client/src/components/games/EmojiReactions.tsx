@@ -68,10 +68,10 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
       // Add floating animation
       setFloatingReactions(prev => [...prev, newReaction]);
       
-      // Remove after animation (3 seconds)
+      // Remove after animation completes (2.5 seconds)
       setTimeout(() => {
         setFloatingReactions(prev => prev.filter(r => r.id !== newReaction.id));
-      }, 3000);
+      }, 2500);
       
       // Add to recent reactions
       setReactions(prev => [...prev.slice(-20), newReaction]);
@@ -116,7 +116,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
     setFloatingReactions(prev => [...prev, newReaction]);
     setTimeout(() => {
       setFloatingReactions(prev => prev.filter(r => r.id !== newReaction.id));
-    }, 3000);
+    }, 2500);
     
     setShowMenu(false);
   };
@@ -141,11 +141,11 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
         {floatingReactions.map(reaction => (
           <div
             key={reaction.id}
-            className="absolute animate-float-up text-4xl"
+            className="absolute text-4xl"
             style={{
               left: `${reaction.x}%`,
               bottom: `${reaction.y}px`,
-              animation: 'floatUp 3s ease-out forwards'
+              animation: 'floatUp 2.5s ease-out forwards'
             }}
           >
             {reaction.emoji}
@@ -237,6 +237,10 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
             transform: translateY(0) scale(1);
             opacity: 1;
           }
+          70% {
+            transform: translateY(-150px) scale(1.3);
+            opacity: 0.8;
+          }
           100% {
             transform: translateY(-200px) scale(1.5);
             opacity: 0;
@@ -266,7 +270,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
         }
         
         .animate-float-up {
-          animation: floatUp 3s ease-out forwards;
+          animation: floatUp 2.5s ease-out forwards;
         }
         
         .animate-slide-down {

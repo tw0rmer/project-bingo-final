@@ -35,7 +35,7 @@ export function MobileInfoView({
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/admin/games/${gameId}/set-interval`, {
+      const response = await fetch(`/api/games/${gameId}/set-interval`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

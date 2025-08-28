@@ -222,15 +222,6 @@ export default function GamePage() {
     socket.on('game_ended', handleGameEnded);
     socket.on('call_speed_changed', handleCallSpeedChanged);
     
-    // Update pattern progress when numbers are called
-    if (serverCardsBySeat && calledNumbers.length > 0) {
-      const patterns = Object.entries(serverCardsBySeat).map(([seat, card]) => {
-        const progress = detectRowPatternProgress(card, calledNumbers);
-        return { seat: parseInt(seat), ...progress };
-      });
-      setPatternProgress(patterns);
-    }
-
     return () => {
       socket.off('number_called', handleNumberCalled);
       socket.off('gameStarted', handleGameStarted);
@@ -239,6 +230,17 @@ export default function GamePage() {
       socket.off('call_speed_changed', handleCallSpeedChanged);
     };
   }, [socket, isConnected, game?.id, game?.lobbyId]);
+
+  // Update pattern progress when numbers are called or cards change
+  useEffect(() => {
+    if (serverCardsBySeat && Object.keys(serverCardsBySeat).length > 0 && calledNumbers.length > 0) {
+      const patterns = Object.entries(serverCardsBySeat).map(([seat, card]) => {
+        const progress = detectRowPatternProgress(card, calledNumbers);
+        return { seat: parseInt(seat), ...progress };
+      });
+      setPatternProgress(patterns);
+    }
+  }, [serverCardsBySeat, calledNumbers]);
 
   // Countdown timer for next number call
   useEffect(() => {
