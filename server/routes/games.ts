@@ -53,10 +53,11 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Game not found' });
     }
 
-    // Get the master card if game is active or finished
+    // ALWAYS get the master card for any game (waiting, active, or finished)
+    // This ensures all players see the same card from the moment they join
     let masterCard = null;
     const gameEngine = req.app.get('gameEngine');
-    if (gameEngine && (game.status === 'active' || game.status === 'finished')) {
+    if (gameEngine) {
       masterCard = gameEngine.getOrGenerateMasterCard(gameId);
     }
 
@@ -90,12 +91,13 @@ router.get('/:id/participants', async (req, res) => {
       })
     );
 
-    // Also get the master card if game has started
+    // ALWAYS get the master card for any game (waiting, active, or finished)
+    // This ensures all players see the same card from the moment they join
     const allGames = await db.select().from(games);
     const game = allGames.find((g: any) => g.id === gameId);
     
     let masterCard = null;
-    if (game && (game.status === 'active' || game.status === 'finished')) {
+    if (game) {
       const gameEngine = req.app.get('gameEngine');
       if (gameEngine) {
         masterCard = gameEngine.getOrGenerateMasterCard(gameId);

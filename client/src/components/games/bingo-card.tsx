@@ -57,7 +57,8 @@ const generateNewBingoCard = (): BingoNumber[][] => {
 };
 
 export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJoining, gamePhase = 'lobby', calledNumbers, onWin, winnerSeatNumber, winnerUserId, myUserId, lobbyId, serverCardsBySeat, masterCard }: BingoCardProps) {
-  const [bingoCard, setBingoCard] = useState<BingoNumber[][]>(() => generateNewBingoCard());
+  // Initialize with empty card - will be populated from server's master card
+  const [bingoCard, setBingoCard] = useState<BingoNumber[][]>([]);
   const winnerFiredRef = useRef(false);
 
   // Use the master card from server or generate a local one
@@ -83,11 +84,8 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
       return;
     }
     
-    // Only generate a new card if we don't have server data
-    if (gamePhase === 'lobby' && !masterCard) {
-      const fresh = generateNewBingoCard();
-      setBingoCard(fresh);
-    }
+    // Never generate a card on frontend - always wait for server master card
+    // This ensures all players see the exact same card
   }, [masterCard, serverCardsBySeat, gamePhase]);
 
   // Persist on change (in case of manual toggles)
@@ -142,6 +140,23 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
       default: return 'border-blue-500/40 bg-blue-500/5';
     }
   };
+
+  // Show loading state if card hasn't loaded yet
+  if (bingoCard.length === 0) {
+    return (
+      <div className={cn(
+        "relative rounded-md border p-4",
+        "bg-white border-gray-200",
+        getPhaseStyles(),
+        "w-full flex items-center justify-center min-h-[400px]"
+      )}>
+        <div className="text-gray-500 text-center">
+          <div className="mb-2">Loading bingo card...</div>
+          <div className="text-sm text-gray-400">Waiting for server data</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(
