@@ -9,7 +9,7 @@ import { Eye, Grid3X3, Users, Info } from 'lucide-react';
 interface MobileGameViewProps {
   // BingoCard props
   onSeatSelect: (seatNumber: number) => void;
-  selectedSeat?: number;
+  selectedSeats?: number[];
   participants: any[];
   isJoining: boolean;
   gamePhase: 'lobby' | 'playing' | 'finished';
@@ -37,7 +37,7 @@ type MobileTab = 'card' | 'master' | 'players' | 'info';
 
 export function MobileGameView({
   onSeatSelect,
-  selectedSeat,
+  selectedSeats = [],
   participants,
   isJoining,
   gamePhase,
@@ -82,10 +82,10 @@ export function MobileGameView({
                       ${parseFloat(user.balance).toFixed(2)}
                     </div>
                   </div>
-                  {currentUserParticipation && (
+                  {selectedSeats.length > 0 && (
                     <div className="bg-green-100 rounded px-2 py-1 border border-green-300">
                       <div className="text-xs font-medium text-green-800">
-                        Seat #{currentUserParticipation.seatNumber}
+                        Seats: {selectedSeats.join(', ')} ({selectedSeats.length}/2)
                       </div>
                     </div>
                   )}
@@ -94,9 +94,9 @@ export function MobileGameView({
                   <div className="text-xs text-gray-600">Status</div>
                   <div className={cn(
                     "text-sm font-bold",
-                    currentUserParticipation ? "text-green-600" : "text-blue-600"
+                    selectedSeats.length > 0 ? "text-green-600" : "text-blue-600"
                   )}>
-                    {currentUserParticipation ? "Playing" : 
+                    {selectedSeats.length > 0 ? "Playing" : 
                      (canAffordEntry ? "Ready" : "Low Balance")}
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export function MobileGameView({
             <div className="flex-1 overflow-hidden">
               <CompactMobileBingo
                 onSeatSelect={onSeatSelect}
-                selectedSeat={selectedSeat}
+                selectedSeats={selectedSeats}
                 participants={participants}
                 isJoining={isJoining}
                 gamePhase={gamePhase}

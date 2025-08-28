@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface BingoCardProps {
   onSeatSelect: (seatNumber: number) => void;
-  selectedSeat?: number;
+  selectedSeats?: number[];
   participants: Array<{
     seatNumber: number;
     user: {
@@ -18,7 +18,6 @@ interface BingoCardProps {
   winnerUserId?: number; // userId of winner
   myUserId?: number; // current user id for coloring
   lobbyId?: number; // used to persist card per lobby/seat
-  serverRow?: number[]; // authoritative row from server for this seat
   serverCardsBySeat?: Record<number, number[]>; // optional full mapping when available
 }
 
@@ -56,14 +55,14 @@ const generateNewBingoCard = (): BingoNumber[][] => {
   return newCard;
 };
 
-export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining, gamePhase = 'lobby', calledNumbers, onWin, winnerSeatNumber, winnerUserId, myUserId, lobbyId, serverRow, serverCardsBySeat }: BingoCardProps) {
+export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJoining, gamePhase = 'lobby', calledNumbers, onWin, winnerSeatNumber, winnerUserId, myUserId, lobbyId, serverCardsBySeat }: BingoCardProps) {
   const [bingoCard, setBingoCard] = useState<BingoNumber[][]>(() => generateNewBingoCard());
   const winnerFiredRef = useRef(false);
 
-  // Restore persisted card on mount when we know seat + lobby
+  // Restore persisted card for all seats
   useEffect(() => {
-    if (!selectedSeat || !lobbyId) return;
-    const key = `bingoCard_lobby_${lobbyId}_seat_${selectedSeat}`;
+    if (!lobbyId) return;
+    
     if (serverCardsBySeat && Object.keys(serverCardsBySeat).length === 15) {
       // Build entire card from server mapping
       const full = Array.from({ length: 15 }, (_, idx) => {
@@ -72,43 +71,31 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
         return row.length === 5 ? row.map(v => ({ value: v, isMarked: false })) : generateNewBingoCard()[idx];
       });
       setBingoCard(full);
-      try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
-      return;
-    }
-    if (serverRow && serverRow.length === 5) {
-      // Build a card that uses serverRow at the selected seat index
-      setBingoCard(prev => {
-        const base = prev.length ? prev : generateNewBingoCard();
-        const updated = base.map((r, idx) =>
-          idx === selectedSeat - 1 ? serverRow.map(v => ({ value: v, isMarked: false })) : r
-        );
-        try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
-        return updated;
+      // Store for each selected seat
+      selectedSeats.forEach(seatNum => {
+        const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
+        try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
       });
       return;
     }
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        const parsed: BingoNumber[][] = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === 15) {
-          setBingoCard(parsed);
-        }
-      } catch {}
-    } else {
-      // Save freshly generated card so it persists across reloads
-      const fresh = generateNewBingoCard();
-      setBingoCard(fresh);
+    
+    // Load existing card or generate new one
+    const fresh = generateNewBingoCard();
+    setBingoCard(fresh);
+    selectedSeats.forEach(seatNum => {
+      const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
       localStorage.setItem(key, JSON.stringify(fresh));
-    }
-  }, [selectedSeat, lobbyId, serverRow?.join(','), serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
+    });
+  }, [selectedSeats.join(','), lobbyId, serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
 
   // Persist on change (in case of manual toggles)
   useEffect(() => {
-    if (!selectedSeat || !lobbyId) return;
-    const key = `bingoCard_lobby_${lobbyId}_seat_${selectedSeat}`;
-    try { localStorage.setItem(key, JSON.stringify(bingoCard)); } catch {}
-  }, [bingoCard, selectedSeat, lobbyId]);
+    if (selectedSeats.length === 0 || !lobbyId) return;
+    selectedSeats.forEach(seatNum => {
+      const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
+      try { localStorage.setItem(key, JSON.stringify(bingoCard)); } catch {}
+    });
+  }, [bingoCard, selectedSeats.join(','), lobbyId]);
 
   // Auto-mark numbers when calledNumbers prop changes
   useEffect(() => {
@@ -117,14 +104,17 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
       row.map(cell => ({ ...cell, isMarked: calledNumbers.includes(cell.value) }))
     ));
 
-    // Winner detection for selected seat (simple line across BINGO)
-    if (selectedSeat && !winnerFiredRef.current) {
-      const rowIdx = selectedSeat - 1;
-      const row = bingoCard[rowIdx];
-      if (row && row.every(c => calledNumbers.includes(c.value))) {
-        winnerFiredRef.current = true;
-        const rowNumbers = row.map(c => c.value);
-        onWin?.('line', rowNumbers);
+    // Winner detection for any selected seat (simple line across BINGO)
+    if (selectedSeats.length > 0 && !winnerFiredRef.current) {
+      for (const seatNumber of selectedSeats) {
+        const rowIdx = seatNumber - 1;
+        const row = bingoCard[rowIdx];
+        if (row && row.every(c => calledNumbers.includes(c.value))) {
+          winnerFiredRef.current = true;
+          const rowNumbers = row.map(c => c.value);
+          onWin?.('line', rowNumbers);
+          break; // Only trigger once
+        }
       }
     }
   }, [calledNumbers]);
@@ -184,7 +174,7 @@ export function BingoCard({ onSeatSelect, selectedSeat, participants, isJoining,
             const seatNumber = rowIndex + 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
             const isOccupied = !!participant;
-            const isSelected = selectedSeat === seatNumber;
+            const isSelected = selectedSeats.includes(seatNumber);
 
             return (
               <React.Fragment key={rowIndex}>

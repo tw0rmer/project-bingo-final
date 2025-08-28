@@ -9,7 +9,7 @@ export interface BingoNumber {
 
 interface CompactMobileBingoProps {
   onSeatSelect: (seatNumber: number) => void;
-  selectedSeat?: number;
+  selectedSeats?: number[];
   participants: any[];
   isJoining: boolean;
   gamePhase?: 'lobby' | 'playing' | 'finished';
@@ -55,7 +55,7 @@ const generateNewBingoCard = (): BingoNumber[][] => {
 
 export function CompactMobileBingo({
   onSeatSelect,
-  selectedSeat,
+  selectedSeats = [],
   participants,
   isJoining,
   gamePhase = 'lobby',
@@ -69,20 +69,12 @@ export function CompactMobileBingo({
   serverCardsBySeat
 }: CompactMobileBingoProps) {
   const [bingoCard, setBingoCard] = useState<BingoNumber[][]>(() => generateNewBingoCard());
-  const [currentPage, setCurrentPage] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const winnerFiredRef = useRef(false);
-  
-  // Calculate pagination
-  const SEATS_PER_PAGE = 5; // Show 5 seats at a time on mobile
-  const totalPages = Math.ceil(15 / SEATS_PER_PAGE);
-  const startSeat = currentPage * SEATS_PER_PAGE;
-  const endSeat = Math.min(startSeat + SEATS_PER_PAGE, 15);
 
-  // Restore persisted card
+  // Restore persisted card for all seats
   useEffect(() => {
-    if (!selectedSeat || !lobbyId) return;
-    const key = `bingoCard_lobby_${lobbyId}_seat_${selectedSeat}`;
+    if (!lobbyId) return;
     
     if (serverCardsBySeat && Object.keys(serverCardsBySeat).length === 15) {
       const full = Array.from({ length: 15 }, (_, idx) => {
@@ -91,36 +83,22 @@ export function CompactMobileBingo({
         return row.length === 5 ? row.map(v => ({ value: v, isMarked: false })) : generateNewBingoCard()[idx];
       });
       setBingoCard(full);
-      try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
-      return;
-    }
-    
-    if (serverRow && serverRow.length === 5) {
-      setBingoCard(prev => {
-        const base = prev.length ? prev : generateNewBingoCard();
-        const updated = base.map((r, idx) =>
-          idx === selectedSeat - 1 ? serverRow.map(v => ({ value: v, isMarked: false })) : r
-        );
-        try { localStorage.setItem(key, JSON.stringify(updated)); } catch {}
-        return updated;
+      // Store for each selected seat
+      selectedSeats.forEach(seatNum => {
+        const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
+        try { localStorage.setItem(key, JSON.stringify(full)); } catch {}
       });
       return;
     }
     
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        const parsed: BingoNumber[][] = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === 15) {
-          setBingoCard(parsed);
-        }
-      } catch {}
-    } else {
-      const fresh = generateNewBingoCard();
-      setBingoCard(fresh);
+    // Load existing card or generate new one
+    const fresh = generateNewBingoCard();
+    setBingoCard(fresh);
+    selectedSeats.forEach(seatNum => {
+      const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
       localStorage.setItem(key, JSON.stringify(fresh));
-    }
-  }, [selectedSeat, lobbyId, serverRow?.join(','), serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
+    });
+  }, [selectedSeats.join(','), lobbyId, serverCardsBySeat ? JSON.stringify(serverCardsBySeat) : undefined]);
 
   // Auto-mark numbers
   useEffect(() => {
@@ -140,19 +118,23 @@ export function CompactMobileBingo({
     });
   }, [calledNumbers]);
 
-  // Check for win
+  // Check for win on any selected seat
   useEffect(() => {
-    if (gamePhase !== 'playing' || !selectedSeat || winnerFiredRef.current) return;
-    const myRow = bingoCard[selectedSeat - 1];
-    if (!myRow) return;
+    if (gamePhase !== 'playing' || selectedSeats.length === 0 || winnerFiredRef.current) return;
     
-    const allMarked = myRow.every(cell => cell.isMarked);
-    if (allMarked && !winnerFiredRef.current) {
-      winnerFiredRef.current = true;
-      const rowNumbers = myRow.map(cell => cell.value);
-      onWin('bingo', rowNumbers);
+    for (const seatNumber of selectedSeats) {
+      const myRow = bingoCard[seatNumber - 1];
+      if (!myRow) continue;
+      
+      const allMarked = myRow.every(cell => cell.isMarked);
+      if (allMarked && !winnerFiredRef.current) {
+        winnerFiredRef.current = true;
+        const rowNumbers = myRow.map(cell => cell.value);
+        onWin('bingo', rowNumbers);
+        break; // Only trigger once
+      }
     }
-  }, [bingoCard, selectedSeat, gamePhase, onWin]);
+  }, [bingoCard, selectedSeats.join(','), gamePhase, onWin]);
 
   const handleNumberClick = (rowIndex: number, colIndex: number) => {
     if (gamePhase !== 'playing') return;
@@ -167,125 +149,73 @@ export function CompactMobileBingo({
     });
   };
 
-  const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(0, prev - 1));
+  // Helper function to check if a seat is occupied by another user
+  const isSeatOccupiedByOther = (seatNumber: number) => {
+    const participant = participants.find(p => p.seatNumber === seatNumber);
+    return participant && participant.userId !== myUserId;
   };
-
-  const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
-  };
-
-  // Auto-scroll to selected seat's page
-  useEffect(() => {
-    if (selectedSeat) {
-      const targetPage = Math.floor((selectedSeat - 1) / SEATS_PER_PAGE);
-      setCurrentPage(targetPage);
-    }
-  }, [selectedSeat]);
 
   return (
     <div className="w-full h-full flex flex-col bg-white p-2">
-      {/* Navigation Header */}
-      <div className="flex-shrink-0 flex items-center justify-between mb-2 bg-gray-50 rounded-lg p-2">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 0}
-          className={cn(
-            "p-1 rounded-lg transition-colors",
-            currentPage === 0 
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed" 
-              : "bg-blue-500 text-white hover:bg-blue-600 active:scale-95"
-          )}
-          data-testid="button-prev-page"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        
-        <div className="text-center">
-          <div className="text-sm font-bold text-gray-900">
-            Seats {startSeat + 1} - {endSeat}
+      {/* Header */}
+      <div className="flex-shrink-0 text-center mb-2 bg-gray-50 rounded-lg p-2">
+        <div className="text-sm font-bold text-gray-900">All 15 Seats</div>
+        <div className="text-xs text-gray-600">Select up to 2 seats to play</div>
+        {selectedSeats.length > 0 && (
+          <div className="text-xs text-blue-600 font-medium mt-1">
+            Selected: {selectedSeats.join(', ')} ({selectedSeats.length}/2)
           </div>
-          <div className="text-xs text-gray-600">
-            Page {currentPage + 1} of {totalPages}
-          </div>
-        </div>
-        
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages - 1}
-          className={cn(
-            "p-1 rounded-lg transition-colors",
-            currentPage === totalPages - 1 
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed" 
-              : "bg-blue-500 text-white hover:bg-blue-600 active:scale-95"
-          )}
-          data-testid="button-next-page"
-        >
-          <ChevronRight size={20} />
-        </button>
+        )}
       </div>
 
-      {/* Page Indicators */}
-      <div className="flex-shrink-0 flex justify-center gap-1 mb-2">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(i)}
-            className={cn(
-              "w-2 h-2 rounded-full transition-all",
-              i === currentPage 
-                ? "bg-blue-600 w-6" 
-                : "bg-gray-300 hover:bg-gray-400"
-            )}
-            data-testid={`button-page-${i}`}
-          />
-        ))}
-      </div>
-
-      {/* Bingo Grid */}
+      {/* Scrollable Bingo Grid */}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
-        <div className="grid grid-cols-6 gap-1 h-full">
-          {/* Headers */}
-          <div className="bg-indigo-600 text-white font-bold text-center rounded flex items-center justify-center text-xs">
-            Seat
-          </div>
-          {['B', 'I', 'N', 'G', 'O'].map((letter) => (
-            <div 
-              key={letter} 
-              className="bg-blue-600 text-white font-bold text-center rounded flex items-center justify-center text-xs"
-            >
-              {letter}
+        <div className="space-y-1">
+          {/* Sticky Header Row */}
+          <div className="sticky top-0 bg-white z-10 grid grid-cols-6 gap-1 pb-1">
+            <div className="bg-indigo-600 text-white font-bold text-center rounded flex items-center justify-center text-xs h-8">
+              Seat
             </div>
-          ))}
+            {['B', 'I', 'N', 'G', 'O'].map((letter) => (
+              <div 
+                key={letter} 
+                className="bg-blue-600 text-white font-bold text-center rounded flex items-center justify-center text-xs h-8"
+              >
+                {letter}
+              </div>
+            ))}
+          </div>
 
-          {/* Visible Rows */}
-          {Array.from({ length: endSeat - startSeat }, (_, offset) => {
-            const rowIndex = startSeat + offset;
-            const seatNumber = rowIndex + 1;
+          {/* All 15 Seat Rows */}
+          {Array.from({ length: 15 }, (_, i) => i + 1).map((seatNumber) => {
+            const rowIndex = seatNumber - 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
-            const isOccupied = !!participant;
-            const isSelected = selectedSeat === seatNumber;
+            const isOccupiedByOther = participant && participant.userId !== myUserId;
+            const isMySelection = selectedSeats.includes(seatNumber);
+            const canSelect = !isOccupiedByOther && !isJoining && selectedSeats.length < 2;
+            const canDeselect = isMySelection && !isJoining;
 
             return (
-              <React.Fragment key={rowIndex}>
+              <div key={seatNumber} className="grid grid-cols-6 gap-1">
                 {/* Seat Cell */}
                 <button
-                  onClick={() => !isOccupied && !isJoining && onSeatSelect(seatNumber)}
-                  disabled={isOccupied || isJoining}
+                  onClick={() => (canSelect || canDeselect) && onSeatSelect(seatNumber)}
+                  disabled={isOccupiedByOther || (isJoining && !isMySelection) || (!canSelect && !canDeselect)}
                   className={cn(
-                    "rounded p-1 font-medium text-xs transition-all touch-manipulation",
+                    "rounded p-1 font-medium text-xs transition-all touch-manipulation h-12",
                     "focus:outline-none focus:ring-2 focus:ring-blue-500",
                     "active:scale-95",
-                    isSelected && "bg-emerald-600 text-white ring-2 ring-emerald-400",
-                    isOccupied && !isSelected && "bg-red-600 text-white cursor-not-allowed",
-                    !isSelected && !isOccupied && "bg-gray-100 text-gray-900 hover:bg-blue-100",
+                    isMySelection && "bg-emerald-600 text-white ring-2 ring-emerald-400",
+                    isOccupiedByOther && "bg-red-600 text-white cursor-not-allowed",
+                    !isMySelection && !isOccupiedByOther && canSelect && "bg-gray-100 text-gray-900 hover:bg-blue-100",
+                    !isMySelection && !isOccupiedByOther && !canSelect && "bg-gray-200 text-gray-500 cursor-not-allowed",
                     winnerSeatNumber === seatNumber && "animate-pulse ring-2 ring-yellow-400"
                   )}
                   data-testid={`button-seat-${seatNumber}`}
                 >
                   <div className="font-bold">#{seatNumber}</div>
                   <div className="text-[10px] truncate">
-                    {isOccupied ? participant?.user?.email?.split('@')[0] : 'Open'}
+                    {participant ? participant?.user?.email?.split('@')[0] : 'Open'}
                   </div>
                 </button>
 
@@ -296,8 +226,9 @@ export function CompactMobileBingo({
                     onClick={() => handleNumberClick(rowIndex, colIndex)}
                     disabled={gamePhase !== 'playing'}
                     className={cn(
-                      "rounded font-bold text-sm transition-all touch-manipulation",
+                      "rounded font-bold text-sm transition-all touch-manipulation h-12",
                       "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      "flex items-center justify-center",
                       gamePhase === 'playing' && "cursor-pointer active:scale-95",
                       gamePhase !== 'playing' && "cursor-default",
                       number.isMarked 
@@ -310,29 +241,11 @@ export function CompactMobileBingo({
                     {number.value}
                   </button>
                 ))}
-              </React.Fragment>
+              </div>
             );
           })}
         </div>
       </div>
-
-      {/* Quick Jump to Selected Seat */}
-      {selectedSeat && (
-        <div className="flex-shrink-0 mt-2 bg-green-50 border border-green-300 rounded-lg p-2">
-          <div className="text-xs text-green-800 text-center">
-            Your seat: #{selectedSeat}
-            {Math.floor((selectedSeat - 1) / SEATS_PER_PAGE) !== currentPage && (
-              <button
-                onClick={() => setCurrentPage(Math.floor((selectedSeat - 1) / SEATS_PER_PAGE))}
-                className="ml-2 text-green-600 underline font-medium"
-                data-testid="button-jump-to-seat"
-              >
-                Jump to seat
-              </button>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

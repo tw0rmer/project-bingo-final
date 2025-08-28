@@ -304,30 +304,53 @@ const LobbyPage: React.FC = () => {
     }
   };
 
-  const handleJoinLobby = async (seatNumber: number) => {
+  const handleSeatSelection = async (seatNumber: number) => {
     if (!user || joining) return;
+
+    const userParticipations = participants.filter(p => p.userId === user.id);
+    const isAlreadySelected = userParticipations.some(p => p.seatNumber === seatNumber);
 
     try {
       setJoining(true);
       setError('');
 
       const token = localStorage.getItem('token');
-      await apiRequest(`/lobbies/${lobbyId}/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ seatNumber })
-      });
 
-      console.log('[LOBBY PAGE] Successfully joined lobby at seat', seatNumber);
+      if (isAlreadySelected) {
+        // Leave this specific seat
+        await apiRequest(`/lobbies/${lobbyId}/leave`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ seatNumber })
+        });
+        console.log('[LOBBY PAGE] Successfully left seat', seatNumber);
+      } else {
+        // Check if user can select more seats (max 2)
+        if (userParticipations.length >= 2) {
+          setError('You can only select up to 2 seats');
+          return;
+        }
+
+        // Join this seat
+        await apiRequest(`/lobbies/${lobbyId}/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ seatNumber })
+        });
+        console.log('[LOBBY PAGE] Successfully joined lobby at seat', seatNumber);
+      }
 
       // Real-time updates will handle the UI refresh via Socket.io events
       
     } catch (err: any) {
-      console.error('[LOBBY PAGE] Error joining lobby:', err);
-      setError(err.message || 'Failed to join lobby');
+      console.error('[LOBBY PAGE] Error with seat selection:', err);
+      setError(err.message || 'Failed to update seat selection');
     } finally {
       setJoining(false);
     }
@@ -400,29 +423,30 @@ const LobbyPage: React.FC = () => {
                   <BingoCard
             onSeatSelect={(seatNumber) => {
               if (gamePhase === 'lobby' && !joining) {
-                handleJoinLobby(seatNumber);
+                handleSeatSelection(seatNumber);
               }
             }}
-            selectedSeat={currentUserParticipation?.seatNumber}
+            selectedSeats={selectedSeats}
             participants={participants}
             isJoining={joining}
             gamePhase={gamePhase}
             calledNumbers={calledNumbers}
             onWin={(pattern, rowNumbers) => {
-              if (!currentUserParticipation) return;
+              if (selectedSeats.length === 0) return;
               const token = localStorage.getItem('token');
+              // For now, use the first selected seat for win claims
+              const primarySeat = selectedSeats[0];
               apiRequest(`/games/${lobby.id}/claim`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ userId: user!.id, seatNumber: currentUserParticipation.seatNumber, numbers: rowNumbers }),
+                body: JSON.stringify({ userId: user!.id, seatNumber: primarySeat, numbers: rowNumbers }),
               }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
             }}
             winnerSeatNumber={winner?.seatNumber}
             winnerUserId={winner?.userId}
             myUserId={user?.id}
             lobbyId={lobby.id}
-            // When a server card exists for this seat, provide it so the client-card matches
-            serverRow={currentUserParticipation ? serverCardsBySeat[currentUserParticipation.seatNumber] : undefined}
+            // When server cards exist for selected seats, provide them
             serverCardsBySeat={serverCardsBySeat}
           />
       </div>
@@ -469,7 +493,8 @@ const LobbyPage: React.FC = () => {
     );
   }
 
-  const currentUserParticipation = participants.find(p => p.userId === user.id);
+  const currentUserParticipations = participants.filter(p => p.userId === user.id);
+  const selectedSeats = currentUserParticipations.map(p => p.seatNumber);
   const canAffordEntry = getBalanceAsNumber(user.balance) >= parseFloat(lobby.entryFee);
   
   // Debug function to fix seat count
@@ -552,10 +577,10 @@ const LobbyPage: React.FC = () => {
                     }
                   })();
                   if (currentGamePhase === 'lobby' && !joining) {
-                    handleJoinLobby(seatNumber);
+                    handleSeatSelection(seatNumber);
                   }
                 }}
-                selectedSeat={currentUserParticipation?.seatNumber}
+                selectedSeats={selectedSeats}
                 participants={participants}
                 isJoining={joining}
                 gamePhase={(() => {
@@ -569,23 +594,24 @@ const LobbyPage: React.FC = () => {
                 })()}
                 calledNumbers={calledNumbers}
                 onWin={(pattern, rowNumbers) => {
-                  if (!currentUserParticipation) return;
+                  if (selectedSeats.length === 0) return;
                   const token = localStorage.getItem('token');
+                  // For now, use the first selected seat for win claims
+                  const primarySeat = selectedSeats[0];
                   apiRequest(`/games/${lobby.id}/claim`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ userId: user!.id, seatNumber: currentUserParticipation.seatNumber, numbers: rowNumbers }),
+                    body: JSON.stringify({ userId: user!.id, seatNumber: primarySeat, numbers: rowNumbers }),
                   }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
                 }}
                 winnerSeatNumber={winner?.seatNumber}
                 winnerUserId={winner?.userId}
                 myUserId={user?.id}
                 lobbyId={lobby.id}
-                serverRow={currentUserParticipation ? serverCardsBySeat[currentUserParticipation.seatNumber] : undefined}
                 serverCardsBySeat={serverCardsBySeat}
                 lobby={lobby}
                 user={user}
-                currentUserParticipation={currentUserParticipation}
+                currentUserParticipation={currentUserParticipations[0]} // Use first participation for compatibility
                 canAffordEntry={canAffordEntry}
                 isConnected={isConnected}
                 isPaused={isPaused}
