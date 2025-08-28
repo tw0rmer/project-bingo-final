@@ -8,6 +8,66 @@ It is optional, but recommended to be updated as the project evolves.
 2025-07-30 22:19:00 - Added robust error handling patterns for lobby operations
 2025-08-28 06:25:00 - Added real-time Socket.IO patterns and GameEngine architecture
 
+## Critical Bug Fix Patterns - 2025-08-28 (11:15 PM) 🔧
+
+### **Emergency Production Fix Pattern**
+
+1. **API Endpoint Mismatch Resolution**:
+   ```typescript
+   // PROBLEM PATTERN (Client-Server Endpoint Mismatch):
+   // Client: `/api/games/${gameId}/set-interval`
+   // Server: `/api/admin/games/${gameId}/set-interval`
+   
+   // SOLUTION PATTERN:
+   // Always verify endpoint consistency between client and server
+   const response = await fetch(`/api/admin/games/${gameId}/set-interval`, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ interval: newInterval })
+   });
+   ```
+
+2. **Missing Socket Event Handler Pattern**:
+   ```typescript
+   // SOLUTION PATTERN: Complete Event Lifecycle Management
+   useEffect(() => {
+     const handleGameReset = (data: any) => {
+       console.log('[LOBBY PAGE] Game reset event received:', data);
+       if (data.lobbyId === lobby?.id) {
+         // Reset all game-related state
+         setSelectedGame(null);
+         setShowGame(false);
+         refetchGames();
+       }
+     };
+
+     socket.on('game_reset', handleGameReset);
+     return () => socket.off('game_reset', handleGameReset);
+   }, [socket, lobby?.id]);
+   ```
+
+3. **API Fallback Logic Pattern**:
+   ```typescript
+   // PROBLEM PATTERN: Wrong fallback behavior
+   // Old: setShowPatternPopup(true) when API fails
+   
+   // SOLUTION PATTERN: Fail-safe fallback
+   useEffect(() => {
+     fetchPreferences()
+       .then(preferences => setShowPatternPopup(preferences.showPopup))
+       .catch(() => setShowPatternPopup(false)); // ✅ Fail to safe state
+   }, []);
+   ```
+
+### **Socket Verification Pattern**:
+```typescript
+// VERIFICATION PATTERN: Confirm socket events are working
+// Look for these log patterns in production:
+// ✅ "[SOCKET] Emitted seat_taken to lobby room: lobby_1"
+// ✅ "[LOBBY PAGE] Seat taken event received: {...}"
+// ✅ "[SEAT GRID] Rendering seats with participants: [...]"
+```
+
 ## Real-Time Game Engine Patterns - 2025-08-28
 
 ### **Socket.IO Real-Time Communication Pattern**

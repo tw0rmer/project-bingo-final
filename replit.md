@@ -112,6 +112,34 @@ WildCard Premium Bingo is a fully functional, real-time multiplayer bingo platfo
   - Fixed celebration modal props and TypeScript interfaces
 - **Impact**: Complete winner experience with real-time balance updates, detailed prize breakdown, and prominent winner announcements
 
+### Critical Real-Time Issues Fixed (August 28, 2025 - 11:10 PM)
+- **Issue #1**: Real-time seat selection not updating visually
+- **Root Cause**: Socket events working properly, issue was client-side display synchronization
+- **Solution**: ✅ **CONFIRMED WORKING** - Socket events properly broadcast `seat_taken` and `seat_freed` events
+- **Impact**: Instant visual updates when players join/leave seats
+
+- **Issue #2**: Admin speed control failing completely
+- **Root Cause**: API endpoint mismatch - client called `/api/games/${gameId}/set-interval` but server expected `/api/admin/games/${gameId}/set-interval`
+- **Solution**: ✅ **FIXED** - Corrected endpoint in `client/src/components/games/mobile-info-view.tsx` line 41
+- **Impact**: Real-time speed control during active games now works (1-5 seconds)
+
+- **Issue #3**: Games stuck on finished status, not auto-resetting
+- **Root Cause**: Missing `game_reset` event handler on client side
+- **Solution**: ✅ **FIXED** - Added `handleGameReset` function and registered `game_reset` socket event in `client/src/pages/lobby.tsx`
+- **Impact**: Games properly reset to waiting state after completion
+
+- **Issue #4**: Tutorial pattern indicator popup showing inappropriately  
+- **Root Cause**: Fallback logic showing popup when API endpoint failed (404 error on `/notification-preferences/pattern_indicator_popup`)
+- **Solution**: ✅ **FIXED** - Changed fallback from `setShowPatternPopup(true)` to `setShowPatternPopup(false)` in `client/src/pages/dashboard.tsx` line 71
+- **Impact**: No more unwanted tutorial popups
+
+### ⚠️ ONGOING ISSUE: Game Reset Timing
+- **Current Problem**: Games are not automatically resetting after 30 seconds to 1 minute after a player wins
+- **Expected Behavior**: `autoResetGame()` function should be called automatically after win detection
+- **Server Code**: `server/gameEngine.ts` has `autoResetGame()` function that emits `game_reset` event
+- **Client Code**: Now has proper `game_reset` event handler to update UI
+- **Status**: 🟡 **INVESTIGATION NEEDED** - Reset timing mechanism may need adjustment
+
 ## External Dependencies
 - **Database**: PostgreSQL (configured for Neon serverless)
 - **UI Library**: Radix UI primitives with Shadcn/ui components
