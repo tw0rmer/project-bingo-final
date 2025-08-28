@@ -735,4 +735,83 @@ router.delete('/admin/:id', async (req, res) => {
   }
 });
 
+// Get bingo card for specific seat in lobby
+router.get('/:id/card/:seatNumber', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const lobbyId = parseInt(req.params.id);
+    const seatNumber = parseInt(req.params.seatNumber);
+    
+    if (isNaN(lobbyId) || isNaN(seatNumber)) {
+      return res.status(400).json({ message: 'Invalid lobby ID or seat number' });
+    }
+
+    if (seatNumber < 1 || seatNumber > 15) {
+      return res.status(400).json({ message: 'Seat number must be between 1 and 15' });
+    }
+
+    // Check if user has this seat
+    const participants = await db.select().from(lobbyParticipants).where(
+      and(
+        eq(lobbyParticipants.lobbyId, lobbyId),
+        eq(lobbyParticipants.userId, req.user!.id),
+        eq(lobbyParticipants.seatNumber, seatNumber)
+      )
+    );
+
+    if (participants.length === 0) {
+      return res.status(403).json({ message: 'You do not have this seat' });
+    }
+
+    // Generate deterministic card for this lobby and seat
+    const card = generateLobbyCard(lobbyId, seatNumber);
+    
+    res.json({
+      lobbyId,
+      seatNumber,
+      userId: req.user!.id,
+      card,
+      message: 'Bingo card generated successfully'
+    });
+  } catch (error) {
+    console.error('Get bingo card error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Helper function to generate deterministic lobby cards
+function generateLobbyCard(lobbyId: number, seatNumber: number): number[] {
+  // Use same seeded RNG logic as gameEngine
+  function makeSeededRng(seed: number) {
+    let state = seed >>> 0;
+    return () => {
+      state = (1664525 * state + 1013904223) >>> 0;
+      return state / 0xffffffff;
+    };
+  }
+
+  function seededShuffle<T>(arr: T[], rand: () => number): T[] {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const rand = makeSeededRng(lobbyId * 2654435761);
+  const bColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 1 + i), rand);
+  const iColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 16 + i), rand);
+  const nColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 31 + i), rand);
+  const gColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 46 + i), rand);
+  const oColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 61 + i), rand);
+
+  // Return the card for the specific seat (1-indexed, so subtract 1)
+  const seatIndex = seatNumber - 1;
+  if (seatIndex >= 0 && seatIndex < 15) {
+    return [bColumn[seatIndex], iColumn[seatIndex], nColumn[seatIndex], gColumn[seatIndex], oColumn[seatIndex]];
+  } else {
+    throw new Error(`Invalid seat number: ${seatNumber}`);
+  }
+}
+
 export default router;
