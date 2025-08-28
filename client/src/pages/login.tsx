@@ -48,7 +48,7 @@ export default function LoginPage() {
         };
       }
       
-      console.log('[LOGIN] Attempting login for:', email);
+      console.log('[LOGIN] Attempting login for:', identifier);
       const data = await apiRequest<LoginResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ identifier, password }),
@@ -183,7 +183,7 @@ export default function LoginPage() {
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-1">
               Email or Username
             </label>
             <input
@@ -198,7 +198,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <input

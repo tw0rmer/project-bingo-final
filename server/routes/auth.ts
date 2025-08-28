@@ -84,7 +84,7 @@ router.post('/register', async (req, res) => {
 // Login endpoint
 router.post('/login', async (req, res) => {
   try {
-    console.log('[AUTH] Login attempt:', { email: req.body?.email });
+    console.log('[AUTH] Login attempt:', { identifier: req.body?.identifier || req.body?.email || req.body?.username });
     const { identifier, email, username, password } = req.body;
 
     const idf = identifier || email || username;
@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
     console.log('[AUTH] Available users:', allUsers.map(u => ({ id: u.id, email: u.email, isAdmin: u.isAdmin })));
     const user = allUsers.find((u: any) => u.email === idf || (u.username && u.username.toLowerCase() === String(idf).toLowerCase()));
     if (!user) {
-      console.log('[AUTH] User not found for email:', email);
+      console.log('[AUTH] User not found for identifier:', idf);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -110,12 +110,12 @@ router.post('/login', async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     console.log('[AUTH] Password valid:', isValidPassword);
     if (!isValidPassword) {
-      console.log('[AUTH] Invalid password for user:', email);
+      console.log('[AUTH] Invalid password for user:', user.email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const token = generateToken(user.id, user.email);
-    console.log('[AUTH] Login successful for:', email);
+    console.log('[AUTH] Login successful for:', user.email);
 
     res.json({
       message: 'Login successful',
