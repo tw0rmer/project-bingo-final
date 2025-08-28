@@ -234,6 +234,22 @@
     animation: tutorial-float 3s ease-in-out infinite;
   }
   
+  /* Enhanced winner glow animation */
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px #facc15, 0 0 40px #facc15, 0 0 60px #facc15;
+      transform: scale(1.05);
+    }
+    50% {
+      box-shadow: 0 0 25px #fbbf24, 0 0 50px #fbbf24, 0 0 80px #fbbf24;
+      transform: scale(1.08);
+    }
+  }
+  
+  .animate-glow {
+    animation: glow 1.5s ease-in-out infinite;
+  }
+  
   /* Glassmorphism effects */
   .backdrop-blur-xs {
     backdrop-filter: blur(2px);

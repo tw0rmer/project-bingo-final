@@ -14,6 +14,7 @@ import { EmojiReactions } from '../components/games/EmojiReactions';
 import { PatternIndicator } from '../components/games/PatternIndicator';
 import { detectRowPatternProgress } from '../utils/patternDetection';
 import { GameCardSkeleton } from '../components/GameCardSkeleton';
+import { useToast } from '../hooks/use-toast';
 
 interface Game {
   id: number;
@@ -62,6 +63,7 @@ export default function GamePage() {
   const { user } = useAuth();
   const { socket, isConnected } = useSocket();
   const isMobile = useIsMobile(1024);
+  const { toast } = useToast();
   
   const [game, setGame] = useState<Game | null>(null);
   const [lobby, setLobby] = useState<Lobby | null>(null);
@@ -191,12 +193,31 @@ export default function GamePage() {
           const participantCount = participants.length;
           const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
           
+          console.log('[CELEBRATION] Triggering winner celebration:', {
+            prizeAmount: totalPrize,
+            winningSeats: data.userSeats || selectedSeats,
+            winningRow: data.winningNumbers || []
+          });
+          
           setCelebrationData({
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
             winningRow: data.winningNumbers || []
           });
           setShowCelebration(true);
+          
+          // Auto-close celebration after 30 seconds
+          setTimeout(() => {
+            setShowCelebration(false);
+          }, 30000);
+        } else {
+          // If someone else won, show a toast message
+          toast({
+            title: "Game Over! 🎉",
+            description: `Seat ${data.winningSeat || data.seatNumber} won the game!`,
+            duration: 5000,
+          });
+          setToastMsg(`🎉 Game won by seat ${data.winningSeat || data.seatNumber}!`);
         }
       }
     };

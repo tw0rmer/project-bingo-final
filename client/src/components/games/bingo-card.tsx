@@ -228,10 +228,14 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                       "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
                       gamePhase === 'playing' && "cursor-pointer active:scale-95 transition-transform duration-100",
                       gamePhase !== 'playing' && "cursor-default opacity-90",
-                      number.isMarked ? "bg-blue-600 text-white font-bold" : "bg-gray-100 text-gray-900",
-                      winnerSeatNumber === seatNumber && (winnerUserId && myUserId && winnerUserId === myUserId
-                        ? "ring-2 ring-yellow-400 shadow-[0_0_10px_#facc15] bg-yellow-300 text-black animate-pulse"
-                        : "ring-2 ring-red-500 shadow-[0_0_10px_#ef4444] bg-red-600 text-white animate-pulse")
+                        // Winner row - all cells get full golden treatment
+                      winnerSeatNumber === seatNumber && winnerUserId && myUserId && winnerUserId === myUserId
+                        ? "!bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 text-black font-extrabold shadow-[0_0_20px_#facc15] ring-4 ring-yellow-400 animate-glow scale-105 z-10"
+                        : winnerSeatNumber === seatNumber
+                        ? "!bg-gradient-to-br from-red-400 via-red-500 to-red-600 text-white font-bold shadow-[0_0_15px_#ef4444] ring-2 ring-red-400 animate-pulse"
+                        : number.isMarked 
+                        ? "bg-blue-600 text-white font-bold" 
+                        : "bg-gray-100 text-gray-900"
                     )}
                   >
                     {number.value}
