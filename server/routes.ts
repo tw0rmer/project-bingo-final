@@ -112,16 +112,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.user.id);
       const notificationType = req.params.type;
       
-      const preference = await storage.getUserNotificationPreference(userId, notificationType);
+      // Import database functions
+      const { userNotificationPrefs } = await import("../shared/schema");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      
+      const [preference] = await db.select().from(userNotificationPrefs).where(eq(userNotificationPrefs.userId, userId));
       
       if (!preference) {
         // Default to showing popup if no preference exists
         return res.json({ shouldShow: true, isDismissed: false });
       }
       
+      // Check if 24 hours have passed since dismissal
+      const dismissedAt = new Date(preference.dismissedAt);
+      const now = new Date();
+      const hoursDiff = (now.getTime() - dismissedAt.getTime()) / (1000 * 60 * 60);
+      
+      const shouldShow = hoursDiff >= 24; // Show again after 24 hours
+      
       res.json({ 
-        shouldShow: !preference.isDismissed, 
-        isDismissed: preference.isDismissed,
+        shouldShow: shouldShow, 
+        isDismissed: !shouldShow,
         dismissedAt: preference.dismissedAt 
       });
     } catch (error) {
@@ -139,10 +151,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.user.id);
       const notificationType = req.params.type;
       
-      await storage.updateUserNotificationPreference(userId, notificationType, {
-        isDismissed: true,
-        dismissedAt: new Date()
-      });
+      // Import database functions
+      const { userNotificationPrefs } = await import("../shared/schema");
+      const { db } = await import("./db");
+      const { eq } = await import("drizzle-orm");
+      
+      // Try to update existing record or create new one
+      const [existing] = await db.select().from(userNotificationPrefs).where(eq(userNotificationPrefs.userId, userId));
+      
+      if (existing) {
+        // Update existing record
+        await db.update(userNotificationPrefs)
+          .set({ dismissedAt: new Date().toISOString() })
+          .where(eq(userNotificationPrefs.userId, userId));
+      } else {
+        // Create new record
+        await db.insert(userNotificationPrefs).values({
+          userId,
+          notificationType: notificationType,
+          dismissedAt: new Date().toISOString()
+        });
+      }
       
       res.json({ message: "Notification preference updated" });
     } catch (error) {
