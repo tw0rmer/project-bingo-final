@@ -4,7 +4,7 @@ import { apiRequest } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, DollarSign, Trophy, Play } from 'lucide-react';
+import { Users, DollarSign, Trophy, Play, Gamepad2 } from 'lucide-react';
 
 interface Lobby {
   id: number;
@@ -14,7 +14,7 @@ interface Lobby {
   maxGames: number;
   status: 'active' | 'inactive';
   gamesCount: number;
-  totalPlayers: number;
+  // Removed totalPlayers as lobbies are containers, not game instances
 }
 
 interface Game {
@@ -218,8 +218,8 @@ export function LobbyList() {
                 </div>
                 
                 <div className="flex items-center justify-center text-gray-600">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="text-sm">{lobby.totalPlayers || 0} players online</span>
+                  <Gamepad2 className="w-4 h-4 mr-2" />
+                  <span className="text-sm">{lobby.gamesCount || 0} active games</span>
                 </div>
 
                 <Button className="w-full" data-testid={`button-enter-lobby-${lobby.id}`}>

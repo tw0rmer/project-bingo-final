@@ -15,11 +15,17 @@ router.get('/', async (req, res) => {
     const allLobbies = await db.select().from(lobbies);
     
     // Add computed fields for lobby list compatibility
-    const lobbiesWithStats = allLobbies.map((lobby: any) => ({
-      ...lobby,
-      maxGames: lobby.maxGames || 4,
-      gamesCount: 0, // TODO: Count actual games when schema is migrated
-      totalPlayers: 0 // TODO: Count actual players when schema is migrated
+    const lobbiesWithStats = await Promise.all(allLobbies.map(async (lobby: any) => {
+      // Count actual games in this lobby
+      const allGames = await db.select().from(games);
+      const lobbyGames = allGames.filter((game: any) => game.lobbyId === lobby.id);
+      
+      return {
+        ...lobby,
+        maxGames: lobby.maxGames || 4,
+        gamesCount: lobbyGames.length
+        // Note: Removed totalPlayers as lobbies are containers, not game instances
+      };
     }));
     
     res.json(lobbiesWithStats);

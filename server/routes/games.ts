@@ -296,4 +296,272 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
+// Join a specific game
+router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const gameId = parseInt(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid game ID' });
+    }
+
+    const { seatNumber } = req.body;
+    if (!seatNumber || seatNumber < 1 || seatNumber > 15) {
+      return res.status(400).json({ message: 'Invalid seat number' });
+    }
+
+    // Get the game
+    const allGames = await db.select().from(games);
+    const game = allGames.find((g: any) => g.id === gameId);
+    
+    if (!game) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    // Get the lobby to check entry fee
+    const allLobbies = await db.select().from(lobbies);
+    const lobby = allLobbies.find((l: any) => l.id === game.lobbyId);
+    
+    if (!lobby) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Check if game is accepting players
+    if (game.status !== 'waiting') {
+      return res.status(400).json({ message: 'Game is not accepting new players' });
+    }
+
+    // Check if game is full
+    if (game.seatsTaken >= game.maxSeats) {
+      return res.status(400).json({ message: 'Game is full' });
+    }
+
+    // Check user's current participation in this game
+    const allParticipants = await db.select().from(gameParticipants);
+    const userParticipations = allParticipants.filter((p: any) => 
+      p.gameId === gameId && p.userId === req.user!.id
+    );
+    
+    // Check if user already has this specific seat
+    const alreadyHasSeat = userParticipations.some((p: any) => p.seatNumber === seatNumber);
+    if (alreadyHasSeat) {
+      return res.status(400).json({ message: 'You already have this seat' });
+    }
+    
+    // Check if user already has maximum seats (2)
+    if (userParticipations.length >= 2) {
+      return res.status(400).json({ message: 'You can only select up to 2 seats' });
+    }
+
+    // Check if seat is taken by another user
+    const seatTaken = allParticipants.find((p: any) => 
+      p.gameId === gameId && p.seatNumber === seatNumber && p.userId !== req.user!.id
+    );
+    
+    if (seatTaken) {
+      return res.status(400).json({ message: 'Seat is already taken' });
+    }
+
+    // Get user and check balance
+    const allUsers = await db.select().from(users);
+    const user = allUsers.find((u: any) => u.id === req.user!.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const entryFee = parseFloat(lobby.entryFee);
+    const userBalance = parseFloat(user.balance);
+    
+    if (userBalance < entryFee) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
+
+    // Deduct entry fee from user balance
+    const newBalance = userBalance - entryFee;
+    await db.update(users)
+      .set({ balance: newBalance.toString() })
+      .where(eq(users.id, req.user!.id));
+
+    // Add user to game participants
+    await db.insert(gameParticipants).values({
+      gameId,
+      userId: req.user!.id,
+      seatNumber,
+      card: JSON.stringify([]) // Will be populated when game starts
+    });
+
+    // Update game seats taken
+    const gameParticipants_list = await db.select().from(gameParticipants);
+    const currentGameParticipants = gameParticipants_list.filter((p: any) => p.gameId === gameId);
+    const actualSeatsTaken = currentGameParticipants.length;
+    
+    await db.update(games)
+      .set({ seatsTaken: actualSeatsTaken })
+      .where(eq(games.id, gameId));
+
+    // Create wallet transaction
+    try {
+      await db.insert(walletTransactions).values({
+        userId: req.user!.id,
+        amount: -entryFee,
+        type: 'game_entry',
+        description: `Entry fee for ${game.name}`,
+        status: 'completed'
+      });
+    } catch (transactionError) {
+      console.error('[GAME] Error creating transaction:', transactionError);
+    }
+
+    // Emit real-time events
+    try {
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`game_${gameId}`).emit('seat_taken', {
+          gameId,
+          seatNumber,
+          userId: req.user!.id,
+          userEmail: user.email,
+          newSeatsTaken: actualSeatsTaken
+        });
+      }
+    } catch (socketError) {
+      console.error('[GAME] Socket error:', socketError);
+    }
+
+    res.json({
+      message: 'Successfully joined game',
+      game: { ...game, seatsTaken: actualSeatsTaken },
+      userBalance: newBalance.toString(),
+      seatNumber
+    });
+  } catch (error) {
+    console.error('[GAME] Error joining game:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Leave a specific game
+router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
+  try {
+    const gameId = parseInt(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid game ID' });
+    }
+
+    const { seatNumber } = req.body;
+
+    // Get the game
+    const allGames = await db.select().from(games);
+    const game = allGames.find((g: any) => g.id === gameId);
+    
+    if (!game) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    // Get the lobby to check entry fee for refund
+    const allLobbies = await db.select().from(lobbies);
+    const lobby = allLobbies.find((l: any) => l.id === game.lobbyId);
+    
+    if (!lobby) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Check if game allows leaving (block only while active)
+    if (game.status === 'active') {
+      return res.status(400).json({ message: 'Cannot leave game once it has started' });
+    }
+
+    // Find user's participation(s)
+    const allParticipants = await db.select().from(gameParticipants);
+    const userParticipations = allParticipants.filter((p: any) => 
+      p.gameId === gameId && p.userId === req.user!.id
+    );
+    
+    if (userParticipations.length === 0) {
+      return res.status(400).json({ message: 'You are not in this game' });
+    }
+
+    // Determine which participations to remove
+    let participationsToRemove = userParticipations;
+    if (seatNumber) {
+      // Leave specific seat only
+      participationsToRemove = userParticipations.filter((p: any) => p.seatNumber === seatNumber);
+      if (participationsToRemove.length === 0) {
+        return res.status(400).json({ message: 'You do not have this seat' });
+      }
+    }
+
+    // Refund entry fee for each seat being left
+    const entryFee = parseFloat(lobby.entryFee);
+    const totalRefund = entryFee * participationsToRemove.length;
+    const allUsers = await db.select().from(users);
+    const user = allUsers.find((u: any) => u.id === req.user!.id);
+    
+    if (user) {
+      const currentBalance = parseFloat(user.balance);
+      const newBalance = currentBalance + totalRefund;
+      
+      await db.update(users)
+        .set({ balance: newBalance.toString() })
+        .where(eq(users.id, req.user!.id));
+
+      // Remove participations
+      for (const participation of participationsToRemove) {
+        await db.delete(gameParticipants).where(eq(gameParticipants.id, participation.id));
+      }
+
+      // Update game seats taken
+      const remainingParticipants = await db.select().from(gameParticipants);
+      const currentGameParticipants = remainingParticipants.filter((p: any) => p.gameId === gameId);
+      const actualSeatsTaken = currentGameParticipants.length;
+      
+      await db.update(games)
+        .set({ seatsTaken: actualSeatsTaken })
+        .where(eq(games.id, gameId));
+
+      // Create refund transaction
+      try {
+        await db.insert(walletTransactions).values({
+          userId: req.user!.id,
+          amount: totalRefund,
+          type: 'refund',
+          description: `Refund for leaving ${game.name}`,
+          status: 'completed'
+        });
+      } catch (transactionError) {
+        console.error('[GAME] Error creating refund transaction:', transactionError);
+      }
+
+      // Emit real-time events
+      try {
+        const io = req.app.get('io');
+        if (io) {
+          participationsToRemove.forEach((participation: any) => {
+            io.to(`game_${gameId}`).emit('seat_left', {
+              gameId,
+              seatNumber: participation.seatNumber,
+              userId: req.user!.id,
+              newSeatsTaken: actualSeatsTaken
+            });
+          });
+        }
+      } catch (socketError) {
+        console.error('[GAME] Socket error:', socketError);
+      }
+
+      res.json({
+        message: seatNumber ? 'Successfully left seat' : 'Successfully left game',
+        refundAmount: totalRefund,
+        userBalance: newBalance.toString(),
+        seatsLeft: participationsToRemove.map((p: any) => p.seatNumber)
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('[GAME] Error leaving game:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;

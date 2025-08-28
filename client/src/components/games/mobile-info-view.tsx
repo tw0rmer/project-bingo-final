@@ -33,7 +33,7 @@ export function MobileInfoView({
 
       {/* Info Grid */}
       <div className="flex-1 overflow-y-auto space-y-2">
-        {/* Entry Fee & Players */}
+        {/* Entry Fee & Game Info */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-white rounded-lg border border-gray-200 p-3">
             <div className="flex items-center justify-between mb-1">
@@ -47,13 +47,13 @@ export function MobileInfoView({
           <div className="bg-white rounded-lg border border-gray-200 p-3">
             <div className="flex items-center justify-between mb-1">
               <Users size={14} className="text-blue-600" />
-              <span className="text-xs text-gray-500">Players</span>
+              <span className="text-xs text-gray-500">My Seats</span>
             </div>
             <div className="text-lg font-bold text-gray-900">
-              {lobby.seatsTaken}/{lobby.maxSeats}
+              {currentUserParticipation?.length || 0}/2
             </div>
             <div className="text-[10px] text-gray-500">
-              {lobby.maxSeats - lobby.seatsTaken} available
+              seats selected
             </div>
           </div>
         </div>
@@ -196,8 +196,9 @@ export function MobileInfoView({
             <button
               onClick={onLeaveLobby}
               className="w-full py-3 px-4 rounded-lg font-medium text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700"
+              data-testid="button-mobile-back-lobby"
             >
-              Back to Lobby
+              ← Back to Lobby
             </button>
           </div>
         )}

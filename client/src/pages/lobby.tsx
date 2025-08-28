@@ -84,7 +84,7 @@ const LobbyPage: React.FC = () => {
 
   // Check if this is a new hierarchical lobby and redirect to game selection
   useEffect(() => {
-    const checkLobbyType = async () => {
+    const checkGameType = async () => {
       try {
         setLoading(true);
         setError('');
@@ -368,10 +368,10 @@ const LobbyPage: React.FC = () => {
     }
   };
 
-  const handleLeaveLobby = async () => {
-    console.log('[DEBUG BUTTON] Leave lobby button clicked!');
+  const handleLeaveGame = async () => {
+    console.log('[DEBUG BUTTON] Leave game button clicked!');
     console.log('[DEBUG BUTTON] Current user:', user);
-    console.log('[DEBUG BUTTON] Current lobby ID:', lobbyId);
+    console.log('[DEBUG BUTTON] Current game ID:', lobbyId);
     console.log('[DEBUG BUTTON] Current participation:', currentUserParticipations);
     console.log('[DEBUG BUTTON] Joining state:', joining);
     
@@ -383,31 +383,46 @@ const LobbyPage: React.FC = () => {
     try {
       setJoining(true);
       setError('');
-      console.log('[DEBUG BUTTON] Making leave lobby API request...');
-      console.log('[DEBUG BUTTON] API endpoint: /lobbies/' + lobbyId + '/leave');
+      console.log('[DEBUG BUTTON] Making leave game API request...');
+      console.log('[DEBUG BUTTON] API endpoint: /games/' + lobbyId + '/leave');
 
       const token = localStorage.getItem('token');
       console.log('[DEBUG BUTTON] Token exists:', !!token);
       
-      const response = await apiRequest(`/lobbies/${lobbyId}/leave`, {
+      const response = await apiRequest(`/games/${lobbyId}/leave`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      console.log('[DEBUG BUTTON] Leave lobby API response:', response);
-      console.log('[DEBUG BUTTON] Successfully left lobby');
+      console.log('[DEBUG BUTTON] Leave game API response:', response);
+      console.log('[DEBUG BUTTON] Successfully left game');
 
-      // Real-time updates will handle the UI refresh via Socket.io events
+      // Update user balance if refund was given
+      if (response.userBalance && user) {
+        setUser({ ...user, balance: response.userBalance });
+      }
+
+      // Refresh participants
+      const participantsResponse = await apiRequest(`/games/${lobbyId}/participants`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setParticipants(participantsResponse);
 
     } catch (err: any) {
-      console.error('[DEBUG BUTTON] Error leaving lobby:', err);
+      console.error('[DEBUG BUTTON] Error leaving game:', err);
       console.error('[DEBUG BUTTON] Error details:', JSON.stringify(err, null, 2));
-      setError(err.message || 'Failed to leave lobby');
+      setError(err.message || 'Failed to leave game');
     } finally {
       setJoining(false);
-      console.log('[DEBUG BUTTON] Leave lobby process completed');
+      console.log('[DEBUG BUTTON] Leave game process completed');
+    }
+  };
+
+  const handleGoBackToLobby = () => {
+    if (lobby) {
+      setLocation(`/lobby-select/${lobby.id}`);
     }
   };
 
@@ -816,6 +831,28 @@ const LobbyPage: React.FC = () => {
                           ? (canAffordEntry ? 'Click an available seat to join' : 'Insufficient balance to join')
                           : 'Lobby not accepting players'}
                       </div>
+                    )}
+                  </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="mb-2 space-y-2">
+                    <button
+                      onClick={handleGoBackToLobby}
+                      className="w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                      data-testid="button-go-back-lobby"
+                    >
+                      ← Go Back to Lobby
+                    </button>
+                    
+                    {currentUserParticipations.length > 0 && gameStatus === 'waiting' && (
+                      <button
+                        onClick={handleLeaveGame}
+                        disabled={joining}
+                        className="w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors bg-red-600 text-white hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        data-testid="button-leave-game"
+                      >
+                        {joining ? 'Leaving...' : 'Leave Game (Get Refund)'}
+                      </button>
                     )}
                   </div>
 
