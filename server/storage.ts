@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Lobby, type InsertLobby, type Winner, type InsertWinner, type FaqItem, type InsertFaqItem, type Achievement, type InsertAchievement, type UserAchievement, type InsertUserAchievement } from "@shared/schema";
+import { type User, type InsertUser, type Lobby, type InsertLobby, type Winner, type InsertWinner, type FaqItem, type InsertFaqItem, type Achievement, type InsertAchievement, type UserAchievement, type InsertUserAchievement, type UserNotificationPreference, type InsertUserNotificationPreference } from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -23,6 +23,11 @@ export interface IStorage {
   createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
   markAchievementAsViewed(userId: number, achievementId: string): Promise<void>;
   checkAndUnlockAchievements(userId: number): Promise<UserAchievement[]>;
+
+  // Notification preferences methods
+  getUserNotificationPreference(userId: number, notificationType: string): Promise<UserNotificationPreference | undefined>;
+  setUserNotificationPreference(preference: InsertUserNotificationPreference): Promise<UserNotificationPreference>;
+  updateUserNotificationPreference(userId: number, notificationType: string, updates: Partial<UserNotificationPreference>): Promise<UserNotificationPreference | undefined>;
 }
 
 // Simple in-memory storage implementation
@@ -33,10 +38,12 @@ export class MemStorage implements IStorage {
   private faqItems: Map<string, FaqItem> = new Map();
   private achievements: Map<string, Achievement> = new Map();
   private userAchievements: Map<number, UserAchievement> = new Map();
+  private userNotificationPreferences: Map<string, UserNotificationPreference> = new Map();
   private nextUserId = 1;
   private nextRoomId = 1;
   private nextWinnerId = 1;
   private nextAchievementUserId = 1;
+  private nextNotificationPrefId = 1;
 
   constructor() {
     this.initializeSampleData();
@@ -253,6 +260,64 @@ export class MemStorage implements IStorage {
     }
     
     return [];
+  }
+
+  async getUserNotificationPreference(userId: number, notificationType: string): Promise<UserNotificationPreference | undefined> {
+    const key = `${userId}-${notificationType}`;
+    const preference = this.userNotificationPreferences.get(key);
+    
+    // Check if preference exists and if it's within 24 hours of dismissal
+    if (preference && preference.isDismissed && preference.dismissedAt) {
+      const dismissedTime = new Date(preference.dismissedAt).getTime();
+      const now = new Date().getTime();
+      const hoursSinceDismissal = (now - dismissedTime) / (1000 * 60 * 60);
+      
+      // Reset if 24 hours have passed
+      if (hoursSinceDismissal >= 24) {
+        preference.isDismissed = false;
+        preference.dismissedAt = null;
+        preference.updatedAt = new Date();
+      }
+    }
+    
+    return preference;
+  }
+
+  async setUserNotificationPreference(preference: InsertUserNotificationPreference): Promise<UserNotificationPreference> {
+    const key = `${preference.userId}-${preference.notificationType}`;
+    const newPreference: UserNotificationPreference = {
+      id: this.nextNotificationPrefId++,
+      ...preference,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.userNotificationPreferences.set(key, newPreference);
+    return newPreference;
+  }
+
+  async updateUserNotificationPreference(userId: number, notificationType: string, updates: Partial<UserNotificationPreference>): Promise<UserNotificationPreference | undefined> {
+    const key = `${userId}-${notificationType}`;
+    const existing = this.userNotificationPreferences.get(key);
+    
+    if (!existing) {
+      // Create if doesn't exist
+      return this.setUserNotificationPreference({
+        userId,
+        notificationType,
+        isDismissed: updates.isDismissed ?? false,
+        dismissedAt: updates.dismissedAt ?? null
+      });
+    }
+    
+    // Update existing
+    const updated: UserNotificationPreference = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.userNotificationPreferences.set(key, updated);
+    return updated;
   }
 }
 

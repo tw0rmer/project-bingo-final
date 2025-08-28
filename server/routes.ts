@@ -102,6 +102,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification preferences endpoints
+  app.get("/api/notification-preferences/:type", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const userId = parseInt(req.user.id);
+      const notificationType = req.params.type;
+      
+      const preference = await storage.getUserNotificationPreference(userId, notificationType);
+      
+      if (!preference) {
+        // Default to showing popup if no preference exists
+        return res.json({ shouldShow: true, isDismissed: false });
+      }
+      
+      res.json({ 
+        shouldShow: !preference.isDismissed, 
+        isDismissed: preference.isDismissed,
+        dismissedAt: preference.dismissedAt 
+      });
+    } catch (error) {
+      console.error("Notification preference fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch notification preference" });
+    }
+  });
+
+  app.post("/api/notification-preferences/:type/dismiss", async (req, res) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const userId = parseInt(req.user.id);
+      const notificationType = req.params.type;
+      
+      await storage.updateUserNotificationPreference(userId, notificationType, {
+        isDismissed: true,
+        dismissedAt: new Date()
+      });
+      
+      res.json({ message: "Notification preference updated" });
+    } catch (error) {
+      console.error("Notification preference update error:", error);
+      res.status(500).json({ message: "Failed to update notification preference" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

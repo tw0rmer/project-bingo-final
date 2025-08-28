@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import { apiRequest } from '../lib/api';
 import ConnectionStatus from '../components/ConnectionStatus';
+import { PatternIndicatorPopup } from '../components/tutorial/PatternIndicatorPopup';
 
 interface Lobby {
   id: number;
@@ -42,10 +43,30 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showPatternPopup, setShowPatternPopup] = useState(false);
 
   // Helper function to safely get balance as number
   const getBalanceAsNumber = (balance: number | string): number => {
     return typeof balance === 'string' ? parseFloat(balance) || 0 : balance;
+  };
+
+  const checkPatternPopupPreference = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await apiRequest<{ shouldShow: boolean }>('/notification-preferences/pattern_indicator_popup', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.shouldShow) {
+        setShowPatternPopup(true);
+      }
+    } catch (error) {
+      console.log('[PATTERN_POPUP] Preference check failed:', error);
+      // Default to showing popup if API fails
+      setShowPatternPopup(true);
+    }
   };
 
   const fetchDashboardData = async () => {
@@ -73,6 +94,9 @@ export default function DashboardPage() {
       });
       
       setData(response);
+      
+      // Check pattern popup preference after dashboard loads
+      await checkPatternPopupPreference();
     } catch (err: any) {
       console.error('[DASHBOARD] Fetch error:', err);
       if (err.message?.includes('401') || err.message?.includes('token')) {
@@ -101,6 +125,24 @@ export default function DashboardPage() {
   const handleLogout = () => {
     logout();
     setLocation('/');
+  };
+
+  const handlePatternPopupDismiss = async (doNotShowAgain: boolean = false) => {
+    setShowPatternPopup(false);
+    
+    if (doNotShowAgain) {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          await apiRequest('/notification-preferences/pattern_indicator_popup/dismiss', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        }
+      } catch (error) {
+        console.error('[PATTERN_POPUP] Failed to save dismiss preference:', error);
+      }
+    }
   };
 
   if (loading) {
@@ -281,8 +323,15 @@ export default function DashboardPage() {
           </div>
         )}
 
-
+        <ConnectionStatus className="mt-6" />
       </div>
+
+      {/* Pattern Indicator Popup - Only shows once per user per 24 hours */}
+      <PatternIndicatorPopup
+        isOpen={showPatternPopup}
+        onClose={() => handlePatternPopupDismiss(false)}
+        onDoNotShowAgain={() => handlePatternPopupDismiss(true)}
+      />
     </SiteLayout>
   );
 }

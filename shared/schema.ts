@@ -118,6 +118,17 @@ export const userAchievements = sqliteTable("user_achievements", {
   isNew: integer("is_new", { mode: "boolean" }).notNull().default(true), // for notification display
 });
 
+// User notification preferences for popup dismissals with 24-hour reset
+export const userNotificationPreferences = sqliteTable("user_notification_preferences", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  notificationType: text("notification_type").notNull(), // 'pattern_indicator_popup'
+  isDismissed: integer("is_dismissed", { mode: "boolean" }).notNull().default(false),
+  dismissedAt: integer("dismissed_at", { mode: 'timestamp' }),
+  createdAt: integer("created_at", { mode: 'timestamp' }).default(new Date()),
+  updatedAt: integer("updated_at", { mode: 'timestamp' }).default(new Date()),
+});
+
 // Type definitions
 export type User = typeof users.$inferSelect;
 export type WalletTransaction = typeof walletTransactions.$inferSelect;
@@ -129,6 +140,7 @@ export type LobbyParticipant = typeof lobbyParticipants.$inferSelect;
 export type FaqItem = typeof faqItems.$inferSelect;
 export type Achievement = typeof achievements.$inferSelect;
 export type UserAchievement = typeof userAchievements.$inferSelect;
+export type UserNotificationPreference = typeof userNotificationPreferences.$inferSelect;
 
 // Insert schemas for validation
 export const insertUserSchema = createInsertSchema(users);
@@ -141,6 +153,7 @@ export const insertLobbyParticipantSchema = createInsertSchema(lobbyParticipants
 export const insertFaqItemSchema = createInsertSchema(faqItems);
 export const insertAchievementSchema = createInsertSchema(achievements);
 export const insertUserAchievementSchema = createInsertSchema(userAchievements);
+export const insertUserNotificationPreferenceSchema = createInsertSchema(userNotificationPreferences);
 
 // Insert types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -153,3 +166,4 @@ export type InsertLobbyParticipant = z.infer<typeof insertLobbyParticipantSchema
 export type InsertFaqItem = z.infer<typeof insertFaqItemSchema>;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+export type InsertUserNotificationPreference = z.infer<typeof insertUserNotificationPreferenceSchema>;
