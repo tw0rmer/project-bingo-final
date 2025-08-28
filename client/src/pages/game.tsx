@@ -177,6 +177,32 @@ export default function GamePage() {
     setLocation('/dashboard');
   };
 
+  const handleStartGame = async () => {
+    if (!game || !userInfo?.isAdmin) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await apiRequest(`/admin/games/${gameId}/start`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Refresh game data
+      const gameResponse = await apiRequest<Game>(`/games/${gameId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setGame(gameResponse);
+      setGameStatus('active');
+      setToastMsg('Game started successfully!');
+    } catch (error: any) {
+      console.error('Failed to start game:', error);
+      setError(error.message || 'Failed to start game');
+    }
+  };
+
   const getUserSeat = () => {
     if (!userInfo) return null;
     return participants.find(p => p.userId === userInfo.id);
@@ -349,11 +375,23 @@ export default function GamePage() {
                 <p className="text-gray-400 text-sm">{lobby?.name}</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-400">Your Balance</p>
-              <p className="text-xl font-bold text-green-400">
-                ${typeof userInfo?.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo?.balance?.toString() || '0').toFixed(2)}
-              </p>
+            <div className="flex items-center gap-4">
+              {/* Admin Start Game Button */}
+              {userInfo?.isAdmin && game?.status === 'waiting' && (
+                <Button 
+                  onClick={handleStartGame}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                >
+                  🚀 Start Game
+                </Button>
+              )}
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Your Balance</p>
+                <p className="text-xl font-bold text-green-400">
+                  ${typeof userInfo?.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo?.balance?.toString() || '0').toFixed(2)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -391,6 +429,8 @@ export default function GamePage() {
           isPaused={isPaused}
           gameStatus={gameStatus}
           onLeaveLobby={handleBackToLobby}
+          onStartGame={userInfo?.isAdmin ? handleStartGame : undefined}
+          gameData={game}
         />
       </div>
     </div>

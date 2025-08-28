@@ -319,6 +319,28 @@ export default function AdminPage() {
     }
   };
 
+  const resetGame = async (gameId: number) => {
+    if (!confirm('Are you sure you want to reset this game? This will clear all players and refund their entry fees.')) {
+      return;
+    }
+
+    try {
+      await authApiRequest(`/admin/games/${gameId}/reset`, { method: 'POST' });
+      
+      await fetchData(); // Refresh lobby data
+      
+      // Refresh games modal if open
+      if (showGamesModal) {
+        await viewLobbyGames(showGamesModal.lobbyId);
+      }
+      
+      setError('');
+    } catch (error: any) {
+      console.error('Failed to reset game:', error);
+      setError('Failed to reset game');
+    }
+  };
+
   // User ban/delete handlers
   const handleBanUser = (userId: number, email: string) => {
     setShowBanConfirm({ userId, email });
@@ -1194,6 +1216,13 @@ export default function AdminPage() {
                             🚀 Start Game
                           </button>
                         )}
+                        
+                        <button
+                          onClick={() => resetGame(game.id)}
+                          className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-3 rounded text-sm font-medium"
+                        >
+                          🔄 Reset Game
+                        </button>
                         
                         <button
                           onClick={() => deleteGame(game.id)}

@@ -779,6 +779,74 @@ router.post('/games/:id/start', authenticateToken, requireAdmin, async (req: Aut
   }
 });
 
+// Reset individual game (admin) - clears players from specific game
+router.post('/games/:id/reset', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const gameId = parseInt(req.params.id);
+    if (isNaN(gameId)) {
+      return res.status(400).json({ message: 'Invalid game ID' });
+    }
+
+    // Get game details
+    const game = await db.select().from(games).where(eq(games.id, gameId)).limit(1);
+    if (!game.length) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    // Get lobby details for entry fee
+    const lobby = await db.select().from(lobbies).where(eq(lobbies.id, game[0].lobbyId)).limit(1);
+    if (!lobby.length) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Get all participants in this game
+    const participants = await db.select().from(gameParticipants).where(eq(gameParticipants.gameId, gameId));
+    
+    // Refund entry fees to participants
+    for (const participant of participants) {
+      // Get user
+      const user = await db.select().from(users).where(eq(users.id, participant.userId)).limit(1);
+      if (user.length) {
+        // Refund entry fee
+        await db.update(users)
+          .set({ balance: user[0].balance + lobby[0].entryFee })
+          .where(eq(users.id, participant.userId));
+        
+        // Create refund transaction
+        await db.insert(walletTransactions).values({
+          userId: participant.userId,
+          type: 'withdrawal',
+          amount: lobby[0].entryFee,
+          description: `Game reset refund - ${game[0].name}`,
+          status: 'completed'
+        });
+      }
+    }
+    
+    // Remove all participants for this game
+    await db.delete(gameParticipants).where(eq(gameParticipants.gameId, gameId));
+    
+    // Reset game status and clear game state
+    await db.update(games)
+      .set({ 
+        seatsTaken: 0, 
+        status: 'waiting',
+        drawnNumbers: '[]',
+        currentNumber: null,
+        winnerId: null
+      })
+      .where(eq(games.id, gameId));
+
+    res.json({ 
+      message: 'Game reset successfully',
+      participantsRefunded: participants.length
+    });
+  } catch (error) {
+    console.error('Reset game error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Reset lobby games (admin) - clears all games and players from lobby
 router.post('/lobbies/:id/reset-games', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {

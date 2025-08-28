@@ -31,6 +31,10 @@ interface MobileGameViewProps {
   isPaused: boolean;
   gameStatus: string;
   onLeaveLobby?: () => void;
+  
+  // Admin functionality
+  onStartGame?: () => void;
+  gameData?: any;
 }
 
 type MobileTab = 'card' | 'master' | 'players' | 'info';
@@ -56,7 +60,9 @@ export function MobileGameView({
   isConnected,
   isPaused,
   gameStatus,
-  onLeaveLobby
+  onLeaveLobby,
+  onStartGame,
+  gameData
 }: MobileGameViewProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>('card');
 
@@ -101,6 +107,18 @@ export function MobileGameView({
                   </div>
                 </div>
               </div>
+              
+              {/* Admin Start Game Button for Mobile */}
+              {user?.isAdmin && gameData?.status === 'waiting' && (
+                <div className="mt-2 pt-2 border-t border-gray-300">
+                  <button
+                    onClick={onStartGame}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium"
+                  >
+                    🚀 Start Game
+                  </button>
+                </div>
+              )}
             </div>
             
             {/* Compact Mobile Bingo Card */}
