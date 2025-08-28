@@ -177,18 +177,23 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
             const isSelected = selectedSeats.includes(seatNumber);
 
             return (
-              <React.Fragment key={rowIndex}>
+              <div key={rowIndex} className="contents">
                 {/* Mobile-Responsive Seat Cell */}
                 <button
-                  onClick={() => !isOccupied && !isJoining && onSeatSelect(seatNumber)}
-                  disabled={isOccupied || isJoining}
+                  onClick={() => {
+                    if (isJoining) return;
+                    if (isSelected || (!isOccupied && !isSelected)) {
+                      onSeatSelect(seatNumber);
+                    }
+                  }}
+                  disabled={(isOccupied && !isSelected) || isJoining}
                   title={isOccupied ? `Seat ${seatNumber}: ${participant?.user?.email || 'Unknown User'}` : `Seat ${seatNumber}: Available`}
                   className={cn(
                     "relative text-left px-0.5 sm:px-1 h-9 sm:h-8 rounded font-medium text-[9px] sm:text-[10.5px] transition-colors touch-manipulation",
                     "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
                     "active:scale-95 transition-transform duration-100", // Touch feedback
                     isSelected && "bg-emerald-600 text-white",
-                    isOccupied && !isSelected && "bg-red-600 text-white cursor-not-allowed",
+                    (isOccupied && !isSelected) && "bg-red-600 text-white cursor-not-allowed",
                     !isSelected && !isOccupied && "bg-gray-100 text-gray-900 hover:bg-blue-600 hover:text-white cursor-pointer",
                     winnerSeatNumber === seatNumber && (winnerUserId && myUserId && winnerUserId === myUserId
                       ? "ring-2 ring-yellow-400 shadow-[0_0_10px_#facc15] bg-yellow-400 text-black animate-pulse"
@@ -232,7 +237,7 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                     {number.value}
                   </button>
                 ))}
-              </React.Fragment>
+              </div>
             );
           })}
         </div>

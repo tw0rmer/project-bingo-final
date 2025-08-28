@@ -264,11 +264,17 @@ export default function GamePage() {
           body: JSON.stringify({ seatNumber })
         });
 
-        // Refresh participant data
-        const participantsResponse = await apiRequest<Participant[]>(`/games/${gameId}/participants`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        // Refresh participant data AND game data (for updated seat counts)
+        const [participantsResponse, updatedGameResponse] = await Promise.all([
+          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          apiRequest<Game>(`/games/${gameId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+        ]);
         setParticipants(participantsResponse);
+        setGame(updatedGameResponse);
       } catch (error: any) {
         setError(error.message || 'Failed to leave game');
       } finally {
