@@ -101,6 +101,19 @@ class GameEngine {
     // Generate deterministic cards for this game
     const lobbyCards = this.getOrGenerateLobbyCards(game.lobbyId);
     
+    // Store the generated cards in participant records
+    for (const participant of participants) {
+      const card = lobbyCards[participant.seatNumber] || [];
+      try {
+        await db.update(gameParticipants)
+          .set({ card: JSON.stringify(card) })
+          .where(and(eq(gameParticipants.gameId, gameId), eq(gameParticipants.seatNumber, participant.seatNumber)))
+          .run();
+      } catch (e) {
+        console.error(`Failed to store card for participant ${participant.seatNumber}:`, e);
+      }
+    }
+    
     const gameState: GameState = {
       gameId: game.id,
       lobbyId: game.lobbyId,
@@ -111,7 +124,7 @@ class GameEngine {
       winnerId: null,
       isPaused: false,
       callIntervalMs: 5000, // 5 seconds
-      participants: participants.map(p => ({
+      participants: participants.map((p: any) => ({
         userId: p.userId,
         seatNumber: p.seatNumber,
         card: lobbyCards[p.seatNumber] || []
@@ -124,12 +137,21 @@ class GameEngine {
     gameState.intervalId = setInterval(() => this.drawNumber(game.id), gameState.callIntervalMs);
     
     // Emit game started event
-    this.io.emit('gameStarted', {
+    this.io.to(`lobby_${game.lobbyId}`).emit('gameStarted', {
       gameId: game.id,
       lobbyId: game.lobbyId
     });
     
     console.log(`[GAME ENGINE] Game ${gameId} started with ${participants.length} participants`);
+    console.log(`[GAME ENGINE] Number calling interval set for ${gameState.callIntervalMs}ms`);
+    console.log(`[GAME ENGINE] Game state stored:`, { gameId: game.id, isRunning: gameState.isRunning, participantCount: gameState.participants.length });
+    
+    // Test number calling immediately
+    setTimeout(() => {
+      console.log(`[GAME ENGINE] Testing immediate number call for game ${gameId}`);
+      this.drawNumber(gameId);
+    }, 2000);
+    
     return game;
   }
 
@@ -176,7 +198,7 @@ class GameEngine {
     }
 
     // Cache participants in memory for fast win checks
-    gameState.participants = participants.map((p) => ({
+    gameState.participants = participants.map((p: any) => ({
       userId: p.userId,
       seatNumber: p.seatNumber,
       card: lobbyCards[p.seatNumber],
@@ -192,8 +214,16 @@ class GameEngine {
 
   // Draw next number
   private async drawNumber(gameId: number) {
+    console.log(`[GAME ENGINE] drawNumber called for game ${gameId}`);
     const gameState = this.gamesMap.get(gameId);
-    if (!gameState || !gameState.isRunning) return;
+    if (!gameState) {
+      console.log(`[GAME ENGINE] No game state found for game ${gameId}`);
+      return;
+    }
+    if (!gameState.isRunning) {
+      console.log(`[GAME ENGINE] Game ${gameId} is not running`);
+      return;
+    }
 
     let newNumber: number;
     do {
@@ -210,6 +240,7 @@ class GameEngine {
         .run();
     } catch (_e) {}
 
+    console.log(`[GAME ENGINE] Number called: ${newNumber} for game ${gameId}`);
     this.io.to(`lobby_${gameState.lobbyId}`).emit('number_called', {
       gameId,
       number: newNumber,
@@ -222,7 +253,7 @@ class GameEngine {
     try {
       if (!gameState.isRunning) return;
       const participants = gameState.participants;
-      if (!participants) return;
+      if (!participants || participants.length === 0) return;
       for (const p of participants) {
         const isWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
         if (isWinner) {
