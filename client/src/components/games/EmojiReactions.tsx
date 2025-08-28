@@ -170,6 +170,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
             onClick={() => setShowMenu(!showMenu)}
             className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full p-3 shadow-lg transition-all duration-200 transform hover:scale-110"
             data-testid="button-emoji-menu"
+            data-tutorial="emoji-button"
           >
             <MessageCircle className="w-5 h-5" />
           </button>
@@ -231,7 +232,7 @@ export function EmojiReactions({ gameId, lobbyId, userId, className }: EmojiReac
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes floatUp {
           0% {
             transform: translateY(0) scale(1);

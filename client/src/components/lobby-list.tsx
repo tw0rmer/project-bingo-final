@@ -70,6 +70,7 @@ export function LobbyList() {
             key={lobby.id} 
             className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-500"
             onClick={() => handleLobbySelect(lobby)}
+            data-tutorial="lobby-card"
           >
             <CardHeader>
               <div className="flex justify-between items-start">

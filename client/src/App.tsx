@@ -2,6 +2,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Router, Route, Switch } from 'wouter';
 import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
+import { TutorialProvider } from './contexts/TutorialContext';
+import { TutorialOverlay } from './components/tutorial/TutorialOverlay';
 import { queryClient } from './lib/queryClient';
 import { Toaster } from './components/ui/toaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -31,8 +33,10 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SocketProvider>
-            <ConnectionStatus />
-            <Router>
+            <TutorialProvider>
+              <ConnectionStatus />
+              <TutorialOverlay />
+              <Router>
               <Switch>
               <Route path="/" component={HomePage} />
               <Route path="/login" component={LoginPage} />
@@ -81,8 +85,9 @@ export default function App() {
               </Route>
               <Route component={NotFoundPage} />
             </Switch>
-            </Router>
-            <Toaster />
+              </Router>
+              <Toaster />
+            </TutorialProvider>
           </SocketProvider>
         </AuthProvider>
       </QueryClientProvider>
