@@ -324,11 +324,14 @@ export default function GamePage() {
     );
   };
 
-  // Desktop view
-  if (!isMobile) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white">
-        {/* Header with navigation */}
+  // Both desktop and mobile use the same tabbed interface now
+  // Desktop gets a header, mobile doesn't
+
+  // Unified view with optional desktop header
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Desktop header (only show on desktop) */}
+      {!isMobile && (
         <div className="bg-gray-800 border-b border-gray-700 p-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -354,49 +357,42 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-
-        {/* Main game content */}
-        <div className="max-w-7xl mx-auto p-6">
-          {renderBingoCard()}
-        </div>
+      )}
+      
+      {/* Tabbed game interface for both desktop and mobile */}
+      <div className={!isMobile ? "max-w-7xl mx-auto" : "h-full"}>
+        <MobileGameView
+          lobby={lobby}
+          participants={participants}
+          selectedSeats={selectedSeats}
+          onSeatSelect={handleSeatSelection}
+          isJoining={joining}
+          gamePhase={gameStatus === 'waiting' ? 'lobby' : gameStatus === 'active' ? 'playing' : 'finished'}
+          calledNumbers={calledNumbers}
+          onWin={(pattern, rowNumbers) => {
+            if (selectedSeats.length === 0) return;
+            const token = localStorage.getItem('token');
+            const primarySeat = selectedSeats[0];
+            apiRequest(`/games/${gameId}/claim`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
+            }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+          }}
+          winnerSeatNumber={winner?.seatNumber}
+          winnerUserId={winner?.userId}
+          myUserId={userInfo?.id}
+          lobbyId={game?.id || 0}
+          serverCardsBySeat={serverCardsBySeat}
+          user={userInfo}
+          currentUserParticipation={participants.find(p => p.userId === userInfo?.id) || null}
+          canAffordEntry={canAffordEntry}
+          isConnected={isConnected}
+          isPaused={isPaused}
+          gameStatus={gameStatus}
+          onLeaveLobby={handleBackToLobby}
+        />
       </div>
-    );
-  }
-
-  // Mobile view
-  return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <MobileGameView
-        lobby={lobby}
-        participants={participants}
-        selectedSeats={selectedSeats}
-        onSeatSelect={handleSeatSelection}
-        isJoining={joining}
-        gamePhase={gameStatus === 'waiting' ? 'lobby' : gameStatus === 'active' ? 'playing' : 'finished'}
-        calledNumbers={calledNumbers}
-        onWin={(pattern, rowNumbers) => {
-          if (selectedSeats.length === 0) return;
-          const token = localStorage.getItem('token');
-          const primarySeat = selectedSeats[0];
-          apiRequest(`/games/${gameId}/claim`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
-          }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
-        }}
-        winnerSeatNumber={winner?.seatNumber}
-        winnerUserId={winner?.userId}
-        myUserId={userInfo?.id}
-        lobbyId={game?.id || 0}
-        serverCardsBySeat={serverCardsBySeat}
-        user={userInfo}
-        currentUserParticipation={participants.find(p => p.userId === userInfo?.id) || null}
-        canAffordEntry={canAffordEntry}
-        isConnected={isConnected}
-        isPaused={isPaused}
-        gameStatus={gameStatus}
-        onLeaveLobby={handleBackToLobby}
-      />
     </div>
   );
 }

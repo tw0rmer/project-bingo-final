@@ -157,7 +157,7 @@ export function MobileGameView({
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-white">
+    <div className="w-full h-full flex flex-col bg-white min-h-[600px]">
       {/* Tab Navigation - compact */}
       <div className="flex-shrink-0 flex border-b border-gray-200 bg-gray-50">
         {tabs.map((tab) => {
@@ -182,7 +182,7 @@ export function MobileGameView({
       </div>
       
       {/* Tab Content - uses all remaining space */}
-      <div className="flex-1 overflow-hidden w-full">
+      <div className="flex-1 overflow-auto w-full">
         {renderTabContent()}
       </div>
     </div>
