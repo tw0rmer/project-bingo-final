@@ -61,41 +61,27 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
   const [bingoCard, setBingoCard] = useState<BingoNumber[][]>([]);
   const winnerFiredRef = useRef(false);
 
-  // Use the master card from server or generate a local one
+  // Use the master card from server ONLY - no fallbacks
   useEffect(() => {
+    console.log('[BINGO CARD] Master card update:', masterCard ? `${masterCard.length} rows` : 'null');
+    
     if (masterCard && masterCard.length === 15) {
       // Use the server's master card - this ensures ALL players see the same card
       const formattedCard = masterCard.map(row => 
         row.map(value => ({ value, isMarked: false }))
       );
       setBingoCard(formattedCard);
-      console.log('[BINGO CARD] Using master card from server');
+      console.log('[BINGO CARD] Using master card from server - first row:', masterCard[0]);
       return;
     }
     
-    if (serverCardsBySeat && Object.keys(serverCardsBySeat).length === 15) {
-      // Build entire card from server mapping (legacy support)
-      const full = Array.from({ length: 15 }, (_, idx) => {
-        const seat = idx + 1;
-        const row = serverCardsBySeat[seat] || [];
-        return row.length === 5 ? row.map(v => ({ value: v, isMarked: false })) : generateNewBingoCard()[idx];
-      });
-      setBingoCard(full);
-      return;
-    }
-    
-    // Never generate a card on frontend - always wait for server master card
-    // This ensures all players see the exact same card
-  }, [masterCard, serverCardsBySeat, gamePhase]);
+    // Do NOT use serverCardsBySeat or any other fallback
+    // Only use the master card to ensure consistency
+    console.log('[BINGO CARD] No master card yet, waiting...');
+  }, [masterCard]);
 
-  // Persist on change (in case of manual toggles)
-  useEffect(() => {
-    if (selectedSeats.length === 0 || !lobbyId) return;
-    selectedSeats.forEach(seatNum => {
-      const key = `bingoCard_lobby_${lobbyId}_seat_${seatNum}`;
-      try { localStorage.setItem(key, JSON.stringify(bingoCard)); } catch {}
-    });
-  }, [bingoCard, selectedSeats.join(','), lobbyId]);
+  // Remove localStorage persistence as we always use server master card
+  // This prevents confusion from cached random cards
 
   // Auto-mark numbers when calledNumbers prop changes
   useEffect(() => {
@@ -186,8 +172,8 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
             </div>
           ))}
 
-          {/* 15 rows */}
-          {Array.from({ length: 15 }, (_, rowIndex) => {
+          {/* 15 rows - only render if we have card data */}
+          {bingoCard.length > 0 && Array.from({ length: 15 }, (_, rowIndex) => {
             const seatNumber = rowIndex + 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
             const isOccupied = !!participant;
@@ -235,7 +221,7 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                 </button>
 
                 {/* Mobile-Responsive Bingo Numbers */}
-                {bingoCard && bingoCard[rowIndex]?.map((number, colIndex) => (
+                {bingoCard.length > 0 && bingoCard[rowIndex]?.map((number, colIndex) => (
                   <button
                     key={colIndex}
                     onClick={gamePhase === 'playing' ? () => handleNumberClick(rowIndex, colIndex) : undefined}
