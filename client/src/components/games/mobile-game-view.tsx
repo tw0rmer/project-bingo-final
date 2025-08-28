@@ -10,6 +10,7 @@ interface MobileGameViewProps {
   currentNumber?: number | null;
   nextCallIn?: number;
   currentCallSpeed?: number;
+  gameId?: number;
   // BingoCard props
   onSeatSelect: (seatNumber: number) => void;
   selectedSeats?: number[];
@@ -47,6 +48,7 @@ export function MobileGameView({
   currentNumber,
   nextCallIn,
   currentCallSpeed = 5,
+  gameId,
   onSeatSelect,
   selectedSeats = [],
   participants,

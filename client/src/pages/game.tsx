@@ -488,6 +488,7 @@ export default function GamePage() {
           currentNumber={currentNumber}
           nextCallIn={nextCallIn}
           currentCallSpeed={currentCallSpeed}
+          gameId={gameId}
           lobby={lobby}
           participants={participants}
           selectedSeats={selectedSeats}
