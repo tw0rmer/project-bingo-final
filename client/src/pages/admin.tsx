@@ -297,6 +297,28 @@ export default function AdminPage() {
     }
   };
 
+  const resetLobbyGames = async (lobbyId: number) => {
+    if (!confirm('Are you sure you want to reset this lobby? This will delete ALL games and clear all players.')) {
+      return;
+    }
+
+    try {
+      await authApiRequest(`/admin/lobbies/${lobbyId}/reset-games`, { method: 'POST' });
+      
+      await fetchData(); // Refresh lobby data
+      
+      // Refresh games modal if open
+      if (showGamesModal && showGamesModal.lobbyId === lobbyId) {
+        await viewLobbyGames(lobbyId);
+      }
+      
+      setError('');
+    } catch (error: any) {
+      console.error('Failed to reset lobby games:', error);
+      setError('Failed to reset lobby games');
+    }
+  };
+
   // User ban/delete handlers
   const handleBanUser = (userId: number, email: string) => {
     setShowBanConfirm({ userId, email });
@@ -1112,14 +1134,27 @@ export default function AdminPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <p className="text-gray-600">
-                    {showGamesModal.games.length} game(s) in this lobby
+                    {showGamesModal.games.length} game(s) in this lobby (Max: 4)
                   </p>
-                  <button
-                    onClick={() => addGameToLobby(showGamesModal.lobbyId)}
-                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium"
-                  >
-                    ➕ Add New Game
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => addGameToLobby(showGamesModal.lobbyId)}
+                      className={`py-2 px-4 rounded-lg font-medium ${
+                        showGamesModal.games.length >= 4
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-600 hover:bg-green-700 text-white'
+                      }`}
+                      disabled={showGamesModal.games.length >= 4}
+                    >
+                      ➕ Add New Game
+                    </button>
+                    <button
+                      onClick={() => resetLobbyGames(showGamesModal.lobbyId)}
+                      className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium"
+                    >
+                      🔄 Reset Lobby
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

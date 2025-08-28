@@ -779,4 +779,72 @@ router.post('/games/:id/start', authenticateToken, requireAdmin, async (req: Aut
   }
 });
 
+// Reset lobby games (admin) - clears all games and players from lobby
+router.post('/lobbies/:id/reset-games', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const lobbyId = parseInt(req.params.id);
+    if (isNaN(lobbyId)) {
+      return res.status(400).json({ message: 'Invalid lobby ID' });
+    }
+
+    // Get lobby details
+    const lobby = await db.select().from(lobbies).where(eq(lobbies.id, lobbyId)).limit(1);
+    if (!lobby.length) {
+      return res.status(404).json({ message: 'Lobby not found' });
+    }
+
+    // Get all games in this lobby
+    const lobbyGames = await db.select().from(games).where(eq(games.lobbyId, lobbyId));
+    
+    // For each game, remove participants and refund entry fees
+    for (const game of lobbyGames) {
+      const participants = await db.select().from(gameParticipants).where(eq(gameParticipants.gameId, game.id));
+      
+      // Refund entry fees to participants
+      for (const participant of participants) {
+        // Get user
+        const user = await db.select().from(users).where(eq(users.id, participant.userId)).limit(1);
+        if (user.length) {
+          // Refund entry fee
+          await db.update(users)
+            .set({ balance: user[0].balance + lobby[0].entryFee })
+            .where(eq(users.id, participant.userId));
+          
+          // Create refund transaction
+          await db.insert(walletTransactions).values({
+            userId: participant.userId,
+            type: 'withdrawal',
+            amount: lobby[0].entryFee,
+            description: `Lobby reset refund - ${lobby[0].name}`,
+            status: 'completed'
+          });
+        }
+      }
+      
+      // Remove all participants for this game
+      await db.delete(gameParticipants).where(eq(gameParticipants.gameId, game.id));
+    }
+    
+    // Delete all games in this lobby
+    await db.delete(games).where(eq(games.lobbyId, lobbyId));
+    
+    // Reset lobby status
+    await db.update(lobbies)
+      .set({ 
+        seatsTaken: 0, 
+        status: 'waiting' 
+      })
+      .where(eq(lobbies.id, lobbyId));
+
+    res.json({ 
+      message: 'Lobby reset successfully',
+      gamesDeleted: lobbyGames.length,
+      participantsRefunded: lobbyGames.reduce((sum, game) => sum + game.seatsTaken, 0)
+    });
+  } catch (error) {
+    console.error('Reset lobby games error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;
