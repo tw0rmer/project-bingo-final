@@ -133,7 +133,8 @@ export default function GamePage() {
         ]);
 
         setParticipants(participantsData.participants || []);
-        setMasterCard(participantsData.masterCard);
+        // Set master card from game data (added in games API) or participants data
+        setMasterCard(gameResponse.masterCard || participantsData.masterCard);
         setUserInfo(userResponse);
 
         console.log('[GAME PAGE] Data loaded:', {
@@ -185,6 +186,11 @@ export default function GamePage() {
         setGameStatus('active');
         setCalledNumbers([]);
         setWinner(null);
+        // Set the master card from server so all players see the same card
+        if (data.masterCard) {
+          console.log('[SOCKET] Received master card from server');
+          setMasterCard(data.masterCard);
+        }
       }
     };
 
@@ -245,11 +251,43 @@ export default function GamePage() {
       }
     };
 
+    const handleSeatTaken = (data: any) => {
+      console.log('[SOCKET] Seat taken:', data);
+      if (data.gameId === game.id) {
+        // Refresh participant data in real-time
+        const token = localStorage.getItem('token');
+        if (token) {
+          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).then(participantsResponse => {
+            setParticipants(participantsResponse);
+          }).catch(console.error);
+        }
+      }
+    };
+
+    const handleSeatLeft = (data: any) => {
+      console.log('[SOCKET] Seat left:', data);
+      if (data.gameId === game.id) {
+        // Refresh participant data in real-time
+        const token = localStorage.getItem('token');
+        if (token) {
+          apiRequest<Participant[]>(`/games/${gameId}/participants`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).then(participantsResponse => {
+            setParticipants(participantsResponse);
+          }).catch(console.error);
+        }
+      }
+    };
+
     socket.on('number_called', handleNumberCalled);
     socket.on('gameStarted', handleGameStarted);
     socket.on('player_won', handlePlayerWon);
     socket.on('game_ended', handleGameEnded);
     socket.on('call_speed_changed', handleCallSpeedChanged);
+    socket.on('seat_taken', handleSeatTaken);
+    socket.on('seat_left', handleSeatLeft);
     
     return () => {
       socket.off('number_called', handleNumberCalled);
@@ -257,6 +295,8 @@ export default function GamePage() {
       socket.off('player_won', handlePlayerWon);
       socket.off('game_ended', handleGameEnded);
       socket.off('call_speed_changed', handleCallSpeedChanged);
+      socket.off('seat_taken', handleSeatTaken);
+      socket.off('seat_left', handleSeatLeft);
     };
   }, [socket, isConnected, game?.id, game?.lobbyId]);
 

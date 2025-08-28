@@ -435,7 +435,7 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
     try {
       const io = req.app.get('io');
       if (io) {
-        io.to(`game_${gameId}`).emit('seat_taken', {
+        io.to(`lobby_${game.lobbyId}`).emit('seat_taken', {
           gameId,
           seatNumber,
           userId: req.user!.id,
@@ -556,7 +556,7 @@ router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
         const io = req.app.get('io');
         if (io) {
           participationsToRemove.forEach((participation: any) => {
-            io.to(`game_${gameId}`).emit('seat_left', {
+            io.to(`lobby_${game.lobbyId}`).emit('seat_left', {
               gameId,
               seatNumber: participation.seatNumber,
               userId: req.user!.id,
