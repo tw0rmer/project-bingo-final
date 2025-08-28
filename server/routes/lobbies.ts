@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Get lobby participants
+// Get lobby participants (backward compatibility - returns empty for new lobbies)
 router.get('/:id/participants', async (req, res) => {
   try {
     const lobbyId = parseInt(req.params.id);
@@ -60,24 +60,10 @@ router.get('/:id/participants', async (req, res) => {
       return res.status(400).json({ message: 'Invalid lobby ID' });
     }
 
-    // Get participants with user info
-    const allParticipants = await db.select().from(lobbyParticipants);
-    const allUsers = await db.select().from(users);
-    
-    const lobbyParticipantsList = allParticipants.filter((p: any) => p.lobbyId === lobbyId);
-    
-    const participantsWithUsers = lobbyParticipantsList.map((participant: any) => {
-      const user = allUsers.find((u: any) => u.id === participant.userId);
-      return {
-        ...participant,
-        user: user ? {
-          id: user.id,
-          email: user.email
-        } : null
-      };
-    });
-
-    res.json(participantsWithUsers);
+    // For the new lobby structure, participants are managed at the game level
+    // Return empty array for backward compatibility since the frontend 
+    // should redirect to game selection instead of showing this lobby view
+    res.json([]);
   } catch (error) {
     console.error('Get lobby participants error:', error);
     res.status(500).json({ message: 'Internal server error' });

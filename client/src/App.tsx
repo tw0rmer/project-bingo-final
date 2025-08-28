@@ -17,6 +17,7 @@ import HowToPlayPage from './pages/how-to-play';
 import NotFoundPage from './pages/not-found';
 import AdminPage from './pages/admin';
 import LobbyPage from './pages/lobby';
+import LobbySelectPage from './pages/lobby-select';
 import AddBalancePage from './pages/add-balance';
 import ProfilePage from './pages/profile';
 import AchievementsPage from './pages/achievements';
@@ -46,6 +47,11 @@ export default function App() {
               <Route path="/lobby/:id">
                 <ProtectedRoute>
                   <LobbyPage />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/lobby-select/:id">
+                <ProtectedRoute>
+                  <LobbySelectPage />
                 </ProtectedRoute>
               </Route>
               <Route path="/add-balance">

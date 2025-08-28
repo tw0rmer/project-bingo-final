@@ -95,7 +95,7 @@ export default function DashboardPage() {
   }, [user, setLocation]);
 
   const handleViewLobby = (lobbyId: number) => {
-    setLocation(`/lobby/${lobbyId}`);
+    setLocation(`/lobby-select/${lobbyId}`);
   };
 
   const handleLogout = () => {
@@ -259,14 +259,13 @@ export default function DashboardPage() {
                   <button 
                     onClick={() => handleViewLobby(room.id)} 
                     className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                      room.status === 'waiting' 
+                      (room.status === 'waiting' || room.status === 'active')
                         ? 'bg-casino-gold text-white hover:bg-yellow-500' 
                         : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
-                    disabled={room.status !== 'waiting'}
+                    disabled={room.status === 'finished'}
                   >
-                    {room.status === 'waiting' ? 'Enter Lobby' : 
-                     room.status === 'active' ? 'Game in Progress' : 
+                    {(room.status === 'waiting' || room.status === 'active') ? 'Enter Lobby' : 
                      'Game Finished'}
                   </button>
                 </div>

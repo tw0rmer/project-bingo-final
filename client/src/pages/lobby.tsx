@@ -82,9 +82,9 @@ const LobbyPage: React.FC = () => {
     return typeof balance === 'string' ? parseFloat(balance) || 0 : balance;
   };
 
-  // Fetch initial data
+  // Check if this is a new hierarchical lobby and redirect to game selection
   useEffect(() => {
-    const fetchData = async () => {
+    const checkLobbyType = async () => {
       try {
         setLoading(true);
         setError('');
@@ -96,7 +96,19 @@ const LobbyPage: React.FC = () => {
           return;
         }
 
-        // Fetch lobby, participants, and user data in parallel
+        // First check if this lobby has games (new structure)
+        const gamesResponse = await apiRequest<any[]>(`/lobbies/${lobbyId}/games`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (gamesResponse.length > 0) {
+          // This is a new hierarchical lobby, redirect to lobby selection page
+          console.log('[LOBBY PAGE] This is a hierarchical lobby with', gamesResponse.length, 'games. Redirecting to lobby selection.');
+          setLocation(`/lobby-select/${lobbyId}`);
+          return;
+        }
+
+        // This is an old-style lobby, fetch data normally
         const [lobbyResponse, participantsResponse, userResponse] = await Promise.all([
           apiRequest<Lobby>(`/lobbies/${lobbyId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -135,7 +147,7 @@ const LobbyPage: React.FC = () => {
     };
 
     if (lobbyId) {
-      fetchData();
+      checkLobbyType();
     } else {
       setError('Invalid lobby ID');
       setLoading(false);
