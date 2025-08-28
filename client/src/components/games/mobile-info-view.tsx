@@ -190,20 +190,14 @@ export function MobileInfoView({
           </ul>
         </div>
 
-        {/* Leave Lobby Button */}
-        {currentUserParticipation && onLeaveLobby && (
+        {/* Back to Lobby Button */}
+        {onLeaveLobby && (
           <div className="mt-2">
             <button
               onClick={onLeaveLobby}
-              disabled={gameStatus === 'active'}
-              className={cn(
-                "w-full py-3 px-4 rounded-lg font-medium text-sm transition-colors",
-                gameStatus === 'active' 
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-casino-red text-white hover:bg-red-700"
-              )}
+              className="w-full py-3 px-4 rounded-lg font-medium text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700"
             >
-              {gameStatus === 'active' ? 'Cannot Leave During Game' : 'Leave Lobby'}
+              Back to Lobby
             </button>
           </div>
         )}
