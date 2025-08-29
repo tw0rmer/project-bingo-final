@@ -1,12 +1,24 @@
 # 🎯 WildCard Premium Bingo
 
-**A full-stack, real-time multiplayer bingo platform with casino-themed styling and professional-grade features.**
+**A full-stack, real-time multiplayer bingo platform with casino-themed styling - Currently in Development.**
 
-![Bingo Game](https://img.shields.io/badge/Game-Bingo-red?style=for-the-badge) ![Real-time](https://img.shields.io/badge/Real--time-Socket.io-blue?style=for-the-badge) ![Mobile](https://img.shields.io/badge/Mobile-Responsive-green?style=for-the-badge) ![Production](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=for-the-badge)
+![Bingo Game](https://img.shields.io/badge/Game-Bingo-red?style=for-the-badge) ![Real-time](https://img.shields.io/badge/Real--time-Socket.io-blue?style=for-the-badge) ![Mobile](https://img.shields.io/badge/Mobile-Responsive-green?style=for-the-badge) ![Status](https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge)
 
 ## 🌟 Project Overview
 
-WildCard Premium Bingo is a production-ready, real-time multiplayer bingo platform featuring 15-seat lobbies, entry fees, prize pools, user authentication, admin management, and a complete wallet system. Built with modern web technologies and designed for mobile-first gameplay with casino-themed aesthetics.
+WildCard Premium Bingo is a real-time multiplayer bingo platform **currently under active development**. The project aims to feature 15-seat lobbies, entry fees, prize pools, user authentication, admin management, and a complete wallet system. Built with modern web technologies and designed for mobile-first gameplay with casino-themed aesthetics.
+
+## ⚠️ **CURRENT STATUS: IN DEVELOPMENT**
+
+**Known Issues Requiring Investigation:**
+- 🚫 **Prize Pool Distribution** - Winners not receiving balance updates (CRITICAL)
+- 🚫 **Admin Live Speed Control** - Cannot adjust number calling speed during games (CRITICAL)  
+- 🚫 **User Profile Achievements** - Achievement system not properly implemented
+- 🚫 **Pattern Probability Visuals** - Win probability indicators not functioning
+- 🚫 **Live Seat Selection** - Real-time seat updates not working without page refresh
+- 🔍 **Additional Issues** - More functionality needs thorough testing and debugging
+
+**This project is NOT production-ready and requires significant debugging and feature completion.**
 
 ### ✨ Key Features
 
