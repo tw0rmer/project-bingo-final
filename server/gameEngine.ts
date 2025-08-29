@@ -60,6 +60,7 @@ class GameEngine {
   private lobbyToGameId: Map<number, number> = new Map(); // key: lobbyId
   private masterCardsCache: Map<number, number[][]> = new Map(); // Store master cards by gameId
   private lastSnapshotByLobby: Map<number, any> = new Map();
+  private lobbyCardsCache: Map<number, number[][]> = new Map(); // Store lobby cards by lobbyId
 
   constructor(io: SocketIOServer) {
     this.io = io; // use default namespace; clients already connected here
@@ -80,6 +81,42 @@ class GameEngine {
       this.masterCardsCache.set(gameId, buildDeterministicMasterCard(gameId));
     }
     return this.masterCardsCache.get(gameId)!;
+  }
+
+  getOrGenerateLobbyCards(lobbyId: number): number[][] {
+    if (!this.lobbyCardsCache.has(lobbyId)) {
+      this.lobbyCardsCache.set(lobbyId, buildDeterministicMasterCard(lobbyId));
+    }
+    return this.lobbyCardsCache.get(lobbyId)!;
+  }
+
+  // Debug method to check and fix lobby mappings
+  debugLobbyMappings() {
+    console.log(`[DEBUG] Current lobby mappings:`, {
+      lobbyToGameId: Array.from(this.lobbyToGameId.entries()),
+      gamesMap: Array.from(this.gamesMap.entries()).map(([id, state]) => ({
+        gameId: id,
+        lobbyId: state.lobbyId,
+        isRunning: state.isRunning
+      }))
+    });
+  }
+
+  // Sync lobby mappings with active games
+  syncLobbyMappings() {
+    console.log(`[SYNC] Syncing lobby mappings...`);
+    const activeGames = Array.from(this.gamesMap.values()).filter(g => g.isRunning);
+    
+    // Clear existing mappings
+    this.lobbyToGameId.clear();
+    
+    // Recreate mappings from active games
+    for (const game of activeGames) {
+      this.lobbyToGameId.set(game.lobbyId, game.gameId);
+      console.log(`[SYNC] Mapped lobby ${game.lobbyId} → game ${game.gameId}`);
+    }
+    
+    console.log(`[SYNC] Synced ${this.lobbyToGameId.size} lobby mappings`);
   }
 
   // Start a specific game by ID (new architecture)
@@ -136,6 +173,13 @@ class GameEngine {
     };
 
     this.gamesMap.set(game.id, gameState);
+    
+    // CRITICAL: Create the lobby-to-game mapping for admin controls
+    this.lobbyToGameId.set(game.lobbyId, game.id);
+    console.log(`[GAME ENGINE] Created lobby mapping: lobby ${game.lobbyId} → game ${game.id}`);
+
+    // Ensure all mappings are in sync
+    this.syncLobbyMappings();
 
     // Start number calling interval
     gameState.intervalId = setInterval(() => this.drawNumber(game.id), gameState.callIntervalMs);
@@ -149,7 +193,7 @@ class GameEngine {
     
     console.log(`[GAME ENGINE] Game ${gameId} started with ${participants.length} participants`);
     console.log(`[GAME ENGINE] Number calling interval set for ${gameState.callIntervalMs}ms`);
-    console.log(`[GAME ENGINE] Game state stored:`, { gameId: game.id, isRunning: gameState.isRunning, participantCount: gameState.participants.length });
+    console.log(`[GAME ENGINE] Game state stored:`, { gameId: game.id, isRunning: gameState.isRunning, participantCount: gameState.participants?.length || 0 });
     
     // Test number calling immediately
     setTimeout(() => {
@@ -444,6 +488,14 @@ class GameEngine {
         console.error(`[GAME ENGINE] Auto-reset failed for game ${gameId}:`, error);
       });
     }, 30000); // 30 seconds delay
+    
+    // Also schedule a faster reset for immediate testing (5 seconds)
+    console.log(`[GAME ENGINE] Scheduling fast reset for game ${gameId} in 5 seconds for testing`);
+    setTimeout(() => {
+      this.autoResetGame(gameId, gameState.lobbyId).catch(error => {
+        console.error(`[GAME ENGINE] Fast reset failed for game ${gameId}:`, error);
+      });
+    }, 5000); // 5 seconds delay for testing
   }
 
   // Automatically reset a game state for a new round
@@ -474,8 +526,14 @@ class GameEngine {
       this.lastSnapshotByLobby.delete(lobbyId);
       this.lobbyCardsCache.delete(lobbyId);
       
-      // Now it's safe to clear the lobby mapping (after 30 seconds)
-      this.lobbyToGameId.delete(lobbyId);
+      // Only clear the lobby mapping if there's no active game
+      const hasActiveGame = this.gamesMap.has(gameId) || Array.from(this.gamesMap.values()).some(g => g.lobbyId === lobbyId && g.isRunning);
+      if (!hasActiveGame) {
+        this.lobbyToGameId.delete(lobbyId);
+        console.log(`[GAME ENGINE] Cleared lobby mapping for lobby ${lobbyId} - no active games`);
+      } else {
+        console.log(`[GAME ENGINE] Keeping lobby mapping for lobby ${lobbyId} - active game detected`);
+      }
       
       // Emit reset event to all lobby participants
       this.io.to(`lobby_${lobbyId}`).emit('game_reset', {
@@ -569,18 +627,76 @@ class GameEngine {
   }
 
   setCallInterval(lobbyId: number, seconds: number) {
+    const gameId = this.lobbyToGameId.get(lobbyId);
+    const state = this.getStateByLobby(lobbyId);
+    
     console.log(`[ADMIN SPEED] Attempting to change speed for lobby ${lobbyId}:`, {
-      gameId: this.lobbyToGameId.get(lobbyId),
-      hasState: !!this.getStateByLobby(lobbyId),
-      isRunning: this.getStateByLobby(lobbyId)?.isRunning,
+      gameId,
+      hasState: !!state,
+      isRunning: state?.isRunning,
       allActiveGames: Array.from(this.gamesMap.keys()),
-      allLobbyMappings: Array.from(this.lobbyToGameId.keys())
+      allLobbyMappings: Array.from(this.lobbyToGameId.keys()),
+      gameStateKeys: Array.from(this.gamesMap.keys()),
+      lobbyMappingKeys: Array.from(this.lobbyToGameId.keys()),
+      lobbyToGameIdEntries: Array.from(this.lobbyToGameId.entries()),
+      gamesMapEntries: Array.from(this.gamesMap.entries()).map(([id, state]) => ({
+        gameId: id,
+        lobbyId: state.lobbyId,
+        isRunning: state.isRunning
+      }))
     });
     
-    const state = this.getStateByLobby(lobbyId);
-    if (!state || !state.isRunning) {
-      console.error(`[ADMIN SPEED] No active game found for lobby ${lobbyId}`);
-      throw new Error('No active game');
+    if (!gameId) {
+      console.error(`[ADMIN SPEED] No game ID found for lobby ${lobbyId} - attempting to sync mappings`);
+      
+      // Try to sync mappings automatically
+      this.syncLobbyMappings();
+      const retryGameId = this.lobbyToGameId.get(lobbyId);
+      
+      if (!retryGameId) {
+        console.error(`[ADMIN SPEED] Still no game ID found for lobby ${lobbyId} after sync`);
+        throw new Error('No active game - lobby not mapped to any game');
+      }
+      
+      console.log(`[ADMIN SPEED] Successfully synced mapping: lobby ${lobbyId} → game ${retryGameId}`);
+      // Continue with the synced game ID
+      const retryState = this.gamesMap.get(retryGameId);
+      if (!retryState || !retryState.isRunning) {
+        throw new Error('No active game - game is not running');
+      }
+      
+      // Use the synced state
+      const ms = Math.max(1000, Math.min(5000, Math.floor(seconds * 1000)));
+      const actualSeconds = ms / 1000;
+      
+      console.log(`[GAME ENGINE] Changing call interval for lobby ${lobbyId} from ${retryState.callIntervalMs}ms to ${ms}ms (${actualSeconds}s)`);
+      retryState.callIntervalMs = ms;
+      
+      if (retryState.intervalId) {
+        clearInterval(retryState.intervalId);
+        retryState.intervalId = null;
+      }
+      if (!retryState.isPaused) {
+        const gameId = retryState.gameId;
+        retryState.intervalId = setInterval(() => this.drawNumber(gameId), retryState.callIntervalMs);
+        console.log(`[GAME ENGINE] Restarted interval for game ${gameId} with ${actualSeconds}s interval`);
+      }
+      this.io.to(`lobby_${lobbyId}`).emit('call_speed_changed', { 
+        lobbyId, 
+        intervalMs: retryState.callIntervalMs, 
+        intervalSeconds: actualSeconds 
+      });
+      return;
+    }
+    
+    if (!state) {
+      console.error(`[ADMIN SPEED] No game state found for game ${gameId} in lobby ${lobbyId}`);
+      throw new Error('No active game - game state not found');
+    }
+    
+    if (!state.isRunning) {
+      console.error(`[ADMIN SPEED] Game ${gameId} in lobby ${lobbyId} is not running (status: ${state.isRunning})`);
+      throw new Error('No active game - game is not running');
     }
     
     // Convert seconds to milliseconds, minimum 1 second, maximum 5 seconds
