@@ -88,10 +88,8 @@ class ServerManagerGUI:
         
         # Variables
         self.server_process: Optional[subprocess.Popen] = None
-        self.docker_process: Optional[subprocess.Popen] = None
         self.output_queue = queue.Queue()
         self.is_server_running = False
-        self.is_postgres_running = False
         
         self.create_gui()
         self.setup_auto_refresh()
@@ -172,9 +170,9 @@ class ServerManagerGUI:
         self.sqlite_status.pack(side=tk.LEFT, pady=2)
         self.sqlite_version = self.create_label(self.sqlite_frame, "", font=('Consolas', 9))
         self.sqlite_version.pack(side=tk.RIGHT, pady=2)
-        # Alias old Postgres label names to SQLite ones for compatibility
-        self.postgres_status = self.sqlite_status
-        self.postgres_version = self.sqlite_version
+        # Database status references for SQLite
+        self.database_status = self.sqlite_status
+        self.database_version = self.sqlite_version
 
         # Environment File Status
         self.env_frame = self.create_frame(self.env_status_frame)
@@ -604,97 +602,34 @@ class ServerManagerGUI:
             if os.path.exists(db_path):
                 size = os.path.getsize(db_path) / 1024  # Convert to KB
                 modified = datetime.fromtimestamp(os.path.getmtime(db_path)).strftime('%Y-%m-%d %H:%M')
-                self.postgres_status.configure(text="🗄️ SQLite: ✅ Ready")
-                self.postgres_version.configure(text=f"{size:.1f}KB, {modified}")
+                self.database_status.configure(text="🗄️ SQLite: ✅ Ready")
+                self.database_version.configure(text=f"{size:.1f}KB, {modified}")
             else:
-                self.postgres_status.configure(text="🗄️ SQLite: ⚠️ Not initialized")
-                self.postgres_version.configure(text="Run initialization")
+                self.database_status.configure(text="🗄️ SQLite: ⚠️ Not initialized")
+                self.database_version.configure(text="Run initialization")
                 
         except Exception as e:
-            self.postgres_status.configure(text="🗄️ SQLite: ❌ Error")
-            self.postgres_version.configure(text=str(e)[:30])
+            self.database_status.configure(text="🗄️ SQLite: ❌ Error")
+            self.database_version.configure(text=str(e)[:30])
 
     def check_database_status(self):
-        """Check database connection status"""
-        if os.path.exists('.env'):
+        """Check SQLite database status"""
+        data_dir = os.path.join(os.getcwd(), 'data')
+        db_path = os.path.join(data_dir, 'bingo.db')
+        
+        if os.path.exists(db_path):
             try:
-                npm_path = find_executable('npm')
-                if not npm_path:
-                    self.postgres_status.configure(text="🗄️ Database: ❓ npm not found")
-                    self.postgres_version.configure(text="Node.js required")
-                    return
-                    
-                # Simple connection test using npm script
-                result = run_command_safe([npm_path, 'run', 'db:check'], 
-                                        capture_output=True, text=True, timeout=10)
-                if result.returncode == 0:
-                    self.postgres_status.configure(text="🗄️ Database: ✅ Connected")
-                    self.postgres_version.configure(text="Ready")
-                else:
-                    self.postgres_status.configure(text="🗄️ Database: ❌ Connection failed")
-                    self.postgres_version.configure(text="Check settings")
-            except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
-                self.postgres_status.configure(text="🗄️ Database: ❓ Cannot check")
-                self.postgres_version.configure(text="Status unknown")
+                size = os.path.getsize(db_path) / 1024
+                modified = datetime.fromtimestamp(os.path.getmtime(db_path)).strftime('%Y-%m-%d %H:%M')
+                self.database_status.configure(text="🗄️ SQLite: ✅ Ready")
+                self.database_version.configure(text=f"{size:.1f}KB, {modified}")
+            except Exception as e:
+                self.database_status.configure(text="🗄️ SQLite: ❌ Error")
+                self.database_version.configure(text=str(e)[:30])
         else:
-            self.postgres_status.configure(text="🗄️ Database: ❌ No .env")
-            self.postgres_version.configure(text="Create .env first")
+            self.database_status.configure(text="🗄️ SQLite: ⚠️ Not initialized")
+            self.database_version.configure(text="Run migrations first")
 
-    def start_postgres(self):
-        """Start PostgreSQL using Docker Compose"""
-        try:
-            self.console_output.insert(tk.END, "🐳 Starting PostgreSQL container...\n")
-            self.console_output.see(tk.END)
-            
-            docker_path = find_executable('docker')
-            if not docker_path:
-                self.console_output.insert(tk.END, "❌ Docker not found. Please install Docker Desktop.\n")
-                self.console_output.insert(tk.END, "💡 Download from: https://www.docker.com/products/docker-desktop\n")
-                return
-            
-            result = run_command_safe([docker_path, 'compose', 'up', '-d'], 
-                                    capture_output=True, text=True, timeout=30)
-            
-            if result.returncode == 0:
-                self.console_output.insert(tk.END, "✅ PostgreSQL started successfully\n")
-                self.console_output.insert(tk.END, result.stdout + "\n")
-                self.is_postgres_running = True
-                self.check_postgres_status()
-                time.sleep(2)  # Wait for PostgreSQL to be ready
-                self.check_database_status()
-            else:
-                self.console_output.insert(tk.END, f"❌ Failed to start PostgreSQL:\n{result.stderr}\n")
-                
-        except subprocess.TimeoutExpired:
-            self.console_output.insert(tk.END, "⏰ PostgreSQL startup timed out\n")
-        except FileNotFoundError as e:
-            self.console_output.insert(tk.END, f"❌ Docker not found: {str(e)}\n")
-            self.console_output.insert(tk.END, "💡 Please install Docker Desktop first.\n")
-        except Exception as e:
-            self.console_output.insert(tk.END, f"❌ Error starting PostgreSQL: {str(e)}\n")
-        
-        self.console_output.see(tk.END)
-
-    def stop_postgres(self):
-        """Stop PostgreSQL container"""
-        try:
-            self.console_output.insert(tk.END, "🛑 Stopping PostgreSQL container...\n")
-            self.console_output.see(tk.END)
-            
-            result = subprocess.run(['docker', 'compose', 'down'], 
-                                  capture_output=True, text=True, timeout=15)
-            
-            if result.returncode == 0:
-                self.console_output.insert(tk.END, "✅ PostgreSQL stopped successfully\n")
-                self.is_postgres_running = False
-                self.check_postgres_status()
-            else:
-                self.console_output.insert(tk.END, f"❌ Failed to stop PostgreSQL:\n{result.stderr}\n")
-                
-        except Exception as e:
-            self.console_output.insert(tk.END, f"❌ Error stopping PostgreSQL: {str(e)}\n")
-        
-        self.console_output.see(tk.END)
 
     def run_migrations(self):
         """Run database migrations"""
@@ -975,14 +910,14 @@ DB_TYPE=sqlite
                 modified = datetime.fromtimestamp(os.path.getmtime(db_path)).strftime('%Y-%m-%d %H:%M')
                 self.sqlite_status.configure(text="🗄️ SQLite: ✅")
                 self.sqlite_version.configure(text=f"{size:.1f}KB")
-                self.postgres_status.configure(text="🗄️ Database: ✅ Ready")
-                self.postgres_version.configure(text=f"{size:.1f}KB, {modified}")
+                self.database_status.configure(text="🗄️ Database: ✅ Ready")
+                self.database_version.configure(text=f"{size:.1f}KB, {modified}")
                 self.console_output.insert(tk.END, f"✅ SQLite Database: {size:.1f}KB (last modified: {modified})\n")
             else:
                 self.sqlite_status.configure(text="🗄️ SQLite: ⚠️")
                 self.sqlite_version.configure(text="Not initialized")
-                self.postgres_status.configure(text="🗄️ Database: ⚠️ Not initialized")
-                self.postgres_version.configure(text="Run initialization")
+                self.database_status.configure(text="🗄️ Database: ⚠️ Not initialized")
+                self.database_version.configure(text="Run initialization")
                 self.console_output.insert(tk.END, "⚠️ SQLite Database: Not initialized (run migrations first)\n")
             
             # Check package.json
@@ -1163,7 +1098,7 @@ DB_TYPE=sqlite
             
             # Create .env file with mock database enabled
             try:
-                env_content = """DATABASE_URL=postgresql://user:password@host:port/db
+                env_content = """DATABASE_URL=file:./data/bingo.db
 USE_MOCK_DB=true
 
 PORT=5000
