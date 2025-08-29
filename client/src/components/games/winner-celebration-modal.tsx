@@ -119,7 +119,7 @@ export function WinnerCelebrationModal({
       )}
 
       {/* Main Modal */}
-      <div className="relative bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-3xl p-8 max-w-lg w-full mx-4 border-4 border-yellow-400 shadow-2xl animate-modal-bounce">
+      <div className="relative bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-3xl p-4 sm:p-8 max-w-lg w-full mx-4 border-4 border-yellow-400 shadow-2xl animate-modal-bounce max-h-[90vh] overflow-y-auto">
         {/* Golden Glow Border Animation */}
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 opacity-30 blur-xl animate-glow-pulse"></div>
         
@@ -145,10 +145,10 @@ export function WinnerCelebrationModal({
 
           {/* Winner Text */}
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 bg-clip-text text-transparent animate-pulse">
+            <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 bg-clip-text text-transparent animate-pulse">
               🎉 BINGO! 🎉
             </h1>
-            <p className="text-xl font-semibold text-gray-800">
+            <p className="text-lg sm:text-xl font-semibold text-gray-800">
               Congratulations! You Won!
             </p>
           </div>
@@ -157,7 +157,7 @@ export function WinnerCelebrationModal({
           <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-6 border-2 border-green-300">
             <div className="flex items-center justify-center gap-2 mb-3">
               <DollarSign className="w-8 h-8 text-green-600" />
-              <span className="text-4xl font-bold text-green-700">
+              <span className="text-2xl sm:text-4xl font-bold text-green-700">
                 ${prizeAmount.toFixed(2)}
               </span>
             </div>

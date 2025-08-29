@@ -111,118 +111,8 @@ router.get('/:id/participants', async (req, res) => {
   }
 });
 
-// Join a game (select seats)
-router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
-  try {
-    const gameId = parseInt(req.params.id);
-    if (isNaN(gameId)) {
-      return res.status(400).json({ message: 'Invalid game ID' });
-    }
-
-    const { seatNumber } = req.body;
-    if (!seatNumber || seatNumber < 1 || seatNumber > 15) {
-      return res.status(400).json({ message: 'Invalid seat number' });
-    }
-
-    // Get game and lobby details
-    const allGames = await db.select().from(games);
-    const game = allGames.find((g: any) => g.id === gameId);
-    
-    if (!game) {
-      return res.status(404).json({ message: 'Game not found' });
-    }
-
-    const allLobbies = await db.select().from(lobbies);
-    const lobby = allLobbies.find((l: any) => l.id === game.lobbyId);
-    
-    if (!lobby) {
-      return res.status(404).json({ message: 'Lobby not found' });
-    }
-
-    // Check if game accepts players
-    if (game.status !== 'waiting') {
-      return res.status(400).json({ message: 'Game is not accepting new players' });
-    }
-
-    // Check if game is full
-    if (game.seatsTaken >= game.maxSeats) {
-      return res.status(400).json({ message: 'Game is full' });
-    }
-
-    // Check user's current participation in this game
-    const allParticipants = await db.select().from(gameParticipants);
-    const userParticipations = allParticipants.filter((p: any) => 
-      p.gameId === gameId && p.userId === req.user!.id
-    );
-    
-    // Check if user already has this specific seat
-    const alreadyHasSeat = userParticipations.some((p: any) => p.seatNumber === seatNumber);
-    if (alreadyHasSeat) {
-      return res.status(400).json({ message: 'You already have this seat' });
-    }
-    
-    // Check if user already has maximum seats (2)
-    if (userParticipations.length >= 2) {
-      return res.status(400).json({ message: 'You can only select up to 2 seats per game' });
-    }
-
-    // Check if seat is taken by another user
-    const seatTaken = allParticipants.find((p: any) => 
-      p.gameId === gameId && p.seatNumber === seatNumber && p.userId !== req.user!.id
-    );
-    
-    if (seatTaken) {
-      return res.status(400).json({ message: 'Seat is already taken' });
-    }
-
-    // Check user balance
-    const allUsers = await db.select().from(users);
-    const user = allUsers.find((u: any) => u.id === req.user!.id);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const userBalance = parseFloat(user.balance);
-    const entryFee = parseFloat(lobby.entryFee);
-    
-    if (userBalance < entryFee) {
-      return res.status(400).json({ message: 'Insufficient balance' });
-    }
-
-    // Debit entry fee
-    const newBalance = userBalance - entryFee;
-    await db.update(users)
-      .set({ balance: newBalance.toString() })
-      .where(eq(users.id, req.user!.id));
-
-    // Add participant to game
-    await db.insert(gameParticipants).values({
-      gameId,
-      userId: req.user!.id,
-      seatNumber,
-      card: JSON.stringify([]), // Empty card for now
-      isWinner: false
-    });
-
-    // Update game seat count
-    const newSeatCount = game.seatsTaken + 1;
-    await db.update(games)
-      .set({ seatsTaken: newSeatCount })
-      .where(eq(games.id, gameId));
-
-    res.json({
-      message: 'Successfully joined game',
-      game: { ...game, seatsTaken: newSeatCount },
-      userBalance: newBalance.toString(),
-      seatNumber
-    });
-
-  } catch (error) {
-    console.error('Error joining game:', error);
-    res.status(500).json({ message: 'Failed to join game' });
-  }
-});
+// REMOVED: Duplicate join endpoint that was overriding the socket-enabled one below
+// The socket-enabled join endpoint at line ~321 handles all functionality with real-time updates
 
 // Leave a game (deselect seats)
 router.post('/:id/leave', authenticateToken, async (req: AuthRequest, res) => {
@@ -436,14 +326,22 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
     // Emit real-time events
     try {
       const io = req.app.get('io');
+      const lobbyRoom = `lobby_${game.lobbyId}`;
+      
+      console.log(`[SOCKET DEBUG] About to emit seat_taken to room: ${lobbyRoom}`);
+      console.log(`[SOCKET DEBUG] IO instance exists:`, !!io);
+      console.log(`[SOCKET DEBUG] Room members:`, io.sockets.adapter.rooms.get(lobbyRoom)?.size || 0);
+      
       if (io) {
-        io.to(`lobby_${game.lobbyId}`).emit('seat_taken', {
+        io.to(lobbyRoom).emit('seat_taken', {
           gameId,
           seatNumber,
           userId: req.user!.id,
           userEmail: user.email,
           newSeatsTaken: actualSeatsTaken
         });
+        
+        console.log(`[SOCKET] Successfully emitted seat_taken to lobby room: ${lobbyRoom}`);
       }
     } catch (socketError) {
       console.error('[GAME] Socket error:', socketError);

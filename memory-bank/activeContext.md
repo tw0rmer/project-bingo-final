@@ -1,94 +1,90 @@
-# Active Context 🎯
+# ACTIVE DEVELOPMENT CONTEXT
 
-Last Updated: 2025-08-28 23:15:00
+**Last Updated**: 2025-08-29 05:25:00  
+**Session**: Emergency Production Fixes + Live Seat Update Resolution  
+**Status**: 🚀 **MAJOR PROGRESS - Live Seat Updates Fixed!**
 
-## Current Development Session 
+## 🎯 **PRIMARY GOALS**
 
-**Primary Goal**: 🚀 **REAL-TIME INFRASTRUCTURE OPTIMIZATION** - Critical Bug Fixes & System Stability
+### ✅ **COMPLETED & TESTED**:
+1. **🆕 LIVE SEAT UPDATES** - **FIXED & CONFIRMED WORKING!** Resolved duplicate endpoint conflict
 
-**Current Focus Area**: 🔧 **Real-Time System Bug Resolution & Performance Enhancement**
+### 🔧 **CODE APPLIED - AWAITING TESTING**:
+1. **Prize Pool Distribution** - Enhanced error handling and achievement integration
+2. **Admin Speed Control** - Fixed "No active game" error with delayed cleanup
+3. **Game Auto-Reset** - Fixed lobby status not resetting to "active"
+4. **Mobile Winner Modal** - Improved responsiveness and overflow handling
+5. **Achievement System** - Corrected import path errors
+6. **Visual Winner Prediction** - Added glowing effects and number indicators
 
-**🎉 MAJOR FIXES COMPLETED (August 28, 2025 - 11:10 PM)**:
-✅ **Critical Real-Time Bug Resolution**: Fixed 4 major issues blocking production deployment
-✅ **Admin Speed Control**: API endpoint mismatch resolved (`/api/admin/games/` vs `/api/games/`)
-✅ **Game Auto-Reset System**: Added missing `game_reset` socket event handler for proper game lifecycle
-✅ **Tutorial Popup Fix**: Eliminated inappropriate popup triggers on API failures
-✅ **Real-Time Seat Updates**: Confirmed working - socket events properly synchronize across clients
+### 🔄 **ONGOING INVESTIGATION**:
+- **Game Reset Timing** - Games not auto-resetting after 30-60 seconds post-win
 
-**Previously Completed (August 28, 2025 - 6:25 AM)**:
-✅ **Real-Time Number Calling**: Automatic number calling every 5 seconds with Socket.IO real-time synchronization
-✅ **GameEngine Implementation**: Centralized game state management with automatic lifecycle control
-✅ **Live Master Card Updates**: Real-time number highlighting across all connected players with visual feedback
-✅ **Admin Speed Control**: Dynamic interval adjustment (1-5 seconds) during live games with emoji indicators
-✅ **Socket Room Management**: Proper lobby-based room isolation and event broadcasting
-✅ **Winner Detection System**: Automatic winner detection with immediate game ending and celebrations
-✅ **Cross-Device Synchronization**: Perfect timing across mobile and desktop devices
-✅ **Current Number Display**: Prominent display with countdown timer "Next call in X seconds"
-✅ **Database Integration**: Real-time game state persistence with live updates
-✅ **Authentication Middleware**: Secure socket connections with JWT token validation
+## 🚨 **CRITICAL ISSUES STATUS**
 
-**Current System Status (August 28, 2025 - 6:25 AM)**:
-✅ **Real-Time Multiplayer Bingo**: Fully functional with Socket.IO synchronization
-✅ **Automatic Number Calling**: Every 5 seconds with visual countdown timers
-✅ **Admin Speed Controls**: Dynamic interval adjustment (1-5 seconds) during live games
-✅ **Master Card Highlighting**: Real-time number highlighting across all connected players
-✅ **Winner Detection**: Automatic game ending and prize distribution integration
-✅ **Cross-Device Sync**: Perfect synchronization across mobile and desktop
-✅ **Socket Room Management**: Proper lobby-based room isolation and event broadcasting
-✅ **Game State Persistence**: Real-time database updates with game status and drawn numbers
-✅ **Mobile-responsive design**: Seamless real-time functionality across all devices
-✅ **Complete admin panel**: Enhanced with real-time game controls and monitoring
-✅ **Authentication system**: Secure socket connections with JWT validation
-✅ **Prize pool system**: Integrated with real-time winner detection
+| Issue | Status | Priority | Notes |
+|-------|--------|----------|-------|
+| **Live Seat Selection** | ✅ **FIXED & TESTED** | CRITICAL | **Duplicate endpoint conflict resolved!** |
+| Prize Pool Distribution | 🔧 **CODE APPLIED** | CRITICAL | Enhanced error handling + achievements |
+| Admin Speed Control | 🔧 **CODE APPLIED** | CRITICAL | Delayed cleanup + extensive debugging |
+| User Profile Achievements | 🔧 **CODE APPLIED** | HIGH | Import path corrected |
+| Pattern Probability Visuals | 🔧 **CODE APPLIED** | MEDIUM | Glowing effects + number indicators |
+| Game Auto-Reset Timing | 🔍 **INVESTIGATING** | HIGH | 30-60 second delay mechanism |
 
-**Real-Time System Capabilities**:
-- **Live Number Calling**: Automatic number drawing every 5 seconds with Socket.IO broadcasting
-- **Real-Time Synchronization**: Perfect timing across all connected devices and players
-- **Dynamic Speed Control**: Admin-adjustable calling intervals (1-5 seconds) during active games
-- **Live Visual Updates**: Instant number highlighting and countdown timers across all master cards
-- **Automatic Winner Detection**: Real-time winner detection with immediate game completion
-- **Cross-Game Management**: Multiple simultaneous games with independent real-time streams
-- **Socket Room Isolation**: Proper lobby-based event broadcasting ensuring clean separation
-- **Live Database Sync**: Real-time persistence of game state, drawn numbers, and status updates
+## 🎮 **LIVE SEAT UPDATE SUCCESS**
 
-**Real-Time Technical Architecture**:
-- **Frontend**: React 18 with TypeScript, Socket.IO client integration, mobile-first responsive design
-- **Backend**: Express.js with Socket.IO server, JWT authentication middleware, SQLite/PostgreSQL with Drizzle ORM
-- **Game Engine**: Centralized GameEngine class managing real-time number calling and game lifecycle
-- **Socket System**: Room-based event broadcasting with authentication and proper error handling
-- **Admin Interface**: Real-time game controls with speed adjustment and live monitoring
-- **Database Layer**: Live game state synchronization with persistent storage and real-time updates
-- **Mobile Integration**: Seamless real-time functionality across all device sizes with touch optimization
+### **Root Cause Identified**:
+- **Duplicate join endpoints** in `server/routes/games.ts`
+- First endpoint (no socket events) was overriding second endpoint (with socket events)
+- Socket events were never emitted
 
-**🚨 CURRENT CRITICAL ISSUE (August 28, 2025)**:
-⚠️ **Game Reset Timing Problem**: Games not auto-resetting after 30 seconds to 1 minute post-win
-- **Root Cause**: Timing mechanism in `server/gameEngine.ts` needs investigation
-- **Current Status**: `autoResetGame()` function exists but may not be called on proper timing
-- **Impact**: Games stay in "finished" state requiring manual intervention
-- **Priority**: HIGH - Affects user experience and game flow
+### **Fix Applied**:
+- Removed duplicate endpoint without socket functionality
+- Kept socket-enabled endpoint with enhanced debugging
+- Real-time seat updates now working across all browsers
 
-**🎮 COMPLETE GAME ENGINE FILE ARCHITECTURE**:
+### **✅ Confirmed Working**:
+- Immediate seat updates without page refresh
+- Real-time participant count changes
+- Instant visual feedback when seats are taken/freed
 
-### Server-Side Game Engine Files 🖥️
-- **`server/gameEngine.ts`** - Core GameEngine class with number calling, winner detection, auto-reset
-- **`server/index.ts`** - Socket.IO server setup, authentication middleware, game event broadcasting
-- **`server/routes/admin.ts`** - Admin game controls, speed adjustment endpoints
-- **`server/routes/games.ts`** - Game management API, join/leave, winner claiming
-- **`server/routes/lobbies.ts`** - Lobby management, participant tracking, socket event emission
-- **`shared/schema.ts`** - Database schema for games, participants, lobbies, winners
+## 🔧 **TECHNICAL IMPLEMENTATION**
 
-### Client-Side Game Interface Files 📱
-- **`client/src/pages/game.tsx`** - Main game interface with socket integration
-- **`client/src/pages/lobby.tsx`** - Lobby selection with real-time seat updates  
-- **`client/src/components/games/master-card.tsx`** - Real-time number highlighting
-- **`client/src/components/games/mobile-master-card.tsx`** - Mobile game card with countdown
-- **`client/src/components/games/mobile-info-view.tsx`** - Admin controls, speed adjustment
-- **`client/src/components/games/mobile-game-view.tsx`** - Mobile game container
-- **`client/src/components/games/bingo-card.tsx`** - Player bingo cards with auto-marking
-- **`client/src/components/games/winner-celebration-modal.tsx`** - Win celebration system
-- **`client/src/components/games/PatternIndicator.tsx`** - Progress tracking display
+### **Files Modified Today**:
+- `server/gameEngine.ts` - Prize distribution, admin speed control, achievements
+- `server/routes/games.ts` - **Live seat updates fixed**
+- `client/src/components/games/bingo-card.tsx` - Visual winner prediction
+- `client/src/components/games/winner-celebration-modal.tsx` - Mobile responsiveness
 
-### Real-Time Communication Files 🌐  
-- **`client/src/contexts/SocketContext.tsx`** - Socket.IO client management
-- **`server/middleware/auth.ts`** - Socket authentication middleware
-- **`server/logger.ts`** - Game event logging system
+### **Key Fixes Applied**:
+1. **Live Seat Updates**: **Resolved duplicate endpoint conflict** ✅ **TESTED**
+2. **Prize Distribution**: Enhanced error handling + achievement integration 🔧 **NEEDS TESTING**
+3. **Admin Speed Control**: Delayed `lobbyToGameId` cleanup (30 seconds) 🔧 **NEEDS TESTING**
+4. **Game Auto-Reset**: Ensured lobby status resets to "active" 🔧 **NEEDS TESTING**
+5. **Visual Effects**: Added glowing indicators for close-to-win rows 🔧 **NEEDS TESTING**
+
+## 📈 **PROJECT STATUS**
+
+### **Overall Progress**: **90% Operational**
+- **Core Game Engine**: ✅ Fully functional
+- **Real-time Features**: ✅ **Live seat updates working!**
+- **Admin Controls**: 🔧 **Code fixed - needs testing**
+- **User Experience**: 🔧 **Code enhanced - needs testing**
+- **Game Lifecycle**: 🔍 Auto-reset timing investigation needed
+
+### **Next Priority**:
+- **Test admin speed control** during live games
+- **Test pattern visuals** during gameplay
+- **Investigate game auto-reset timing** in `server/gameEngine.ts`
+
+## 🎯 **IMMEDIATE NEXT STEPS**
+
+1. **✅ Test live seat updates** across multiple browsers - **COMPLETED**
+2. **🧪 Test admin speed control** during live games
+3. **🧪 Test pattern visuals** during gameplay
+4. **Investigate game auto-reset timing** in `server/gameEngine.ts`
+5. **Verify all fixes** work together in production environment
+
+---
+
+**Note**: Live seat updates are now working perfectly! Other fixes have been applied but need testing to confirm they work as expected.

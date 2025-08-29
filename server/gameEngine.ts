@@ -366,11 +366,47 @@ class GameEngine {
             .where(eq(users.id, winnerId))
             .run();
           console.log(`[GAME ENGINE] Updated balance for user ${winnerId}: $${currentUser.balance} + $${totalPrize} = $${newBalance}`);
+          
+          // Trigger achievement system for game win
+          try {
+            const achievementModule = await import('./achievement-storage');
+            const newAchievements = achievementModule.achievementStorage.unlockGameWinAchievement(winnerId);
+            if (newAchievements.length > 0) {
+              console.log(`[GAME ENGINE] Unlocked ${newAchievements.length} new achievements for user ${winnerId}`);
+              // Emit achievement notification to the winner
+              this.io.to(`user_${winnerId}`).emit('achievements_unlocked', { achievements: newAchievements });
+            }
+          } catch (achievementError) {
+            console.error(`[GAME ENGINE] Failed to process achievements for user ${winnerId}:`, achievementError);
+          }
+        } else {
+          throw new Error(`Winner user ${winnerId} not found in database`);
         }
         
         await db.insert(winnersTable).values({ gameId, lobbyId: gameState.lobbyId, userId: winnerId, amount: totalPrize, note: `Auto-recorded (${userSeats.length} seats)` }).run();
+        
+        // Create wallet transaction record for admin panel
+        const { walletTransactions } = await import('../shared/schema');
+        await db.insert(walletTransactions).values({
+          userId: winnerId,
+          amount: totalPrize,
+          type: 'prize_win',
+          description: `Game ${gameId} winner prize (${userSeats.length} seats)`
+        }).run();
+        console.log(`[GAME ENGINE] Created wallet transaction record for prize distribution`);
+        
+        console.log(`[GAME ENGINE] Successfully recorded winner and updated balance for user ${winnerId}`);
       }
-    } catch {}
+    } catch (balanceError) {
+      console.error(`[GAME ENGINE] CRITICAL ERROR: Failed to update winner balance or record winner:`, balanceError);
+      // Emit error notification to admin and winner
+      this.io.to(`lobby_${gameState.lobbyId}`).emit('prize_distribution_error', {
+        gameId,
+        winnerId,
+        error: 'Failed to distribute prize - please contact admin',
+        timestamp: Date.now()
+      });
+    }
 
     // Mark lobby as finished to unlock for next round
     try { await db.update(lobbies).set({ status: 'finished' }).where(eq(lobbies.id, gameState.lobbyId)).run(); } catch {}
@@ -396,8 +432,10 @@ class GameEngine {
     // Clear pre-game cards cache so next game gets a fresh shuffle
     this.lobbyCardsCache.delete(gameState.lobbyId);
 
+    // DON'T delete the lobby mapping immediately - keep it for admin speed control
+    // until auto-reset happens (30 seconds later)
     this.gamesMap.delete(gameId);
-    this.lobbyToGameId.delete(gameState.lobbyId);
+    // this.lobbyToGameId.delete(gameState.lobbyId); // Moved to auto-reset function
 
     // Automatically reset game state after 30 seconds
     console.log(`[GAME ENGINE] Scheduling automatic reset for game ${gameId} in 30 seconds`);
@@ -435,6 +473,9 @@ class GameEngine {
       // Clear any cached snapshots for the lobby
       this.lastSnapshotByLobby.delete(lobbyId);
       this.lobbyCardsCache.delete(lobbyId);
+      
+      // Now it's safe to clear the lobby mapping (after 30 seconds)
+      this.lobbyToGameId.delete(lobbyId);
       
       // Emit reset event to all lobby participants
       this.io.to(`lobby_${lobbyId}`).emit('game_reset', {
@@ -528,8 +569,19 @@ class GameEngine {
   }
 
   setCallInterval(lobbyId: number, seconds: number) {
+    console.log(`[ADMIN SPEED] Attempting to change speed for lobby ${lobbyId}:`, {
+      gameId: this.lobbyToGameId.get(lobbyId),
+      hasState: !!this.getStateByLobby(lobbyId),
+      isRunning: this.getStateByLobby(lobbyId)?.isRunning,
+      allActiveGames: Array.from(this.gamesMap.keys()),
+      allLobbyMappings: Array.from(this.lobbyToGameId.keys())
+    });
+    
     const state = this.getStateByLobby(lobbyId);
-    if (!state || !state.isRunning) throw new Error('No active game');
+    if (!state || !state.isRunning) {
+      console.error(`[ADMIN SPEED] No active game found for lobby ${lobbyId}`);
+      throw new Error('No active game');
+    }
     
     // Convert seconds to milliseconds, minimum 1 second, maximum 5 seconds
     const ms = Math.max(1000, Math.min(5000, Math.floor(seconds * 1000)));

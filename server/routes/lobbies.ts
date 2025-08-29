@@ -269,6 +269,10 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
             const currentSeatsTaken = currentLobbyData.seatsTaken;
             
             // Notify all users in the lobby about the seat being taken
+            console.log(`[SOCKET DEBUG] About to emit seat_taken to room: ${lobbyRoom}`);
+            console.log(`[SOCKET DEBUG] IO instance exists:`, !!io);
+            console.log(`[SOCKET DEBUG] Room members:`, io.sockets.adapter.rooms.get(lobbyRoom)?.size || 0);
+            
             io.to(lobbyRoom).emit('seat_taken', {
               lobbyId,
               seatNumber,
@@ -289,8 +293,8 @@ router.post('/:id/join', authenticateToken, async (req: AuthRequest, res) => {
               timestamp: new Date().toISOString()
             });
             
-            console.log('[SOCKET] Emitted seat_taken to lobby room:', lobbyRoom);
-            console.log('[SOCKET] Emitted lobby_joined to user room:', userRoom);
+            console.log('[SOCKET] Successfully emitted seat_taken to lobby room:', lobbyRoom);
+            console.log('[SOCKET] Successfully emitted lobby_joined to user room:', userRoom);
           } catch (socketError) {
             console.error('[SOCKET] Error emitting socket events:', socketError);
             // Continue even if socket emission fails

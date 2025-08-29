@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
+import { detectRowPatternProgress } from '../../utils/patternDetection';
 
 interface BingoCardProps {
   onSeatSelect: (seatNumber: number) => void;
@@ -85,6 +86,23 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
 
   // Remove localStorage persistence as we always use server master card
   // This prevents confusion from cached random cards
+
+  // Calculate which rows are close to winning (for visual effects)
+  const getRowWinningProgress = (rowIndex: number): { isCloseToWin: boolean; isVeryClose: boolean; numbersNeeded: number } => {
+    if (!calledNumbers || bingoCard.length === 0 || !bingoCard[rowIndex]) {
+      return { isCloseToWin: false, isVeryClose: false, numbersNeeded: 5 };
+    }
+    
+    const row = bingoCard[rowIndex].map(cell => cell.value);
+    const progress = detectRowPatternProgress(row, calledNumbers);
+    const numbersNeeded = progress.numbersNeeded.length;
+    
+    return {
+      isCloseToWin: numbersNeeded <= 2 && numbersNeeded > 0, // 1-2 numbers away
+      isVeryClose: numbersNeeded === 1, // 1 number away
+      numbersNeeded
+    };
+  };
 
   // Auto-mark numbers when calledNumbers prop changes
   useEffect(() => {
@@ -181,6 +199,7 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
             const participant = participants.find(p => p.seatNumber === seatNumber);
             const isOccupied = !!participant;
             const isSelected = selectedSeats.includes(seatNumber);
+            const winProgress = getRowWinningProgress(rowIndex);
 
             return (
               <div key={rowIndex} className="contents">
@@ -203,7 +222,10 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                     !isSelected && !isOccupied && "bg-gray-100 text-gray-900 hover:bg-blue-600 hover:text-white cursor-pointer",
                     winnerSeatNumber === seatNumber && (winnerUserId && myUserId && winnerUserId === myUserId
                       ? "ring-2 ring-yellow-400 shadow-[0_0_10px_#facc15] bg-yellow-400 text-black animate-pulse"
-                      : "ring-2 ring-red-500 shadow-[0_0_10px_#ef4444] bg-red-600 text-white animate-pulse")
+                      : "ring-2 ring-red-500 shadow-[0_0_10px_#ef4444] bg-red-600 text-white animate-pulse"),
+                    // Winner prediction visual effects - only for selected seats during gameplay
+                    gamePhase === 'playing' && isSelected && winProgress.isVeryClose && "ring-2 ring-orange-400 shadow-[0_0_15px_#fb923c] animate-pulse",
+                    gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && !winProgress.isVeryClose && "ring-1 ring-amber-300 shadow-[0_0_8px_#fbbf24]"
                   )}
                 >
                   <div className="flex items-center justify-between leading-none">
@@ -212,6 +234,17 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                       {isSelected && <span className="text-[8px] sm:text-[10px] bg-white/20 rounded px-0.5 sm:px-1">✓</span>}
                       {isOccupied && !isSelected && <span className="text-[8px] sm:text-[10px]">👤</span>}
                       {!isOccupied && !isSelected && <span className="text-[8px] sm:text-[10px] opacity-50">○</span>}
+                      {/* Winner prediction indicator */}
+                      {gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && (
+                        <span className={cn(
+                          "text-[7px] sm:text-[8px] px-0.5 rounded font-bold",
+                          winProgress.isVeryClose 
+                            ? "bg-orange-400 text-white animate-pulse" 
+                            : "bg-amber-300 text-amber-900"
+                        )}>
+                          {winProgress.numbersNeeded}!
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="truncate opacity-90 leading-none text-[7px] sm:text-[9px]">
@@ -241,7 +274,12 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                         ? "!bg-gradient-to-br from-red-400 via-red-500 to-red-600 text-white font-bold shadow-[0_0_15px_#ef4444] ring-2 ring-red-400 animate-pulse"
                         : number.isMarked 
                         ? "bg-blue-600 text-white font-bold" 
-                        : "bg-gray-100 text-gray-900"
+                        : "bg-gray-100 text-gray-900",
+                        // Winner prediction for individual numbers - add subtle glow to missing numbers in close-to-win rows
+                        gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isVeryClose && 
+                          "ring-1 ring-orange-300 shadow-[0_0_8px_#fed7aa] bg-orange-50 animate-pulse",
+                        gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isCloseToWin && !winProgress.isVeryClose &&
+                          "ring-1 ring-amber-200 shadow-[0_0_4px_#fef3c7] bg-amber-50"
                     )}
                   >
                     {number.value}
