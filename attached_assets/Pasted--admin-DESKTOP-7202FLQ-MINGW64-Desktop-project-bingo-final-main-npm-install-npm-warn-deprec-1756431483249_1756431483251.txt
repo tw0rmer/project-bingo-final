@@ -1,0 +1,61 @@
+
+admin@DESKTOP-7202FLQ MINGW64 ~/Desktop/project-bingo-final (main)
+$ npm install
+npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+
+added 551 packages, and audited 552 packages in 2m
+
+72 packages are looking for funding
+  run `npm fund` for details
+
+11 vulnerabilities (3 low, 8 moderate)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+admin@DESKTOP-7202FLQ MINGW64 ~/Desktop/project-bingo-final (main)
+$ npm run dev
+
+> rest-express@1.0.0 dev
+> cross-env NODE_ENV=development tsx server/index.ts
+
+📝 Server logging initialized
+📂 Server logs: C:\Users\admin\Desktop\project-bingo-final\debugging\server-2025-08-29T01-37-11.log
+🌐 Browser logs: C:\Users\admin\Desktop\project-bingo-final\debugging\console-2025-08-29T01-37-11.log
+[DB] Using SQLite database at: C:\Users\admin\Desktop\project-bingo-final\data\bingo.db
+[DB] SQLite database initialized successfully
+[SERVER] Started with session ID: 1756431432233-zt6rpa5l6p
+[DB CLEANUP] Starting database cleanup...
+[DB CLEANUP] Pre-check: 0 participants across 3 lobbies
+[DB CLEANUP] Completed. Participants remaining: 0
+node:events:496
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+
+Node.js v22.18.0
+
+admin@DESKTOP-7202FLQ MINGW64 ~/Desktop/project-bingo-final (main)
+$
+
+
