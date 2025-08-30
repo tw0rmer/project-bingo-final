@@ -18,12 +18,10 @@ export function PatternIndicator({ patterns, className, compact = false }: Patte
     .filter(p => !p.isComplete && p.progress >= 0.4) // Show when 40% complete (2/5 numbers)
     .sort((a, b) => b.progress - a.progress)
     .slice(0, 3);
-  
-  if (closePatterns.length === 0) return null;
 
-  // Enhanced pulse effect for very close patterns
+  // Enhanced pulse effect for very close patterns - ALWAYS call hooks first
   useEffect(() => {
-    if (closePatterns[0]?.numbersNeeded.length === 1) {
+    if (closePatterns.length > 0 && closePatterns[0]?.numbersNeeded.length === 1) {
       setShowOneAway(true);
       const interval = setInterval(() => {
         setPulseIntensity(prev => prev === 1 ? 1.1 : 1);
@@ -34,6 +32,9 @@ export function PatternIndicator({ patterns, className, compact = false }: Patte
       setPulseIntensity(1);
     }
   }, [closePatterns]);
+  
+  // Early return AFTER all hooks
+  if (closePatterns.length === 0) return null;
   
   const getPatternIcon = (pattern: string) => {
     switch (pattern) {

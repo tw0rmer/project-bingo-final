@@ -163,26 +163,6 @@ export default function GamePage() {
           });
           setServerCardsBySeat(cardsBySeat);
           console.log('[GAME PAGE] Server cards by seat populated:', cardsBySeat);
-          
-          // Force immediate pattern calculation test
-          setTimeout(() => {
-            console.log('[FORCE TEST] Checking pattern calculation after 100ms delay...');
-            console.log('[FORCE TEST] serverCardsBySeat keys:', Object.keys(cardsBySeat));
-            console.log('[FORCE TEST] calledNumbers length:', calledNumbers.length);
-            
-            if (Object.keys(cardsBySeat).length > 0) {
-              // Force calculation manually to test
-              const testPatterns = Object.entries(cardsBySeat).map(([seat, card]) => {
-                const progress = calledNumbers.length > 0 ? 
-                  card.filter(n => calledNumbers.includes(n)).length / card.length : 0;
-                return { seat: parseInt(seat), progress, test: true };
-              });
-              console.log('[FORCE TEST] Manual pattern calculation result:', testPatterns);
-              
-              // Try setting pattern progress directly
-              setPatternProgress(testPatterns);
-            }
-          }, 100);
         } else {
           console.log('[GAME PAGE] Cannot convert master card - missing data');
         }
@@ -237,7 +217,6 @@ export default function GamePage() {
       if (data.gameId === game.id) {
         console.log('[SOCKET] Updating called numbers:', data.drawnNumbers);
         setCalledNumbers(data.drawnNumbers || []);
-        console.log('[STATE DEBUG] Immediately after setCalledNumbers - current calledNumbers:', calledNumbers);
         setCurrentNumber(data.number);
         setNextCallIn(5); // Reset countdown
         setGameStatus('active');
@@ -515,11 +494,8 @@ export default function GamePage() {
 
   // Update pattern progress when numbers are called or cards change
   useEffect(() => {
-    console.log('[PATTERN CALCULATION] ===== useEffect TRIGGERED =====');
-    
     // Rebuild serverCardsBySeat from participants and masterCard if it's empty
     if ((!serverCardsBySeat || Object.keys(serverCardsBySeat).length === 0) && masterCard && participants.length > 0) {
-      console.log('[PATTERN CALCULATION] serverCardsBySeat is empty, rebuilding from masterCard and participants...');
       const cardsBySeat: Record<number, number[]> = {};
       participants.forEach(participant => {
         const seatIndex = participant.seatNumber - 1;
@@ -527,35 +503,16 @@ export default function GamePage() {
           cardsBySeat[participant.seatNumber] = masterCard[seatIndex];
         }
       });
-      console.log('[PATTERN CALCULATION] Rebuilt serverCardsBySeat:', cardsBySeat);
       setServerCardsBySeat(cardsBySeat);
       return; // Exit early, will retrigger with new data
     }
     
-    console.log('[PATTERN CALCULATION] useEffect dependencies changed:', {
-      hasServerCards: !!serverCardsBySeat,
-      serverCardsCount: serverCardsBySeat ? Object.keys(serverCardsBySeat).length : 0,
-      calledNumbersCount: calledNumbers.length,
-      serverCardsBySeat: serverCardsBySeat,
-      calledNumbers: calledNumbers.slice(0, 10) // First 10 numbers
-    });
-    
     if (serverCardsBySeat && Object.keys(serverCardsBySeat).length > 0 && calledNumbers.length > 0) {
-      console.log('[PATTERN CALCULATION] Computing patterns...');
       const patterns = Object.entries(serverCardsBySeat).map(([seat, card]) => {
         const progress = detectRowPatternProgress(card, calledNumbers);
-        console.log(`[PATTERN CALCULATION] Seat ${seat}:`, {
-          card,
-          progress: progress.progress,
-          matched: progress.numbersMatched.length,
-          needed: progress.numbersNeeded.length
-        });
         return { seat: parseInt(seat), ...progress };
       });
-      console.log('[PATTERN CALCULATION] Setting pattern progress:', patterns);
       setPatternProgress(patterns);
-    } else {
-      console.log('[PATTERN CALCULATION] Conditions not met - not computing patterns');
     }
   }, [serverCardsBySeat, calledNumbers, masterCard, participants]);
 
