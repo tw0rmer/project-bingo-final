@@ -1,0 +1,204 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+SocketContext.tsx:44 [SOCKET] No authenticated user, skipping connection
+AuthContext.tsx:40 [AUTH] Checking authentication on startup...
+AuthContext.tsx:41 [AUTH] Stored token exists: true
+AuthContext.tsx:42 [AUTH] Stored server session ID: 1756536322263-ez94en4wta
+AuthContext.tsx:43 [AUTH] Full localStorage contents: Array(3)
+AuthContext.tsx:49 [AUTH] Current server session ID: 1756536322263-ez94en4wta
+AuthContext.tsx:86 [AUTH] Validating stored token...
+AuthContext.tsx:93 [AUTH] Token valid, auto-login successful: Object
+SocketContext.tsx:54 [SOCKET] Initializing connection for user: admin@bingo.com
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object
+SocketContext.tsx:73 [SOCKET] Connected successfully: VROC1eRAcDWa8O1hAAAH
+game.tsx:196 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:197 [GAME] Socket available: true
+game.tsx:198 [GAME] Socket connected: true
+game.tsx:199 [GAME] Game ID available: false
+game.tsx:196 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:197 [GAME] Socket available: true
+game.tsx:198 [GAME] Socket connected: true
+game.tsx:199 [GAME] Game ID available: true
+game.tsx:202 [SOCKET] Game page connected to game 50
+game.tsx:203 [SOCKET] Attempting to join lobby room: lobby_9
+game.tsx:204 [SOCKET] Socket connected: true
+game.tsx:205 [SOCKET] Game lobbyId: 9
+game.tsx:209 [SOCKET] ✅ Emitted join_lobby for lobby 9
+game.tsx:457 [SOCKET] Setting up event listeners...
+game.tsx:476 [SOCKET] Testing socket connection...
+game.tsx:148 [GAME PAGE] DEBUG - Master card conversion attempt: Object
+game.tsx:165 [GAME PAGE] Server cards by seat populated: Object
+game.tsx:170 [GAME PAGE] Data loaded: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:227 [SOCKET] Game started: Object
+game.tsx:234 [SOCKET] Received master card from server
+game.tsx:246 [SOCKET] Updated server cards by seat from game started: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(1)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(2)
+mobile-info-view.tsx:51 [ADMIN] Changed call speed to 1 seconds
+game.tsx:383 [SOCKET] Call speed changed: Object
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(3)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(4)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(5)
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(6)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(7)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(8)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(9)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(10)
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 10, order: 11, calledAt: 1756537320565, drawnNumbers: Array(11)}
+game.tsx:218 [SOCKET] Updating called numbers: (11) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 58, order: 12, calledAt: 1756537321564, drawnNumbers: Array(12)}
+game.tsx:218 [SOCKET] Updating called numbers: (12) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 24, order: 13, calledAt: 1756537322564, drawnNumbers: Array(13)}
+game.tsx:218 [SOCKET] Updating called numbers: (13) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 40, order: 14, calledAt: 1756537323565, drawnNumbers: Array(14)}
+game.tsx:218 [SOCKET] Updating called numbers: (14) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 53, order: 15, calledAt: 1756537324565, drawnNumbers: Array(15)}
+game.tsx:218 [SOCKET] Updating called numbers: (15) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 12, order: 16, calledAt: 1756537325565, drawnNumbers: Array(16)}
+game.tsx:218 [SOCKET] Updating called numbers: (16) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 61, order: 17, calledAt: 1756537326564, drawnNumbers: Array(17)}
+game.tsx:218 [SOCKET] Updating called numbers: (17) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 55, order: 18, calledAt: 1756537327566, drawnNumbers: Array(18)}
+game.tsx:218 [SOCKET] Updating called numbers: (18) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 31, order: 19, calledAt: 1756537328565, drawnNumbers: Array(19)}
+game.tsx:218 [SOCKET] Updating called numbers: (19) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 41, order: 20, calledAt: 1756537329565, drawnNumbers: Array(20)}
+game.tsx:218 [SOCKET] Updating called numbers: (20) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 36, order: 21, calledAt: 1756537330565, drawnNumbers: Array(21)}
+game.tsx:218 [SOCKET] Updating called numbers: (21) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 21, order: 22, calledAt: 1756537331565, drawnNumbers: Array(22)}
+game.tsx:218 [SOCKET] Updating called numbers: (22) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 19, order: 23, calledAt: 1756537332565, drawnNumbers: Array(23)}
+game.tsx:218 [SOCKET] Updating called numbers: (23) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 32, order: 24, calledAt: 1756537333565, drawnNumbers: Array(24)}
+game.tsx:218 [SOCKET] Updating called numbers: (24) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 42, order: 25, calledAt: 1756537334565, drawnNumbers: Array(25)}
+game.tsx:218 [SOCKET] Updating called numbers: (25) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 60, order: 26, calledAt: 1756537335565, drawnNumbers: Array(26)}
+game.tsx:218 [SOCKET] Updating called numbers: (26) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 14, order: 27, calledAt: 1756537336567, drawnNumbers: Array(27)}
+game.tsx:218 [SOCKET] Updating called numbers: (27) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 63, order: 28, calledAt: 1756537337566, drawnNumbers: Array(28)}
+game.tsx:218 [SOCKET] Updating called numbers: (28) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 33, order: 29, calledAt: 1756537338567, drawnNumbers: Array(29)}
+game.tsx:218 [SOCKET] Updating called numbers: (29) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 30, order: 30, calledAt: 1756537339567, drawnNumbers: Array(30)}
+game.tsx:218 [SOCKET] Updating called numbers: (30) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 57, order: 31, calledAt: 1756537340567, drawnNumbers: Array(31)}
+game.tsx:218 [SOCKET] Updating called numbers: (31) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 68, order: 32, calledAt: 1756537341569, drawnNumbers: Array(32)}
+game.tsx:218 [SOCKET] Updating called numbers: (32) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 73, order: 33, calledAt: 1756537342568, drawnNumbers: Array(33)}
+game.tsx:218 [SOCKET] Updating called numbers: (33) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 39, order: 34, calledAt: 1756537343569, drawnNumbers: Array(34)}
+game.tsx:218 [SOCKET] Updating called numbers: (34) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 56, order: 35, calledAt: 1756537344569, drawnNumbers: Array(35)}
+game.tsx:218 [SOCKET] Updating called numbers: (35) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 13, order: 36, calledAt: 1756537345569, drawnNumbers: Array(36)}
+game.tsx:218 [SOCKET] Updating called numbers: (36) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 18, order: 37, calledAt: 1756537346571, drawnNumbers: Array(37)}
+game.tsx:218 [SOCKET] Updating called numbers: (37) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 6, order: 38, calledAt: 1756537347571, drawnNumbers: Array(38)}
+game.tsx:218 [SOCKET] Updating called numbers: (38) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 45, order: 39, calledAt: 1756537348571, drawnNumbers: Array(39)}
+game.tsx:218 [SOCKET] Updating called numbers: (39) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 2, order: 40, calledAt: 1756537349571, drawnNumbers: Array(40)}
+game.tsx:218 [SOCKET] Updating called numbers: (40) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 43, order: 41, calledAt: 1756537350571, drawnNumbers: Array(41)}
+game.tsx:218 [SOCKET] Updating called numbers: (41) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 65, order: 42, calledAt: 1756537351571, drawnNumbers: Array(42)}
+game.tsx:218 [SOCKET] Updating called numbers: (42) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 5, order: 43, calledAt: 1756537352571, drawnNumbers: Array(43)}
+game.tsx:218 [SOCKET] Updating called numbers: (43) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 15, order: 44, calledAt: 1756537353571, drawnNumbers: Array(44)}
+game.tsx:218 [SOCKET] Updating called numbers: (44) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 49, order: 45, calledAt: 1756537354572, drawnNumbers: Array(45)}
+game.tsx:218 [SOCKET] Updating called numbers: (45) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 37, order: 46, calledAt: 1756537355572, drawnNumbers: Array(46)}
+game.tsx:218 [SOCKET] Updating called numbers: (46) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 66, order: 47, calledAt: 1756537356572, drawnNumbers: Array(47)}
+game.tsx:218 [SOCKET] Updating called numbers: (47) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 4, order: 48, calledAt: 1756537357572, drawnNumbers: Array(48)}
+game.tsx:218 [SOCKET] Updating called numbers: (48) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 54, order: 49, calledAt: 1756537358572, drawnNumbers: Array(49)}
+game.tsx:218 [SOCKET] Updating called numbers: (49) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 64, order: 50, calledAt: 1756537359573, drawnNumbers: Array(50)}
+game.tsx:218 [SOCKET] Updating called numbers: (50) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54, 64]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 11, order: 51, calledAt: 1756537360573, drawnNumbers: Array(51)}
+game.tsx:218 [SOCKET] Updating called numbers: (51) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54, 64, 11]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 46, order: 52, calledAt: 1756537361574, drawnNumbers: Array(52)}
+game.tsx:218 [SOCKET] Updating called numbers: (52) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54, 64, 11, 46]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 23, order: 53, calledAt: 1756537362575, drawnNumbers: Array(53)}
+game.tsx:218 [SOCKET] Updating called numbers: (53) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54, 64, 11, 46, 23]
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 22, order: 54, calledAt: 1756537363575, drawnNumbers: Array(54)}
+game.tsx:218 [SOCKET] Updating called numbers: (54) [70, 62, 29, 34, 27, 38, 3, 51, 35, 59, 10, 58, 24, 40, 53, 12, 61, 55, 31, 41, 36, 21, 19, 32, 42, 60, 14, 63, 33, 30, 57, 68, 73, 39, 56, 13, 18, 6, 45, 2, 43, 65, 5, 15, 49, 37, 66, 4, 54, 64, 11, 46, 23, 22]
+game.tsx:461 [SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====
+game.tsx:462 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"userId":1,"winningSeat":3,"winningNumbers":[5,22,33,53,63],"userSeats":[1,3],"seatCount":2,"prizeAmount":14,"totalPrizePool":20,"houseFee":6}
+game.tsx:253 [SOCKET] ===== PLAYER WON EVENT @ 1756537362783 =====
+game.tsx:254 [SOCKET] Player won data: {gameId: 50, lobbyId: 9, userId: 1, winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx:255 [SOCKET] Current user info (userInfo): null
+game.tsx:256 [SOCKET] Current user info (auth context): {id: 1, email: 'admin@bingo.com', isAdmin: true, balance: 94.5, username: undefined}
+game.tsx:257 [SOCKET] Winner user ID: 1 Current user ID: 1
+game.tsx:258 [SOCKET] Is current user the winner? true
+game.tsx:259 [SOCKET] Game ID match? 50 vs 50 = true
+game.tsx:260 [STATE] BEFORE handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:269 [GAME] Current user IS the winner, saving winner data
+game.tsx:276 [CELEBRATION] Using server-calculated prize data: {prizeAmount: 14, totalPrizePool: 20, houseFee: 6, winningSeats: Array(2), winningRow: Array(5)}
+game.tsx:292 [GAME] ===== SETTING UP WINNER CELEBRATION =====
+game.tsx:293 [GAME] Setting showCelebration to TRUE
+game.tsx:294 [GAME] Celebration data being set: {prizeAmount: 14, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 20, houseFee: 6}
+game.tsx:301 [STATE] SETTING showCelebration to TRUE @ 1756537362793
+game.tsx:302 [DEBUG] TESTING REACT BATCHING - Using flushSync to force immediate render
+game.tsx:306 [STATE] AFTER flushSync setShowCelebration(true) - showCelebration should be: true
+game.tsx:311 [WIN] Refreshing user balance after winning...
+game.tsx:355 [STATE] END handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:466 [SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====
+game.tsx:467 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"winners":[1],"winningSeat":3,"winningNumbers":[5,22,33,53,63],"endedAt":1756537363576}
+game.tsx:360 [SOCKET] ===== GAME ENDED EVENT @ 1756537362836 =====
+game.tsx:361 [DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix
+game.tsx:362 [SOCKET] Game ended data: {gameId: 50, lobbyId: 9, winners: Array(1), winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx:363 [SOCKET] Current game ID: 50
+game.tsx:364 [SOCKET] Game ID match? true
+game.tsx:365 [STATE] BEFORE handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx:372 [GAME] ===== GAME STATUS SET TO FINISHED =====
+game.tsx:373 [STATE] SETTING gameStatus to finished @ 1756537362837
+game.tsx:374 [GAME] Current showCelebration state: false
+game.tsx:375 [GAME] Current celebrationData state: null
+game.tsx:376 [STATE] AFTER setGameStatus - gameStatus should be: finished
+game.tsx:379 [STATE] END handleGameEnded - showCelebration: false, gameStatus: waiting
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537362874
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537362875 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 14, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 20, houseFee: 6}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx:315 [WIN] Balance updated: 98.5
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537363049
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537363050
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537363050 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 14, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 20, houseFee: 6}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now

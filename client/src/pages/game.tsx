@@ -494,12 +494,30 @@ export default function GamePage() {
 
   // Update pattern progress when numbers are called or cards change
   useEffect(() => {
+    console.log('[PATTERN CALCULATION] useEffect triggered:', {
+      hasServerCards: !!serverCardsBySeat,
+      serverCardsCount: serverCardsBySeat ? Object.keys(serverCardsBySeat).length : 0,
+      calledNumbersCount: calledNumbers.length,
+      serverCardsBySeat: serverCardsBySeat,
+      calledNumbers: calledNumbers.slice(0, 10) // First 10 numbers
+    });
+    
     if (serverCardsBySeat && Object.keys(serverCardsBySeat).length > 0 && calledNumbers.length > 0) {
+      console.log('[PATTERN CALCULATION] Computing patterns...');
       const patterns = Object.entries(serverCardsBySeat).map(([seat, card]) => {
         const progress = detectRowPatternProgress(card, calledNumbers);
+        console.log(`[PATTERN CALCULATION] Seat ${seat}:`, {
+          card,
+          progress: progress.progress,
+          matched: progress.numbersMatched.length,
+          needed: progress.numbersNeeded.length
+        });
         return { seat: parseInt(seat), ...progress };
       });
+      console.log('[PATTERN CALCULATION] Setting pattern progress:', patterns);
       setPatternProgress(patterns);
+    } else {
+      console.log('[PATTERN CALCULATION] Conditions not met - not computing patterns');
     }
   }, [serverCardsBySeat, calledNumbers]);
 
