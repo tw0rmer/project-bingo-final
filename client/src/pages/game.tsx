@@ -163,7 +163,26 @@ export default function GamePage() {
           });
           setServerCardsBySeat(cardsBySeat);
           console.log('[GAME PAGE] Server cards by seat populated:', cardsBySeat);
-          console.log('[STATE DEBUG] Immediately after setServerCardsBySeat - current serverCardsBySeat:', serverCardsBySeat);
+          
+          // Force immediate pattern calculation test
+          setTimeout(() => {
+            console.log('[FORCE TEST] Checking pattern calculation after 100ms delay...');
+            console.log('[FORCE TEST] serverCardsBySeat keys:', Object.keys(cardsBySeat));
+            console.log('[FORCE TEST] calledNumbers length:', calledNumbers.length);
+            
+            if (Object.keys(cardsBySeat).length > 0) {
+              // Force calculation manually to test
+              const testPatterns = Object.entries(cardsBySeat).map(([seat, card]) => {
+                const progress = calledNumbers.length > 0 ? 
+                  card.filter(n => calledNumbers.includes(n)).length / card.length : 0;
+                return { seat: parseInt(seat), progress, test: true };
+              });
+              console.log('[FORCE TEST] Manual pattern calculation result:', testPatterns);
+              
+              // Try setting pattern progress directly
+              setPatternProgress(testPatterns);
+            }
+          }, 100);
         } else {
           console.log('[GAME PAGE] Cannot convert master card - missing data');
         }
