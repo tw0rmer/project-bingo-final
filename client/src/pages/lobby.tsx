@@ -149,16 +149,25 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
           return;
         }
 
+        // Check if we have game results to display first (prevent double redirect)
+        const gameResult = sessionStorage.getItem('gameResult');
+        const hasGameResult = gameResult && JSON.parse(gameResult).timestamp && 
+                             Date.now() - JSON.parse(gameResult).timestamp < 5 * 60 * 1000;
+
         // First check if this lobby has games (new structure)
         const gamesResponse = await apiRequest<any[]>(`/lobbies/${lobbyId}/games`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        if (gamesResponse.length > 0) {
+        if (gamesResponse.length > 0 && !hasGameResult) {
           // This is a new hierarchical lobby, redirect to lobby selection page
+          // BUT only if we don't have game results to show
           console.log('[LOBBY PAGE] This is a hierarchical lobby with', gamesResponse.length, 'games. Redirecting to lobby selection.');
           setLocation(`/lobby-select/${lobbyId}`);
           return;
+        } else if (gamesResponse.length > 0 && hasGameResult) {
+          // We have game results to show, stay on this page temporarily
+          console.log('[LOBBY PAGE] Hierarchical lobby but have game results to show, staying on lobby page.');
         }
 
         // This is an old-style lobby, fetch data normally
@@ -974,7 +983,13 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
           <div className="hidden lg:block">
             <WinnerCelebrationModalEnhanced
               isOpen={showCelebration}
-              onClose={() => setShowCelebration(false)}
+              onClose={() => {
+                setShowCelebration(false);
+                // Check if this is a hierarchical lobby and redirect to lobby selection
+                setTimeout(() => {
+                  setLocation(`/lobby-select/${lobbyId}`);
+                }, 500);
+              }}
               prizeAmount={celebrationData.prizeAmount}
               winningSeats={celebrationData.winningSeats}
               winningRow={celebrationData.winningRow}
@@ -986,7 +1001,13 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
           <div className="lg:hidden">
             <WinnerCelebrationModal
               isOpen={showCelebration}
-              onClose={() => setShowCelebration(false)}
+              onClose={() => {
+                setShowCelebration(false);
+                // Check if this is a hierarchical lobby and redirect to lobby selection
+                setTimeout(() => {
+                  setLocation(`/lobby-select/${lobbyId}`);
+                }, 500);
+              }}
               prizeAmount={celebrationData.prizeAmount}
               winningSeats={celebrationData.winningSeats}
               winningRow={celebrationData.winningRow}
@@ -1024,6 +1045,10 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
                      description: "You can join the next round whenever you're ready.",
                      duration: 3000,
                    });
+                   // Check if this is a hierarchical lobby and redirect to lobby selection
+                   setTimeout(() => {
+                     setLocation(`/lobby-select/${lobbyId}`);
+                   }, 500);
                  }}
                 className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
               >
