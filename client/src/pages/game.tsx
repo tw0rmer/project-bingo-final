@@ -176,7 +176,16 @@ export default function GamePage() {
     if (!socket || !isConnected || !game?.id) return;
 
     console.log(`[SOCKET] Game page connected to game ${game.id}`);
-    socket.emit('join_lobby', game.lobbyId);
+    console.log(`[SOCKET] Attempting to join lobby room: lobby_${game.lobbyId}`);
+    console.log(`[SOCKET] Socket connected:`, socket.connected);
+    console.log(`[SOCKET] Game lobbyId:`, game.lobbyId);
+    
+    if (game.lobbyId) {
+      socket.emit('join_lobby', game.lobbyId);
+      console.log(`[SOCKET] ✅ Emitted join_lobby for lobby ${game.lobbyId}`);
+    } else {
+      console.error(`[SOCKET] ❌ No lobbyId available, cannot join lobby!`);
+    }
 
     // Listen for real-time game events
     const handleNumberCalled = (data: any) => {
