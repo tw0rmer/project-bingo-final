@@ -404,6 +404,14 @@ class GameEngine {
       const userSeats = gameState.participants?.filter(p => p.userId === winnerId) || [];
       const userSeatNumbers = userSeats.map(p => p.seatNumber);
       
+      // Calculate actual prize: 70% of total entry fees
+      const [gameWithLobby] = await db.select().from(games).innerJoin(lobbies, eq(games.lobbyId, lobbies.id)).where(eq(games.id, gameId));
+      const entryFee = gameWithLobby ? gameWithLobby.lobbies.entryFee : 5;
+      const participantCount = gameState.participants?.length || 0;
+      const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
+      const totalPool = entryFee * participantCount;
+      const houseFee = Math.floor(totalPool * 0.3 * 100) / 100;
+      
       const playerWonData = { 
         gameId, 
         lobbyId: gameState.lobbyId, 
@@ -411,7 +419,10 @@ class GameEngine {
         winningSeat,
         winningNumbers,
         userSeats: userSeatNumbers,
-        seatCount: userSeats.length
+        seatCount: userSeats.length,
+        prizeAmount: totalPrize,
+        totalPrizePool: totalPool,
+        houseFee: houseFee
       };
       console.log(`[GAME ENGINE] Emitting player_won event:`, playerWonData);
       this.io.to(`lobby_${gameState.lobbyId}`).emit('player_won', playerWonData);

@@ -232,28 +232,19 @@ export default function GamePage() {
         const currentUserId = user?.id || userInfo?.id;
         if (data.userId === currentUserId) {
           console.log('[GAME] Current user IS the winner, saving winner data');
-          // Calculate prize: 70% of total pot (NOT multiplied by seat count)
-          const entryFee = lobby?.entryFee || 5;
-          const participantCount = game?.seatsTaken || participants.length;
-          const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
           
-          console.log('[CELEBRATION] Prize calculation debug:', {
-            entryFee,
-            participantCount,
-            'participants.length': participants.length,
-            'game.seatsTaken': game?.seatsTaken,
-            totalPrize
-          });
+          // Use server-calculated prize amounts (authoritative source)
+          const totalPrize = data.prizeAmount || 0;
+          const totalPool = data.totalPrizePool || 0;
+          const houseAmount = data.houseFee || 0;
           
-          console.log('[CELEBRATION] Saving winner data for lobby display:', {
+          console.log('[CELEBRATION] Using server-calculated prize data:', {
             prizeAmount: totalPrize,
+            totalPrizePool: totalPool,
+            houseFee: houseAmount,
             winningSeats: data.userSeats || selectedSeats,
             winningRow: data.winningNumbers || []
           });
-          
-          // Calculate breakdown for display
-          const totalPool = entryFee * participantCount;
-          const houseAmount = Math.floor(totalPool * 0.3 * 100) / 100;
           
           // Show celebration modal immediately in game page
           setCelebrationData({
