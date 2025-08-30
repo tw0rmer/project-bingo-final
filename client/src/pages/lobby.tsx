@@ -102,68 +102,71 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
 
   // Check for game results from previous game
   useEffect(() => {
-    // First get the current user info to check for their specific result
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    const checkGameResults = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    // Decode the user ID from the token or get it from the API
-    // For now, try both possible user IDs (1 and 2) until we find data
-    let gameResult = null;
-    let userId = null;
-    
-    // Try to find stored game result for any user
-    for (let id = 1; id <= 10; id++) {
-      const result = sessionStorage.getItem(`gameResult_${id}`);
-      if (result) {
-        gameResult = result;
-        userId = id;
-        break;
-      }
-    }
-    
-    console.log('[LOBBY PAGE] Checking for game results for user ID:', userId, 'Result:', gameResult);
-    if (gameResult) {
+      // Get current user ID from API
       try {
-        const result = JSON.parse(gameResult);
-        console.log('[LOBBY PAGE] Parsed game result:', result);
-        // Check if result is recent (within last 5 minutes)
-        if (result.timestamp && Date.now() - result.timestamp < 5 * 60 * 1000) {
-          console.log('[LOBBY PAGE] Game result is recent, processing...');
-          if (result.type === 'winner') {
-            console.log('[LOBBY PAGE] Showing winner celebration modal');
-            setCelebrationData({
-              prizeAmount: result.prizeAmount,
-              winningSeats: result.winningSeats,
-              winningRow: result.winningRow,
-              totalPrizePool: result.totalPrizePool,
-              houseFee: result.houseFee
-            });
-            setShowCelebration(true);
-          } else if (result.type === 'loser') {
-            console.log('[LOBBY PAGE] Showing loser modal');
-            setLoserData({
-              winnerId: result.winnerId,
-              winnerName: result.winnerName,
-              winnerSeats: result.winnerSeats
-            });
-            setShowLoserModal(true);
+        const userResponse = await apiRequest<{ id: number }>('/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const currentUserId = userResponse.id;
+        console.log('[LOBBY PAGE] Current user ID:', currentUserId);
+        
+        // Check for game result for this specific user
+        const gameResult = sessionStorage.getItem(`gameResult_${currentUserId}`);
+        console.log('[LOBBY PAGE] Checking for game results for user ID:', currentUserId, 'Result:', gameResult);
+        
+        if (gameResult) {
+          try {
+            const result = JSON.parse(gameResult);
+            console.log('[LOBBY PAGE] Parsed game result:', result);
+            // Check if result is recent (within last 5 minutes)
+            if (result.timestamp && Date.now() - result.timestamp < 5 * 60 * 1000) {
+              console.log('[LOBBY PAGE] Game result is recent, processing...');
+              if (result.type === 'winner') {
+                console.log('[LOBBY PAGE] Showing winner celebration modal');
+                setCelebrationData({
+                  prizeAmount: result.prizeAmount,
+                  winningSeats: result.winningSeats,
+                  winningRow: result.winningRow,
+                  totalPrizePool: result.totalPrizePool,
+                  houseFee: result.houseFee
+                });
+                setShowCelebration(true);
+              } else if (result.type === 'loser') {
+                console.log('[LOBBY PAGE] Showing loser modal');
+                setLoserData({
+                  winnerId: result.winnerId,
+                  winnerName: result.winnerName,
+                  winnerSeats: result.winnerSeats
+                });
+                setShowLoserModal(true);
+              }
+              // Clear the stored result after a delay to ensure modal is rendered
+              setTimeout(() => {
+                sessionStorage.removeItem(`gameResult_${currentUserId}`);
+                console.log('[LOBBY PAGE] Cleared game result from sessionStorage for user:', currentUserId);
+              }, 1000);
+            } else {
+              console.log('[LOBBY PAGE] Game result is too old, clearing...');
+              sessionStorage.removeItem(`gameResult_${currentUserId}`);
+            }
+          } catch (e) {
+            console.error('Failed to parse game result:', e);
+            sessionStorage.removeItem(`gameResult_${currentUserId}`);
           }
-          // Clear the stored result after a delay to ensure modal is rendered
-          setTimeout(() => {
-            sessionStorage.removeItem(`gameResult_${userId}`);
-            console.log('[LOBBY PAGE] Cleared game result from sessionStorage for user:', userId);
-          }, 1000);
         } else {
-          console.log('[LOBBY PAGE] Game result is too old, clearing...');
-          sessionStorage.removeItem(`gameResult_${userId}`);
+          console.log('[LOBBY PAGE] No game result found in sessionStorage');
         }
-      } catch (e) {
-        console.error('Failed to parse game result:', e);
-        sessionStorage.removeItem(`gameResult_${userId}`);
+      } catch (error) {
+        console.error('[LOBBY PAGE] Error getting user info:', error);
       }
-    } else {
-      console.log('[LOBBY PAGE] No game result found in sessionStorage');
-    }
+    };
+    
+    checkGameResults();
   }, []);
 
   // Check if this is a new hierarchical lobby and redirect to game selection
