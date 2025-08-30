@@ -28,15 +28,20 @@ export function WinnerCelebrationModalEnhanced({
   const [coinAnimation, setCoinAnimation] = useState(false);
 
   useEffect(() => {
+    console.log(`[MODAL] useEffect triggered - isOpen: ${isOpen} @ ${Date.now()}`);
     if (isOpen) {
+      console.log(`[MODAL] ===== MODAL MOUNTING @ ${Date.now()} =====`);
+      console.log('[MODAL] Props received:', { prizeAmount, winningSeats, winningRow, totalPrizePool, houseFee });
       setTimeLeft(duration);
       setShowConfetti(true);
       setCoinAnimation(true);
+      console.log(`[MODAL] Modal state initialized, DOM should be visible now`);
       
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
+            console.log(`[MODAL] Timer expired, calling onClose @ ${Date.now()}`);
             onClose();
             return 0;
           }
@@ -44,7 +49,12 @@ export function WinnerCelebrationModalEnhanced({
         });
       }, 1000);
 
-      return () => clearInterval(timer);
+      return () => {
+        console.log(`[MODAL] Cleanup - clearing timer @ ${Date.now()}`);
+        clearInterval(timer);
+      };
+    } else {
+      console.log(`[MODAL] isOpen is false, modal should not render @ ${Date.now()}`);
     }
   }, [isOpen, duration, onClose]);
 

@@ -1,0 +1,131 @@
+# 🧑‍💻 Professional Debugging Prompt for AI Agent
+
+You are acting as a **senior debugging engineer** tasked with resolving
+the **winner/loser modal issue** in the **WildCard Premium Bingo**
+project.\
+Your role is not just to patch the issue but to **systematically
+investigate, isolate, and resolve** the underlying cause, while leaving
+behind a reliable and maintainable solution.
+
+------------------------------------------------------------------------
+
+## 🎯 **Primary Goal**
+
+Guarantee that the **winner and loser celebration modals** display
+reliably after each completed game, triggered by **real socket events**,
+and that the fix is proven stable under real-world play conditions.
+
+------------------------------------------------------------------------
+
+## 🏗️ **System Context**
+
+-   **Frontend**: React 18 + TypeScript, Wouter, Tailwind, shadcn/ui,
+    TanStack Query, Vite
+-   **Backend**: Node.js + Express, SQLite (Drizzle ORM), Socket.IO
+-   **Game Engine Flow**:
+    `waiting → starting → running → finished → reset`
+-   **Key Events**:
+    -   Server emits: `player_won`, `game_ended`, `game_reset`
+    -   Client listens: updates UI, triggers modal, triggers toasts
+
+------------------------------------------------------------------------
+
+## 🐛 **Problem Summary**
+
+-   Modal **works with test button** but fails during real gameplay.
+-   `showCelebration` state is toggled to `true`, but modal does not
+    render.
+-   Toast notifications confirm socket events are firing and being
+    received.
+-   Logs prove both **player_won** and **game_ended** events arrive,
+    often within **milliseconds of each other**.
+-   Strong suspicion: **React state race condition** or **component
+    lifecycle conflict**.
+
+------------------------------------------------------------------------
+
+## 🔬 **Step-by-Step Debugging Methodology**
+
+### **Phase 1: Verification & Observation**
+
+1.  Add **precise timestamp logging** (`Date.now()`) for both
+    `player_won` and `game_ended` reception in the frontend.
+2.  Log all state transitions (`showCelebration`, `gameStatus`)
+    immediately before and after socket event handlers run.
+3.  Confirm whether modal DOM node mounts at all (via React DevTools or
+    console logs inside modal `useEffect`).
+
+------------------------------------------------------------------------
+
+### **Phase 2: Isolation of Cause**
+
+1.  **Race Condition Check**:
+    -   Temporarily disable `game_ended` handler logic and confirm modal
+        appears from `player_won` alone.
+    -   Re-enable `game_ended` and apply `setTimeout(..., 100)` delay to
+        confirm interference hypothesis.
+2.  **React Batching Check**:
+    -   Wrap `setShowCelebration(true)` inside `flushSync` to bypass
+        batching and test modal render behavior.
+3.  **Unmount Check**:
+    -   Add cleanup logs to parent components (`game.tsx`) to see if
+        component resets before modal can display.
+
+------------------------------------------------------------------------
+
+### **Phase 3: Controlled Fix Implementation**
+
+1.  If race condition confirmed:
+    -   Ensure `player_won` modal opens immediately and **ignore
+        premature game reset** until modal is closed or timer expires.
+2.  If batching issue confirmed:
+    -   Always trigger modal state updates using `flushSync` or
+        controlled state hooks with refs to guarantee render.
+3.  If unmount confirmed:
+    -   Decouple modal container from game state lifecycle (mount it
+        globally in layout and control via global state).
+
+------------------------------------------------------------------------
+
+### **Phase 4: Validation & Hardening**
+
+1.  Test under different scenarios:
+    -   Single winner game
+    -   Multi-seat player
+    -   Rapid back-to-back games
+2.  Validate modals are visible, dismissible, and not hidden by
+    CSS/z-index.
+3.  Ensure toasts and modals coexist without race conditions.
+4.  Confirm fix persists after full auto-reset cycle.
+
+------------------------------------------------------------------------
+
+## 📂 **Files to Inspect & Modify**
+
+-   **Frontend**:
+    -   `client/src/pages/game.tsx` → Socket listeners and modal state
+        logic
+    -   `client/src/components/games/winner-celebration-modal-enhanced.tsx`
+        → Modal rendering and lifecycle
+-   **Backend**:
+    -   `server/gameEngine.ts` → Event emission ordering (`player_won`
+        vs `game_ended`)
+
+------------------------------------------------------------------------
+
+## ✅ **Definition of Done**
+
+-   Modals **always render reliably** after game completion.
+-   Root cause documented and fix implemented in code (not just a
+    temporary hack).
+-   Logs demonstrate no overlapping state conflicts remain.
+-   QA tests confirm correct behavior in simulated and real games.
+-   Solution is **resilient, debuggable, and maintainable**.
+
+------------------------------------------------------------------------
+
+⚡ **Final Instruction**:\
+Act as a professional debugger: work methodically, document your
+reasoning at each step, and deliver a full updated code block for every
+modification. Do not shortcut or assume---verify each hypothesis until
+the root cause is fully resolved.
