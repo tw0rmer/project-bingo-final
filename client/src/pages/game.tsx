@@ -200,10 +200,12 @@ export default function GamePage() {
     };
 
     const handlePlayerWon = (data: any) => {
-      console.log('[SOCKET] Player won:', data);
+      console.log('[SOCKET] ===== PLAYER WON EVENT RECEIVED =====');
+      console.log('[SOCKET] Player won data:', data);
       console.log('[SOCKET] Current user info:', userInfo);
       console.log('[SOCKET] Winner user ID:', data.userId, 'Current user ID:', userInfo?.id);
       console.log('[SOCKET] Is current user the winner?', data.userId === userInfo?.id);
+      console.log('[SOCKET] Game ID match?', data.gameId, 'vs', game.id, '=', data.gameId === game.id);
       
       if (data.gameId === game.id) {
         setWinner({ userId: data.userId, seatNumber: data.winningSeat || data.seatNumber });
@@ -236,10 +238,14 @@ export default function GamePage() {
             houseFee: houseAmount
           });
           setShowCelebration(true);
-          console.log('[GAME] Showing winner celebration modal with data:', {
+          console.log('[GAME] ===== SETTING UP WINNER CELEBRATION =====');
+          console.log('[GAME] Setting showCelebration to TRUE');
+          console.log('[GAME] Celebration data being set:', {
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
-            winningRow: data.winningNumbers || []
+            winningRow: data.winningNumbers || [],
+            totalPrizePool: totalPool,
+            houseFee: houseAmount
           });
           
           // CRITICAL: Refresh user balance after winning
@@ -281,7 +287,12 @@ export default function GamePage() {
             description: `${winnerDisplay} won this game! Better luck next time.`,
             duration: 5000,
           });
-          console.log('[GAME] Showing game over toast for loser. Winner:', winnerDisplay);
+          console.log('[GAME] ===== SETTING UP LOSER TOAST =====');
+          console.log('[GAME] Current user is LOSER. Winner:', winnerDisplay);
+          console.log('[GAME] Toast data:', {
+            title: "Game Over",
+            description: `${winnerDisplay} won this game! Better luck next time.`
+          });
           
           // Redirect losers after 3 seconds
           setTimeout(() => {
@@ -293,13 +304,18 @@ export default function GamePage() {
     };
 
     const handleGameEnded = (data: any) => {
-      console.log('[SOCKET] Game ended:', data);
+      console.log('[SOCKET] ===== GAME ENDED EVENT RECEIVED =====');
+      console.log('[SOCKET] Game ended data:', data);
+      console.log('[SOCKET] Current game ID:', game.id);
+      console.log('[SOCKET] Game ID match?', data.gameId === game.id);
       if (data.gameId === game.id) {
         setGameStatus('finished');
         
         // Don't redirect immediately - let modals show first
         // Redirect will happen when modal closes or after timeout
-        console.log('[GAME] Game ended - modals will handle redirect timing');
+        console.log('[GAME] ===== GAME STATUS SET TO FINISHED =====');
+        console.log('[GAME] Current showCelebration state:', showCelebration);
+        console.log('[GAME] Current celebrationData state:', celebrationData);
       }
     };
 
@@ -754,6 +770,12 @@ export default function GamePage() {
           <div>Show Celebration: {showCelebration ? 'YES' : 'NO'}</div>
           <div>Celebration Data: {celebrationData ? 'YES' : 'NO'}</div>
           <div>Winner: {winner ? `User ${winner.userId}, Seat ${winner.seatNumber}` : 'None'}</div>
+          {celebrationData && (
+            <div className="mt-1 text-xs">
+              <div>Prize: ${celebrationData.prizeAmount}</div>
+              <div>Seats: {celebrationData.winningSeats?.join(',') || 'None'}</div>
+            </div>
+          )}
           {patternProgress.length > 0 && (
             <div className="mt-2">
               <div className="font-bold">Pattern Details:</div>

@@ -404,7 +404,7 @@ class GameEngine {
       const userSeats = gameState.participants?.filter(p => p.userId === winnerId) || [];
       const userSeatNumbers = userSeats.map(p => p.seatNumber);
       
-      this.io.to(`lobby_${gameState.lobbyId}`).emit('player_won', { 
+      const playerWonData = { 
         gameId, 
         lobbyId: gameState.lobbyId, 
         userId: winnerId,
@@ -412,17 +412,21 @@ class GameEngine {
         winningNumbers,
         userSeats: userSeatNumbers,
         seatCount: userSeats.length
-      });
+      };
+      console.log(`[GAME ENGINE] Emitting player_won event:`, playerWonData);
+      this.io.to(`lobby_${gameState.lobbyId}`).emit('player_won', playerWonData);
     }
 
-    this.io.to(`lobby_${gameState.lobbyId}`).emit('game_ended', {
+    const gameEndedData = {
       gameId,
       lobbyId: gameState.lobbyId,
       winners: winnerId ? [winnerId] : [],
       winningSeat,
       winningNumbers,
       endedAt: Date.now(),
-    });
+    };
+    console.log(`[GAME ENGINE] Emitting game_ended event:`, gameEndedData);
+    this.io.to(`lobby_${gameState.lobbyId}`).emit('game_ended', gameEndedData);
 
     // Persist winner row for public page if present and update balance
     try {
