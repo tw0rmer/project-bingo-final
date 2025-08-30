@@ -985,9 +985,11 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
               isOpen={showCelebration}
               onClose={() => {
                 setShowCelebration(false);
-                // Check if this is a hierarchical lobby and redirect to lobby selection
+                // Use the original lobby ID from the session data
+                const gameResult = sessionStorage.getItem('gameResult');
+                const originalLobbyId = gameResult ? JSON.parse(gameResult).originalLobbyId : lobbyId;
                 setTimeout(() => {
-                  setLocation(`/lobby-select/${lobbyId}`);
+                  setLocation(`/lobby-select/${originalLobbyId}`);
                 }, 500);
               }}
               prizeAmount={celebrationData.prizeAmount}
@@ -1003,9 +1005,11 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
               isOpen={showCelebration}
               onClose={() => {
                 setShowCelebration(false);
-                // Check if this is a hierarchical lobby and redirect to lobby selection
+                // Use the original lobby ID from the session data
+                const gameResult = sessionStorage.getItem('gameResult');
+                const originalLobbyId = gameResult ? JSON.parse(gameResult).originalLobbyId : lobbyId;
                 setTimeout(() => {
-                  setLocation(`/lobby-select/${lobbyId}`);
+                  setLocation(`/lobby-select/${originalLobbyId}`);
                 }, 500);
               }}
               prizeAmount={celebrationData.prizeAmount}
@@ -1045,9 +1049,11 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
                      description: "You can join the next round whenever you're ready.",
                      duration: 3000,
                    });
-                   // Check if this is a hierarchical lobby and redirect to lobby selection
+                   // Use the original lobby ID from the session data
+                   const gameResult = sessionStorage.getItem('gameResult');
+                   const originalLobbyId = gameResult ? JSON.parse(gameResult).originalLobbyId : lobbyId;
                    setTimeout(() => {
-                     setLocation(`/lobby-select/${lobbyId}`);
+                     setLocation(`/lobby-select/${originalLobbyId}`);
                    }, 500);
                  }}
                 className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"

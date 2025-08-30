@@ -230,6 +230,7 @@ export default function GamePage() {
             winningRow: data.winningNumbers || [],
             totalPrizePool: totalPool,
             houseFee: houseAmount,
+            originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
             timestamp: Date.now()
           }));
           
@@ -269,6 +270,7 @@ export default function GamePage() {
             winnerId: data.userId,
             winnerName: winnerDisplay,
             winnerSeats: data.userSeats || [data.winningSeat || data.seatNumber],
+            originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
             timestamp: Date.now()
           }));
           
