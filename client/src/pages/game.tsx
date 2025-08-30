@@ -145,16 +145,26 @@ export default function GamePage() {
         setUserInfo(userResponse);
 
         // Convert master card to serverCardsBySeat format for pattern detection
+        console.log('[GAME PAGE] DEBUG - Master card conversion attempt:', {
+          hasMasterCard: !!receivedMasterCard,
+          masterCardLength: receivedMasterCard?.length,
+          participantsCount: participantsData.participants?.length,
+          participants: participantsData.participants
+        });
+        
         if (receivedMasterCard && participantsData.participants) {
           const cardsBySeat: Record<number, number[]> = {};
           participantsData.participants.forEach(participant => {
             const seatIndex = participant.seatNumber - 1; // Convert 1-based to 0-based
             if (seatIndex >= 0 && seatIndex < receivedMasterCard.length) {
               cardsBySeat[participant.seatNumber] = receivedMasterCard[seatIndex];
+              console.log(`[GAME PAGE] Added seat ${participant.seatNumber}: ${receivedMasterCard[seatIndex]}`);
             }
           });
           setServerCardsBySeat(cardsBySeat);
           console.log('[GAME PAGE] Server cards by seat populated:', cardsBySeat);
+        } else {
+          console.log('[GAME PAGE] Cannot convert master card - missing data');
         }
 
         console.log('[GAME PAGE] Data loaded:', {
@@ -860,6 +870,8 @@ export default function GamePage() {
           <div>Pattern Progress: {patternProgress.length} patterns</div>
           <div>Called Numbers: {calledNumbers.length} numbers</div>
           <div>Server Cards: {Object.keys(serverCardsBySeat).length} seats</div>
+          <div>Master Card: {masterCard ? 'YES' : 'NO'}</div>
+          <div>Participants: {participants.length} total</div>
           <div>Game Status: {gameStatus}</div>
           <div>Show Celebration: {showCelebration ? 'YES' : 'NO'}</div>
           <div>Celebration Data: {celebrationData ? 'YES' : 'NO'}</div>
