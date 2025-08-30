@@ -227,22 +227,20 @@ export default function GamePage() {
           const totalPool = entryFee * participantCount;
           const houseAmount = Math.floor(totalPool * 0.3 * 100) / 100;
           
-          // Save to sessionStorage for lobby to display
-          const winnerGameResult = {
-            type: 'winner',
+          // Show celebration modal immediately in game page
+          setCelebrationData({
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
             winningRow: data.winningNumbers || [],
             totalPrizePool: totalPool,
-            houseFee: houseAmount,
-            originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
-            timestamp: Date.now()
-          };
-          console.log('[GAME] Saving winner game result to sessionStorage:', winnerGameResult);
-          sessionStorage.setItem(`gameResult_${userInfo?.id}`, JSON.stringify(winnerGameResult));
-          
-          // Don't show modal here - will show in lobby after redirect
-          // setShowCelebration(true);
+            houseFee: houseAmount
+          });
+          setShowCelebration(true);
+          console.log('[GAME] Showing winner celebration modal with data:', {
+            prizeAmount: totalPrize,
+            winningSeats: data.userSeats || selectedSeats,
+            winningRow: data.winningNumbers || []
+          });
           
           // CRITICAL: Refresh user balance after winning
           const token = localStorage.getItem('token');
@@ -261,10 +259,14 @@ export default function GamePage() {
             }).catch(console.error);
           }
           
-          // Auto-close celebration after 30 seconds
+          // Auto-close celebration after 10 seconds and redirect to lobby
           setTimeout(() => {
             setShowCelebration(false);
-          }, 30000);
+            console.log('[GAME] Redirecting winner to lobby after celebration...');
+            setTimeout(() => {
+              setLocation(`/lobby/${game.lobbyId}`);
+            }, 1000);
+          }, 10000);
         } else {
           console.log('[GAME] Current user is NOT the winner, saving loser data');
           // Save loser data for other players
@@ -273,19 +275,19 @@ export default function GamePage() {
           const winnerDisplay = winnerEmail.split('@')[0];
           console.log('[GAME] Winner participant:', winnerParticipant, 'Winner display name:', winnerDisplay);
           
-          // Save to sessionStorage for lobby to display
-          const loserGameResult = {
-            type: 'loser',
-            winnerId: data.userId,
-            winnerName: winnerDisplay,
-            winnerSeats: data.userSeats || [data.winningSeat || data.seatNumber],
-            originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
-            timestamp: Date.now()
-          };
-          console.log('[GAME] Saving loser game result to sessionStorage:', loserGameResult);
-          sessionStorage.setItem(`gameResult_${userInfo?.id}`, JSON.stringify(loserGameResult));
+          // Show toast for losers and redirect after delay
+          toast({
+            title: "Game Over",
+            description: `${winnerDisplay} won this game! Better luck next time.`,
+            duration: 5000,
+          });
+          console.log('[GAME] Showing game over toast for loser. Winner:', winnerDisplay);
           
-          // Don't show toast here - will show in lobby after redirect
+          // Redirect losers after 3 seconds
+          setTimeout(() => {
+            console.log('[GAME] Redirecting loser to lobby after toast...');
+            setLocation(`/lobby/${game.lobbyId}`);
+          }, 3000);
         }
       }
     };
@@ -295,12 +297,9 @@ export default function GamePage() {
       if (data.gameId === game.id) {
         setGameStatus('finished');
         
-        // Immediately redirect ALL players to lobby
-        // The winner/loser modals will show in the lobby
-        console.log('[GAME] Redirecting all players to lobby...');
-        setTimeout(() => {
-          setLocation(`/lobby/${game.lobbyId}`);
-        }, 1000); // Small delay to ensure data is saved
+        // Don't redirect immediately - let modals show first
+        // Redirect will happen when modal closes or after timeout
+        console.log('[GAME] Game ended - modals will handle redirect timing');
       }
     };
 
@@ -706,7 +705,24 @@ export default function GamePage() {
         />
       </div>
 
-      {/* Modals now display in lobby after redirect - keeping for fallback */}
+      {/* Winner Celebration Modal */}
+      {showCelebration && celebrationData && (
+        <WinnerCelebrationModalEnhanced
+          isOpen={showCelebration}
+          onClose={() => {
+            setShowCelebration(false);
+            console.log('[GAME] User closed celebration modal, redirecting to lobby...');
+            setTimeout(() => {
+              setLocation(`/lobby/${game.lobbyId}`);
+            }, 500);
+          }}
+          prizeAmount={celebrationData.prizeAmount}
+          winningSeats={celebrationData.winningSeats}
+          winningRow={celebrationData.winningRow}
+          totalPrizePool={celebrationData.totalPrizePool}
+          houseFee={celebrationData.houseFee}
+        />
+      )}
       
       {/* Emoji Reactions - Only show during active games and when authenticated */}
       {gameStatus === 'active' && game && lobby && userInfo && isConnected && (
