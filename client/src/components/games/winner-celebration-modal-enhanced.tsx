@@ -127,104 +127,104 @@ export function WinnerCelebrationModalEnhanced({
         ))}
       </div>
 
-      {/* Main Modal - Enhanced for Desktop */}
-      <div className="relative max-w-4xl w-full mx-4 lg:mx-8">
+      {/* Main Modal - Optimized for Mobile and Desktop */}
+      <div className="relative max-w-sm sm:max-w-lg lg:max-w-4xl w-full mx-2 sm:mx-4 lg:mx-8 max-h-[95vh] overflow-auto">
         {/* Outer Glow Ring */}
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 rounded-3xl blur-3xl opacity-30 animate-pulse-slow"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 rounded-2xl lg:rounded-3xl blur-2xl lg:blur-3xl opacity-30 animate-pulse-slow"></div>
         
         {/* Card Container */}
-        <div className="relative bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 rounded-3xl p-1 animate-modal-slide-up">
+        <div className="relative bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 rounded-2xl lg:rounded-3xl p-1 animate-modal-slide-up">
           {/* Inner Card */}
-          <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-3xl p-8 lg:p-12">
+          <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-12">
             
             {/* Timer Badge */}
-            <div className="absolute top-6 right-6 bg-gradient-to-r from-red-600 to-red-700 rounded-full px-4 py-2 text-white font-bold animate-pulse">
+            <div className="absolute top-3 right-3 lg:top-6 lg:right-6 bg-gradient-to-r from-red-600 to-red-700 rounded-full px-2 py-1 lg:px-4 lg:py-2 text-white text-sm lg:text-base font-bold animate-pulse">
               {timeLeft}s
             </div>
 
             {/* Content Grid for Desktop */}
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12">
               
               {/* Left Side - Trophy and Title */}
-              <div className="text-center lg:text-left space-y-6">
+              <div className="text-center lg:text-left space-y-3 sm:space-y-4 lg:space-y-6">
                 {/* Animated Trophy */}
-                <div className="relative mx-auto lg:mx-0 w-32 h-32 lg:w-40 lg:h-40">
-                  <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 to-amber-500 rounded-full animate-spin-slow blur-xl opacity-50"></div>
+                <div className="relative mx-auto lg:mx-0 w-20 h-20 sm:w-28 sm:h-28 lg:w-40 lg:h-40">
+                  <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 to-amber-500 rounded-full animate-spin-slow blur-lg lg:blur-xl opacity-50"></div>
                   <div className="absolute inset-0 bg-gradient-to-b from-amber-400 to-yellow-500 rounded-full flex items-center justify-center animate-float">
-                    <Trophy className="w-20 h-20 lg:w-24 lg:h-24 text-white drop-shadow-2xl" />
+                    <Trophy className="w-12 h-12 sm:w-16 sm:h-16 lg:w-24 lg:h-24 text-white drop-shadow-2xl" />
                   </div>
-                  <Crown className="absolute -top-4 -right-4 w-12 h-12 text-yellow-400 animate-bounce-slow" />
-                  <Gem className="absolute -bottom-4 -left-4 w-10 h-10 text-purple-400 animate-pulse" />
-                  <Star className="absolute top-0 left-0 w-8 h-8 text-amber-400 animate-spin" />
+                  <Crown className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 lg:-top-4 lg:-right-4 w-6 h-6 sm:w-8 sm:h-8 lg:w-12 lg:h-12 text-yellow-400 animate-bounce-slow" />
+                  <Gem className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 lg:-bottom-4 lg:-left-4 w-5 h-5 sm:w-7 sm:h-7 lg:w-10 lg:h-10 text-purple-400 animate-pulse" />
+                  <Star className="absolute top-0 left-0 w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-400 animate-spin" />
                 </div>
 
                 {/* Winner Text */}
-                <div className="space-y-3">
-                  <h1 className="text-5xl lg:text-7xl font-black bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent animate-text-glow">
+                <div className="space-y-1 sm:space-y-2 lg:space-y-3">
+                  <h1 className="text-3xl sm:text-4xl lg:text-7xl font-black bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent animate-text-glow">
                     WINNER!
                   </h1>
-                  <p className="text-2xl lg:text-3xl font-bold text-white animate-fade-in">
+                  <p className="text-lg sm:text-xl lg:text-3xl font-bold text-white animate-fade-in">
                     🎊 Incredible Victory! 🎊
                   </p>
                   <div className="flex items-center justify-center lg:justify-start gap-2 text-amber-400">
-                    <Sparkles className="w-6 h-6 animate-pulse" />
-                    <span className="text-lg font-medium">Champion Status Achieved</span>
-                    <Sparkles className="w-6 h-6 animate-pulse" />
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 animate-pulse" />
+                    <span className="text-sm sm:text-base lg:text-lg font-medium">Champion Status</span>
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 animate-pulse" />
                   </div>
                 </div>
               </div>
 
               {/* Right Side - Prize and Details */}
-              <div className="space-y-6">
+              <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                 {/* Prize Display - Animated Counter */}
-                <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-2xl p-6 border-2 border-green-400/50 backdrop-blur-sm">
-                  <div className="text-center space-y-4">
-                    <div className="flex items-center justify-center gap-3">
-                      <DollarSign className="w-10 h-10 text-green-400 animate-bounce" />
-                      <span className="text-5xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text animate-count-up">
+                <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border-2 border-green-400/50 backdrop-blur-sm">
+                  <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
+                    <div className="flex items-center justify-center gap-2 lg:gap-3">
+                      <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-green-400 animate-bounce" />
+                      <span className="text-3xl sm:text-4xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text animate-count-up">
                         {prizeAmount.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-green-400">
-                      <TrendingUp className="w-5 h-5" />
-                      <span className="text-lg font-bold">Added to Balance!</span>
+                      <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5" />
+                      <span className="text-sm sm:text-base lg:text-lg font-bold">Added to Balance!</span>
                     </div>
                   </div>
 
                   {/* Prize Breakdown with Animation */}
                   {totalPrizePool && houseFee !== undefined && (
-                    <div className="mt-6 bg-black/30 rounded-xl p-4 space-y-2 animate-slide-in">
-                      <div className="flex justify-between text-gray-400">
+                    <div className="mt-3 sm:mt-4 lg:mt-6 bg-black/30 rounded-lg lg:rounded-xl p-2 sm:p-3 lg:p-4 space-y-1 sm:space-y-2 animate-slide-in">
+                      <div className="flex justify-between text-gray-400 text-xs sm:text-sm">
                         <span>Prize Pool:</span>
                         <span className="font-bold text-white">${totalPrizePool.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between text-gray-400">
+                      <div className="flex justify-between text-gray-400 text-xs sm:text-sm">
                         <span>House (30%):</span>
                         <span className="font-bold text-red-400">-${houseFee.toFixed(2)}</span>
                       </div>
-                      <div className="border-t border-green-400/30 pt-2 flex justify-between text-green-400 font-bold text-lg">
+                      <div className="border-t border-green-400/30 pt-1 sm:pt-2 flex justify-between text-green-400 font-bold text-sm sm:text-base lg:text-lg">
                         <span>Your Win:</span>
-                        <span className="text-xl">${prizeAmount.toFixed(2)}</span>
+                        <span className="text-base sm:text-lg lg:text-xl">${prizeAmount.toFixed(2)}</span>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Winning Details Card */}
-                <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-5 border border-purple-400/30 backdrop-blur-sm">
-                  <div className="space-y-3">
+                <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-lg lg:rounded-xl p-3 sm:p-4 lg:p-5 border border-purple-400/30 backdrop-blur-sm">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-center gap-2 text-purple-300">
-                      <Gift className="w-5 h-5" />
-                      <span className="font-bold">Winning Details</span>
+                      <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="font-bold text-sm sm:text-base">Winning Details</span>
                     </div>
-                    <p className="text-white font-medium">
+                    <p className="text-white font-medium text-sm sm:text-base">
                       {formatSeats(winningSeats)}
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
                       {winningRow.map((num, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white font-bold animate-number-pop"
+                          className="px-2 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-md lg:rounded-lg text-white text-xs sm:text-sm font-bold animate-number-pop"
                           style={{ animationDelay: `${i * 0.1}s` }}
                         >
                           {num}
@@ -232,7 +232,7 @@ export function WinnerCelebrationModalEnhanced({
                       ))}
                     </div>
                     {winningSeats.length > 1 && (
-                      <div className="bg-yellow-500/20 rounded-lg p-2 text-yellow-300 text-sm font-bold animate-pulse">
+                      <div className="bg-yellow-500/20 rounded-md lg:rounded-lg p-2 text-yellow-300 text-xs sm:text-sm font-bold animate-pulse">
                         🎯 Multi-Seat Bonus Active! x{winningSeats.length}
                       </div>
                     )}
@@ -242,7 +242,7 @@ export function WinnerCelebrationModalEnhanced({
                 {/* Action Button */}
                 <button
                   onClick={onClose}
-                  className="w-full bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 hover:from-yellow-600 hover:via-amber-600 hover:to-yellow-600 text-black font-black text-xl py-4 rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-slow shadow-2xl"
+                  className="w-full bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 hover:from-yellow-600 hover:via-amber-600 hover:to-yellow-600 text-black font-black text-base sm:text-lg lg:text-xl py-3 sm:py-4 rounded-lg lg:rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-slow shadow-2xl"
                 >
                   CLAIM & CONTINUE
                 </button>
