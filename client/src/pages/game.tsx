@@ -234,8 +234,16 @@ export default function GamePage() {
           console.log('[GAME] Current user IS the winner, saving winner data');
           // Calculate prize: 70% of total pot (NOT multiplied by seat count)
           const entryFee = lobby?.entryFee || 5;
-          const participantCount = participants.length;
+          const participantCount = game?.seatsTaken || participants.length;
           const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
+          
+          console.log('[CELEBRATION] Prize calculation debug:', {
+            entryFee,
+            participantCount,
+            'participants.length': participants.length,
+            'game.seatsTaken': game?.seatsTaken,
+            totalPrize
+          });
           
           console.log('[CELEBRATION] Saving winner data for lobby display:', {
             prizeAmount: totalPrize,
