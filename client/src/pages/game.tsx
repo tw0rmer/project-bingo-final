@@ -201,12 +201,17 @@ export default function GamePage() {
 
     const handlePlayerWon = (data: any) => {
       console.log('[SOCKET] Player won:', data);
+      console.log('[SOCKET] Current user info:', userInfo);
+      console.log('[SOCKET] Winner user ID:', data.userId, 'Current user ID:', userInfo?.id);
+      console.log('[SOCKET] Is current user the winner?', data.userId === userInfo?.id);
+      
       if (data.gameId === game.id) {
         setWinner({ userId: data.userId, seatNumber: data.winningSeat || data.seatNumber });
         setGameStatus('finished');
         
         // Save celebration data to sessionStorage to show in lobby
         if (data.userId === userInfo?.id) {
+          console.log('[GAME] Current user IS the winner, saving winner data');
           // Calculate prize: 70% of total pot (NOT multiplied by seat count)
           const entryFee = lobby?.entryFee || 5;
           const participantCount = participants.length;
@@ -261,10 +266,12 @@ export default function GamePage() {
             setShowCelebration(false);
           }, 30000);
         } else {
+          console.log('[GAME] Current user is NOT the winner, saving loser data');
           // Save loser data for other players
           const winnerParticipant = participants.find(p => p.userId === data.userId);
           const winnerEmail = winnerParticipant?.user?.email || 'Unknown Player';
           const winnerDisplay = winnerEmail.split('@')[0];
+          console.log('[GAME] Winner participant:', winnerParticipant, 'Winner display name:', winnerDisplay);
           
           // Save to sessionStorage for lobby to display
           const loserGameResult = {
