@@ -527,13 +527,7 @@ class GameEngine {
       });
     }, 30000); // 30 seconds delay
     
-    // Also schedule a faster reset for immediate testing (5 seconds)
-    console.log(`[GAME ENGINE] Scheduling fast reset for game ${gameId} in 5 seconds for testing`);
-    setTimeout(() => {
-      this.autoResetGame(gameId, gameState.lobbyId).catch(error => {
-        console.error(`[GAME ENGINE] Fast reset failed for game ${gameId}:`, error);
-      });
-    }, 5000); // 5 seconds delay for testing
+    // NOTE: Removed 5-second test reset - was interfering with real gameplay
   }
 
   // Automatically reset a game state for a new round
