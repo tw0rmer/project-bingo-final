@@ -516,6 +516,22 @@ export default function GamePage() {
   // Update pattern progress when numbers are called or cards change
   useEffect(() => {
     console.log('[PATTERN CALCULATION] ===== useEffect TRIGGERED =====');
+    
+    // Rebuild serverCardsBySeat from participants and masterCard if it's empty
+    if ((!serverCardsBySeat || Object.keys(serverCardsBySeat).length === 0) && masterCard && participants.length > 0) {
+      console.log('[PATTERN CALCULATION] serverCardsBySeat is empty, rebuilding from masterCard and participants...');
+      const cardsBySeat: Record<number, number[]> = {};
+      participants.forEach(participant => {
+        const seatIndex = participant.seatNumber - 1;
+        if (seatIndex >= 0 && seatIndex < masterCard.length) {
+          cardsBySeat[participant.seatNumber] = masterCard[seatIndex];
+        }
+      });
+      console.log('[PATTERN CALCULATION] Rebuilt serverCardsBySeat:', cardsBySeat);
+      setServerCardsBySeat(cardsBySeat);
+      return; // Exit early, will retrigger with new data
+    }
+    
     console.log('[PATTERN CALCULATION] useEffect dependencies changed:', {
       hasServerCards: !!serverCardsBySeat,
       serverCardsCount: serverCardsBySeat ? Object.keys(serverCardsBySeat).length : 0,
@@ -541,7 +557,7 @@ export default function GamePage() {
     } else {
       console.log('[PATTERN CALCULATION] Conditions not met - not computing patterns');
     }
-  }, [serverCardsBySeat, calledNumbers]);
+  }, [serverCardsBySeat, calledNumbers, masterCard, participants]);
 
   // Countdown timer for next number call
   useEffect(() => {
