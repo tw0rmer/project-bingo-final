@@ -133,12 +133,21 @@ WildCard Premium Bingo is a fully functional, real-time multiplayer bingo platfo
 - **Solution**: ✅ **FIXED** - Changed fallback from `setShowPatternPopup(true)` to `setShowPatternPopup(false)` in `client/src/pages/dashboard.tsx` line 71
 - **Impact**: No more unwanted tutorial popups
 
-### ⚠️ ONGOING ISSUE: Game Reset Timing
-- **Current Problem**: Games are not automatically resetting after 30 seconds to 1 minute after a player wins
-- **Expected Behavior**: `autoResetGame()` function should be called automatically after win detection
-- **Server Code**: `server/gameEngine.ts` has `autoResetGame()` function that emits `game_reset` event
-- **Client Code**: Now has proper `game_reset` event handler to update UI
-- **Status**: 🟡 **INVESTIGATION NEEDED** - Reset timing mechanism may need adjustment
+### Winner Celebration Modal Timer Fix (August 30, 2025 - 6:00 AM)
+- **Issue**: Winner celebration modal closing prematurely (10 seconds) instead of full 45-second countdown
+- **Root Cause**: Conflicting timers - game page had 10-second timer overriding modal's 45-second countdown
+- **Solution**: ✅ **FIXED** - Removed conflicting game page timer, let modal handle its own 45-second auto-close
+- **Impact**: Proper 45-second celebration experience with manual close option or full countdown
+
+### Card Randomization System (August 30, 2025 - 6:15 AM)
+- **Issue**: Bingo cards showed identical numbers after game resets - same layout every time
+- **Root Cause**: Card generation used deterministic seeding based only on `lobbyId`, cache not cleared properly on reset
+- **Solution**: ✅ **FIXED** - Added timestamp entropy to card generation + clear masterCardsCache on auto-reset
+- **Technical Details**: 
+  - Modified `buildDeterministicMasterCard()` to accept entropy parameter (timestamp)
+  - Updated `autoResetGame()` to clear both `lobbyCardsCache` and `masterCardsCache` 
+  - Each new game gets fresh randomization while maintaining fairness within the same game
+- **Impact**: True card randomization between games - different layouts every time while ensuring all players see identical cards during gameplay
 
 ## External Dependencies
 - **Database**: PostgreSQL (configured for Neon serverless)
