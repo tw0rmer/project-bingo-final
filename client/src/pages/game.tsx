@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation, useParams } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
@@ -249,8 +250,11 @@ export default function GamePage() {
             houseFee: houseAmount
           });
           console.log(`[STATE] SETTING showCelebration to TRUE @ ${Date.now()}`);
-          setShowCelebration(true);
-          console.log(`[STATE] AFTER setShowCelebration(true) - showCelebration should be: true`);
+          console.log(`[DEBUG] TESTING REACT BATCHING - Using flushSync to force immediate render`);
+          flushSync(() => {
+            setShowCelebration(true);
+          });
+          console.log(`[STATE] AFTER flushSync setShowCelebration(true) - showCelebration should be: true`);
           
           // CRITICAL: Refresh user balance after winning
           const token = localStorage.getItem('token');
@@ -311,24 +315,23 @@ export default function GamePage() {
     const handleGameEnded = (data: any) => {
       const timestamp = Date.now();
       console.log(`[SOCKET] ===== GAME ENDED EVENT @ ${timestamp} =====`);
-      console.log(`[DEBUG] TEMPORARILY DISABLED handleGameEnded logic to test race condition`);
+      console.log(`[DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix`);
       console.log('[SOCKET] Game ended data:', data);
       console.log('[SOCKET] Current game ID:', game.id);
       console.log('[SOCKET] Game ID match?', data.gameId === game.id);
       console.log(`[STATE] BEFORE handleGameEnded - showCelebration: ${showCelebration}, gameStatus: ${gameStatus}`);
       
-      // TEMPORARILY DISABLED FOR RACE CONDITION TESTING
-      // if (data.gameId === game.id) {
-      //   setGameStatus('finished');
-      //   
-      //   // Don't redirect immediately - let modals show first
-      //   // Redirect will happen when modal closes or after timeout
-      //   console.log('[GAME] ===== GAME STATUS SET TO FINISHED =====');
-      //   console.log(`[STATE] SETTING gameStatus to finished @ ${Date.now()}`);
-      //   console.log('[GAME] Current showCelebration state:', showCelebration);
-      //   console.log('[GAME] Current celebrationData state:', celebrationData);
-      //   console.log(`[STATE] AFTER setGameStatus - gameStatus should be: finished`);
-      // }
+      if (data.gameId === game.id) {
+        setGameStatus('finished');
+        
+        // Don't redirect immediately - let modals show first
+        // Redirect will happen when modal closes or after timeout
+        console.log('[GAME] ===== GAME STATUS SET TO FINISHED =====');
+        console.log(`[STATE] SETTING gameStatus to finished @ ${Date.now()}`);
+        console.log('[GAME] Current showCelebration state:', showCelebration);
+        console.log('[GAME] Current celebrationData state:', celebrationData);
+        console.log(`[STATE] AFTER setGameStatus - gameStatus should be: finished`);
+      }
       
       console.log(`[STATE] END handleGameEnded - showCelebration: ${showCelebration}, gameStatus: ${gameStatus}`);
     };
