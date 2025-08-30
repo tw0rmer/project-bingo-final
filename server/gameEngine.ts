@@ -577,9 +577,11 @@ class GameEngine {
         .set({ status: 'active', seatsTaken: 0 })
         .where(eq(lobbies.id, lobbyId));
       
-      // Clear any cached snapshots for the lobby
+      // Clear any cached snapshots and cards for the lobby AND game
       this.lastSnapshotByLobby.delete(lobbyId);
       this.lobbyCardsCache.delete(lobbyId);
+      this.masterCardsCache.delete(gameId);
+      console.log(`[GAME ENGINE] Cleared all card caches for lobby ${lobbyId} and game ${gameId}`);
       
       // Only clear the lobby mapping if there's no active game
       const hasActiveGame = this.gamesMap.has(gameId) || Array.from(this.gamesMap.values()).some(g => g.lobbyId === lobbyId && g.isRunning);
