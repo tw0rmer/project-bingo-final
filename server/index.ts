@@ -202,7 +202,21 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+    console.error(`[ERROR] ${status}: ${message}`, err.stack);
     res.status(status).json({ message });
+  });
+
+  // Global error handlers to prevent crashes
+  process.on('uncaughtException', (error) => {
+    console.error('[UNCAUGHT EXCEPTION] Server caught uncaught exception:', error);
+    console.error('[UNCAUGHT EXCEPTION] Stack trace:', error.stack);
+    // Don't exit process in production - try to continue running
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('[UNHANDLED REJECTION] Server caught unhandled promise rejection:', reason);
+    console.error('[UNHANDLED REJECTION] Promise:', promise);
+    // Don't exit process in production - try to continue running
   });
 
   // Setup Vite for development or serve static files for production

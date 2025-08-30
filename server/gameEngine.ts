@@ -263,83 +263,121 @@ class GameEngine {
 
   // Draw next number
   private async drawNumber(gameId: number) {
-    console.log(`[GAME ENGINE] drawNumber called for game ${gameId}`);
-    const gameState = this.gamesMap.get(gameId);
-    if (!gameState) {
-      console.log(`[GAME ENGINE] No game state found for game ${gameId}`);
-      return;
-    }
-    if (!gameState.isRunning) {
-      console.log(`[GAME ENGINE] Game ${gameId} is not running`);
-      // Clear interval if somehow still running
-      if (gameState.intervalId) {
-        clearInterval(gameState.intervalId);
-        gameState.intervalId = null;
+    try {
+      console.log(`[GAME ENGINE] drawNumber called for game ${gameId}`);
+      const gameState = this.gamesMap.get(gameId);
+      if (!gameState) {
+        console.log(`[GAME ENGINE] No game state found for game ${gameId}`);
+        return;
       }
-      return;
-    }
+      if (!gameState.isRunning) {
+        console.log(`[GAME ENGINE] Game ${gameId} is not running`);
+        // Clear interval if somehow still running
+        if (gameState.intervalId) {
+          clearInterval(gameState.intervalId);
+          gameState.intervalId = null;
+        }
+        return;
+      }
 
-    let newNumber: number;
-    do {
-      newNumber = Math.floor(Math.random() * 75) + 1;
-    } while (gameState.drawnNumbers.includes(newNumber));
+      // Check if all numbers have been drawn
+      if (gameState.drawnNumbers.length >= 75) {
+        console.log(`[GAME ENGINE] All numbers drawn for game ${gameId}, ending game`);
+        await this.endGame(gameId);
+        return;
+      }
 
-    gameState.currentNumber = newNumber;
-    gameState.drawnNumbers.push(newNumber);
+      let newNumber: number;
+      let attempts = 0;
+      do {
+        newNumber = Math.floor(Math.random() * 75) + 1;
+        attempts++;
+        // Prevent infinite loop in edge cases
+        if (attempts > 100) {
+          console.error(`[GAME ENGINE] Failed to find new number for game ${gameId} after 100 attempts`);
+          await this.endGame(gameId);
+          return;
+        }
+      } while (gameState.drawnNumbers.includes(newNumber));
 
-    try {
-      db.update(games)
-        .set({ currentNumber: newNumber, drawnNumbers: JSON.stringify(gameState.drawnNumbers) })
-        .where(eq(games.id, gameId))
-        .run();
-    } catch (_e) {}
+      gameState.currentNumber = newNumber;
+      gameState.drawnNumbers.push(newNumber);
 
-    console.log(`[GAME ENGINE] Number called: ${newNumber} for game ${gameId}`);
-    this.io.to(`lobby_${gameState.lobbyId}`).emit('number_called', {
-      gameId,
-      number: newNumber,
-      order: gameState.drawnNumbers.length,
-      calledAt: Date.now(),
-      drawnNumbers: gameState.drawnNumbers,
-    });
+      try {
+        await db.update(games)
+          .set({ currentNumber: newNumber, drawnNumbers: JSON.stringify(gameState.drawnNumbers) })
+          .where(eq(games.id, gameId));
+      } catch (dbError) {
+        console.error(`[GAME ENGINE] Database update failed for game ${gameId}:`, dbError);
+        // Don't return here - continue with the game even if DB update fails
+      }
 
-    // Auto-detect winner after each call (server-authoritative)
-    try {
-      if (!gameState.isRunning) return;
-      const participants = gameState.participants;
-      if (!participants || participants.length === 0) return;
+      console.log(`[GAME ENGINE] Number called: ${newNumber} for game ${gameId}`);
       
-      // Find ALL winning seats, not just the first one
-      const winningSeats: Array<{ userId: number; seatNumber: number; card: number[]; completedAt: number }> = [];
-      
-      for (const p of participants) {
-        // Check for row win (5 consecutive numbers in a row)
-        const isRowWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
-        if (isRowWinner) {
-          // Find when this seat completed (the last number that made it complete)
-          const lastNumberIndex = Math.max(...p.card.map(n => gameState.drawnNumbers.indexOf(n)));
-          winningSeats.push({
-            userId: p.userId,
-            seatNumber: p.seatNumber,
-            card: p.card,
-            completedAt: lastNumberIndex
-          });
+      try {
+        this.io.to(`lobby_${gameState.lobbyId}`).emit('number_called', {
+          gameId,
+          number: newNumber,
+          order: gameState.drawnNumbers.length,
+          calledAt: Date.now(),
+          drawnNumbers: gameState.drawnNumbers,
+        });
+      } catch (socketError) {
+        console.error(`[GAME ENGINE] Socket emit failed for game ${gameId}:`, socketError);
+      }
+
+      // Auto-detect winner after each call (server-authoritative)
+      try {
+        if (!gameState.isRunning) return;
+        const participants = gameState.participants;
+        if (!participants || participants.length === 0) return;
+        
+        // Find ALL winning seats, not just the first one
+        const winningSeats: Array<{ userId: number; seatNumber: number; card: number[]; completedAt: number }> = [];
+        
+        for (const p of participants) {
+          // Check for row win (5 consecutive numbers in a row)
+          const isRowWinner = p.card.every((n) => gameState.drawnNumbers.includes(n));
+          if (isRowWinner) {
+            // Find when this seat completed (the last number that made it complete)
+            const lastNumberIndex = Math.max(...p.card.map(n => gameState.drawnNumbers.indexOf(n)));
+            winningSeats.push({
+              userId: p.userId,
+              seatNumber: p.seatNumber,
+              card: p.card,
+              completedAt: lastNumberIndex
+            });
+          }
+        }
+        
+        if (winningSeats.length > 0) {
+          // Sort by completion time - earliest winner wins
+          winningSeats.sort((a, b) => a.completedAt - b.completedAt);
+          const winner = winningSeats[0];
+          
+          console.log(`[GAME ENGINE] Winner detected! User ${winner.userId}, Seat ${winner.seatNumber}, Numbers: ${winner.card.join(', ')}`);
+          console.log(`[GAME ENGINE] Completed at drawn number index ${winner.completedAt} out of ${winningSeats.length} winning seats`);
+          
+          // End game with the FIRST winner chronologically
+          await this.endGame(gameId, winner.userId, winner.seatNumber, winner.card);
+        }
+      } catch (e) {
+        console.error('[GAME ENGINE] Winner detection error:', e);
+      }
+    } catch (error) {
+      console.error(`[GAME ENGINE] Critical error in drawNumber for game ${gameId}:`, error);
+      // Try to safely end the game on critical error
+      try {
+        await this.endGame(gameId);
+      } catch (endError) {
+        console.error(`[GAME ENGINE] Failed to end game ${gameId} after critical error:`, endError);
+        // Clear the interval to prevent further calls
+        const gameState = this.gamesMap.get(gameId);
+        if (gameState?.intervalId) {
+          clearInterval(gameState.intervalId);
+          gameState.intervalId = null;
         }
       }
-      
-      if (winningSeats.length > 0) {
-        // Sort by completion time - earliest winner wins
-        winningSeats.sort((a, b) => a.completedAt - b.completedAt);
-        const winner = winningSeats[0];
-        
-        console.log(`[GAME ENGINE] Winner detected! User ${winner.userId}, Seat ${winner.seatNumber}, Numbers: ${winner.card.join(', ')}`);
-        console.log(`[GAME ENGINE] Completed at drawn number index ${winner.completedAt} out of ${winningSeats.length} winning seats`);
-        
-        // End game with the FIRST winner chronologically
-        await this.endGame(gameId, winner.userId, winner.seatNumber, winner.card);
-      }
-    } catch (e) {
-      console.error('[GAME ENGINE] Winner detection error:', e);
     }
   }
 
