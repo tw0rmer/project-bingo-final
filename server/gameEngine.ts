@@ -38,8 +38,10 @@ function seededShuffle<T>(arr: T[], rand: () => number): T[] {
 }
 
 // Generate a single 5x15 master bingo card that ALL players will see
-function buildDeterministicMasterCard(gameId: number): number[][] {
-  const rand = makeSeededRng(gameId * 2654435761);
+function buildDeterministicMasterCard(gameId: number, entropy?: number): number[][] {
+  // Add entropy (timestamp) to ensure different cards each game while maintaining determinism within a game
+  const seed = entropy ? (gameId * 2654435761 + entropy) : (gameId * 2654435761);
+  const rand = makeSeededRng(seed);
   const bColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 1 + i), rand);
   const iColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 16 + i), rand);
   const nColumn = seededShuffle(Array.from({ length: 15 }, (_, i) => 31 + i), rand);
@@ -78,14 +80,20 @@ class GameEngine {
 
   getOrGenerateMasterCard(gameId: number): number[][] {
     if (!this.masterCardsCache.has(gameId)) {
-      this.masterCardsCache.set(gameId, buildDeterministicMasterCard(gameId));
+      // Add timestamp entropy to ensure new cards each game 
+      const entropy = Date.now();
+      console.log(`[GAME ENGINE] Generating NEW random cards for game ${gameId} with entropy: ${entropy}`);
+      this.masterCardsCache.set(gameId, buildDeterministicMasterCard(gameId, entropy));
     }
     return this.masterCardsCache.get(gameId)!;
   }
 
   getOrGenerateLobbyCards(lobbyId: number): number[][] {
     if (!this.lobbyCardsCache.has(lobbyId)) {
-      this.lobbyCardsCache.set(lobbyId, buildDeterministicMasterCard(lobbyId));
+      // Add timestamp entropy to ensure new cards each game
+      const entropy = Date.now();
+      console.log(`[GAME ENGINE] Generating NEW random cards for lobby ${lobbyId} with entropy: ${entropy}`);
+      this.lobbyCardsCache.set(lobbyId, buildDeterministicMasterCard(lobbyId, entropy));
     }
     return this.lobbyCardsCache.get(lobbyId)!;
   }
