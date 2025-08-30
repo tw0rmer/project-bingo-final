@@ -41,7 +41,7 @@ export function WinnerCelebrationModalEnhanced({
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            console.log(`[MODAL] Timer expired, calling onClose @ ${Date.now()}`);
+            console.log(`[MODAL] 45-second timer expired, calling onClose @ ${Date.now()}`);
             onClose();
             return 0;
           }

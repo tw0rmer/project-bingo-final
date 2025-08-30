@@ -287,14 +287,8 @@ export default function GamePage() {
             }).catch(console.error);
           }
           
-          // Auto-close celebration after 10 seconds and redirect to lobby
-          setTimeout(() => {
-            setShowCelebration(false);
-            console.log('[GAME] Redirecting winner to lobby after celebration...');
-            setTimeout(() => {
-              setLocation(`/lobby/${game.lobbyId}`);
-            }, 1000);
-          }, 10000);
+          // Note: Modal handles its own 45-second auto-close timer
+          // We'll redirect to lobby when the modal closes itself
         } else {
           console.log('[GAME] Current user is NOT the winner, saving loser data');
           // Save loser data for other players
@@ -775,7 +769,8 @@ export default function GamePage() {
           isOpen={showCelebration}
           onClose={() => {
             setShowCelebration(false);
-            console.log('[GAME] User closed celebration modal, redirecting to lobby...');
+            setCelebrationData(null);
+            console.log('[GAME] Celebration modal closed (45s timer or manual), redirecting to lobby...');
             setTimeout(() => {
               setLocation(`/lobby/${game.lobbyId}`);
             }, 500);
