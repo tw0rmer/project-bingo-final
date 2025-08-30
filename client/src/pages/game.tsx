@@ -163,6 +163,7 @@ export default function GamePage() {
           });
           setServerCardsBySeat(cardsBySeat);
           console.log('[GAME PAGE] Server cards by seat populated:', cardsBySeat);
+          console.log('[STATE DEBUG] Immediately after setServerCardsBySeat - current serverCardsBySeat:', serverCardsBySeat);
         } else {
           console.log('[GAME PAGE] Cannot convert master card - missing data');
         }
@@ -217,6 +218,7 @@ export default function GamePage() {
       if (data.gameId === game.id) {
         console.log('[SOCKET] Updating called numbers:', data.drawnNumbers);
         setCalledNumbers(data.drawnNumbers || []);
+        console.log('[STATE DEBUG] Immediately after setCalledNumbers - current calledNumbers:', calledNumbers);
         setCurrentNumber(data.number);
         setNextCallIn(5); // Reset countdown
         setGameStatus('active');
@@ -494,7 +496,8 @@ export default function GamePage() {
 
   // Update pattern progress when numbers are called or cards change
   useEffect(() => {
-    console.log('[PATTERN CALCULATION] useEffect triggered:', {
+    console.log('[PATTERN CALCULATION] ===== useEffect TRIGGERED =====');
+    console.log('[PATTERN CALCULATION] useEffect dependencies changed:', {
       hasServerCards: !!serverCardsBySeat,
       serverCardsCount: serverCardsBySeat ? Object.keys(serverCardsBySeat).length : 0,
       calledNumbersCount: calledNumbers.length,

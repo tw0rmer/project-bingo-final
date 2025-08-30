@@ -1,0 +1,704 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+SocketContext.tsx:44 [SOCKET] No authenticated user, skipping connection
+AuthContext.tsx:40 [AUTH] Checking authentication on startup...
+AuthContext.tsx:41 [AUTH] Stored token exists: true
+AuthContext.tsx:42 [AUTH] Stored server session ID: 1756536322263-ez94en4wta
+AuthContext.tsx:43 [AUTH] Full localStorage contents: Array(3)
+AuthContext.tsx:49 [AUTH] Current server session ID: 1756536322263-ez94en4wta
+AuthContext.tsx:86 [AUTH] Validating stored token...
+AuthContext.tsx:93 [AUTH] Token valid, auto-login successful: Object
+SocketContext.tsx:54 [SOCKET] Initializing connection for user: admin@bingo.com
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object
+SocketContext.tsx:73 [SOCKET] Connected successfully: VROC1eRAcDWa8O1hAAAH
+game.tsx?t=1756537171163:140 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx?t=1756537171163:141 [GAME] Socket available: true
+game.tsx?t=1756537171163:142 [GAME] Socket connected: true
+game.tsx?t=1756537171163:143 [GAME] Game ID available: false
+game.tsx?t=1756537171163:140 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx?t=1756537171163:141 [GAME] Socket available: true
+game.tsx?t=1756537171163:142 [GAME] Socket connected: true
+game.tsx?t=1756537171163:143 [GAME] Game ID available: true
+game.tsx?t=1756537171163:145 [SOCKET] Game page connected to game 50
+game.tsx?t=1756537171163:146 [SOCKET] Attempting to join lobby room: lobby_9
+game.tsx?t=1756537171163:147 [SOCKET] Socket connected: true
+game.tsx?t=1756537171163:148 [SOCKET] Game lobbyId: 9
+game.tsx?t=1756537171163:151 [SOCKET] ✅ Emitted join_lobby for lobby 9
+game.tsx?t=1756537171163:351 [SOCKET] Setting up event listeners...
+game.tsx?t=1756537171163:368 [SOCKET] Testing socket connection...
+game.tsx?t=1756537171163:98 [GAME PAGE] DEBUG - Master card conversion attempt: Object
+game.tsx?t=1756537171163:114 [GAME PAGE] Server cards by seat populated: Object
+game.tsx?t=1756537171163:118 [GAME PAGE] Data loaded: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx?t=1756537171163:300 [SOCKET] Seat taken: Object
+game.tsx?t=1756537171163:317 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx?t=1756537171163:300 [SOCKET] Seat taken: Object
+game.tsx?t=1756537171163:317 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx?t=1756537171163:300 [SOCKET] Seat taken: Object
+game.tsx?t=1756537171163:317 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx?t=1756537171163:300 [SOCKET] Seat taken: Object
+game.tsx?t=1756537171163:317 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx?t=1756537171163:166 [SOCKET] Game started: Object
+game.tsx?t=1756537171163:172 [SOCKET] Received master card from server
+game.tsx?t=1756537171163:182 [SOCKET] Updated server cards by seat from game started: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(1)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(2)
+mobile-info-view.tsx:51 [ADMIN] Changed call speed to 1 seconds
+game.tsx?t=1756537171163:293 [SOCKET] Call speed changed: Object
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(3)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(4)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(5)
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(6)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(7)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(8)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(9)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(10)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(11)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(12)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(13)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(14)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(15)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(16)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(17)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(18)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(19)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(20)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(21)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(22)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(23)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(24)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(25)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(26)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(27)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(28)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(29)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(30)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(31)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(32)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(33)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(34)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(35)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(36)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(37)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(38)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(39)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(40)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(41)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(42)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(43)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(44)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(45)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(46)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(47)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(48)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(49)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(50)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(51)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(52)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(53)
+game.tsx?t=1756537171163:156 [SOCKET] Number called: Object
+game.tsx?t=1756537171163:158 [SOCKET] Updating called numbers: Array(54)
+game.tsx?t=1756537171163:355 [SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====
+game.tsx?t=1756537171163:356 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"userId":1,"winningSeat":3,"winningNumbers":[5,22,33,53,63],"userSeats":[1,3],"seatCount":2,"prizeAmount":14,"totalPrizePool":20,"houseFee":6}
+game.tsx?t=1756537171163:188 [SOCKET] ===== PLAYER WON EVENT @ 1756537362783 =====
+game.tsx?t=1756537171163:189 [SOCKET] Player won data: Object
+game.tsx?t=1756537171163:190 [SOCKET] Current user info (userInfo): null
+game.tsx?t=1756537171163:191 [SOCKET] Current user info (auth context): Object
+game.tsx?t=1756537171163:192 [SOCKET] Winner user ID: 1 Current user ID: 1
+game.tsx?t=1756537171163:193 [SOCKET] Is current user the winner? true
+game.tsx?t=1756537171163:194 [SOCKET] Game ID match? 50 vs 50 = true
+game.tsx?t=1756537171163:195 [STATE] BEFORE handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:201 [GAME] Current user IS the winner, saving winner data
+game.tsx?t=1756537171163:205 [CELEBRATION] Using server-calculated prize data: Object
+game.tsx?t=1756537171163:219 [GAME] ===== SETTING UP WINNER CELEBRATION =====
+game.tsx?t=1756537171163:220 [GAME] Setting showCelebration to TRUE
+game.tsx?t=1756537171163:221 [GAME] Celebration data being set: Object
+game.tsx?t=1756537171163:228 [STATE] SETTING showCelebration to TRUE @ 1756537362793
+game.tsx?t=1756537171163:229 [DEBUG] TESTING REACT BATCHING - Using flushSync to force immediate render
+game.tsx?t=1756537171163:233 [STATE] AFTER flushSync setShowCelebration(true) - showCelebration should be: true
+game.tsx?t=1756537171163:236 [WIN] Refreshing user balance after winning...
+game.tsx?t=1756537171163:272 [STATE] END handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:360 [SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====
+game.tsx?t=1756537171163:361 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"winners":[1],"winningSeat":3,"winningNumbers":[5,22,33,53,63],"endedAt":1756537363576}
+game.tsx?t=1756537171163:276 [SOCKET] ===== GAME ENDED EVENT @ 1756537362836 =====
+game.tsx?t=1756537171163:277 [DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix
+game.tsx?t=1756537171163:278 [SOCKET] Game ended data: Object
+game.tsx?t=1756537171163:279 [SOCKET] Current game ID: 50
+game.tsx?t=1756537171163:280 [SOCKET] Game ID match? true
+game.tsx?t=1756537171163:281 [STATE] BEFORE handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:284 [GAME] ===== GAME STATUS SET TO FINISHED =====
+game.tsx?t=1756537171163:285 [STATE] SETTING gameStatus to finished @ 1756537362837
+game.tsx?t=1756537171163:286 [GAME] Current showCelebration state: false
+game.tsx?t=1756537171163:287 [GAME] Current celebrationData state: null
+game.tsx?t=1756537171163:288 [STATE] AFTER setGameStatus - gameStatus should be: finished
+game.tsx?t=1756537171163:290 [STATE] END handleGameEnded - showCelebration: false, gameStatus: waiting
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537362874
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537362875 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: Object
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx?t=1756537171163:240 [WIN] Balance updated: 98.5
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537363049
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537363050
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537363050 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: Object
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537371476
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537371476
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537371477 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: Object
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx?t=1756537171163:348 [GAME] Game reset received: Object
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537392801
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537392801
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537392802 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: Object
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+winner-celebration-modal-enhanced.tsx:44 [MODAL] 45-second timer expired, calling onClose @ 1756537439333
+game.tsx?t=1756537171163:802 Warning: Cannot update a component (`GamePage`) while rendering a different component (`WinnerCelebrationModalEnhanced`). To locate the bad setState() call inside `WinnerCelebrationModalEnhanced`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render
+    at WinnerCelebrationModalEnhanced (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/components/games/winner-celebration-modal-enhanced.tsx:21:3)
+    at div
+    at GamePage (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/pages/game.tsx?t=1756537171163:37:18)
+    at ProtectedRoute (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/components/ProtectedRoute.tsx:21:42)
+    at Route (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=82790fe4:323:16)
+    at Switch (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=82790fe4:379:17)
+    at Router (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=82790fe4:291:17)
+    at TutorialProvider (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/contexts/TutorialContext.tsx:78:36)
+    at SocketProvider (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/contexts/SocketContext.tsx:37:34)
+    at AuthProvider (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/contexts/AuthContext.tsx:22:32)
+    at QueryClientProvider (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=82790fe4:2805:3)
+    at ErrorBoundary (https://d626d98c-4e44-4e24-b8e1-546717446f36-00-2og9ytz93vota.picard.replit.dev/src/components/ErrorBoundary.tsx:9:5)
+    at App
+printWarning @ chunk-WERSD76P.js?v=82790fe4:521
+error @ chunk-WERSD76P.js?v=82790fe4:505
+warnAboutRenderPhaseUpdatesInDEV @ chunk-WERSD76P.js?v=82790fe4:19793
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=82790fe4:18546
+dispatchSetState @ chunk-WERSD76P.js?v=82790fe4:12403
+onClose @ game.tsx?t=1756537171163:802
+(anonymous) @ winner-celebration-modal-enhanced.tsx:45
+basicStateReducer @ chunk-WERSD76P.js?v=82790fe4:11703
+updateReducer @ chunk-WERSD76P.js?v=82790fe4:11794
+updateState @ chunk-WERSD76P.js?v=82790fe4:12021
+useState @ chunk-WERSD76P.js?v=82790fe4:12753
+useState @ chunk-3TFVT2CW.js?v=82790fe4:1066
+WinnerCelebrationModalEnhanced @ winner-celebration-modal-enhanced.tsx:26
+renderWithHooks @ chunk-WERSD76P.js?v=82790fe4:11548
+updateFunctionComponent @ chunk-WERSD76P.js?v=82790fe4:14582
+beginWork @ chunk-WERSD76P.js?v=82790fe4:15924
+beginWork$1 @ chunk-WERSD76P.js?v=82790fe4:19753
+performUnitOfWork @ chunk-WERSD76P.js?v=82790fe4:19198
+workLoopSync @ chunk-WERSD76P.js?v=82790fe4:19137
+renderRootSync @ chunk-WERSD76P.js?v=82790fe4:19116
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=82790fe4:18678
+workLoop @ chunk-WERSD76P.js?v=82790fe4:197
+flushWork @ chunk-WERSD76P.js?v=82790fe4:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=82790fe4:384
+game.tsx?t=1756537171163:804 [GAME] Celebration modal closed (45s timer or manual), redirecting to lobby...
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537439407
+game.tsx?t=1756537171163:371 [GAME] ===== SOCKET USEEFFECT UNMOUNTING =====
+game.tsx?t=1756537171163:372 [GAME] Current showCelebration state on unmount: false
+game.tsx?t=1756537171163:373 [GAME] Current celebrationData on unmount: null
+game.tsx?t=1756537171163:374 [GAME] Cleaning up socket listeners...
+lobby.tsx:199 [LOBBY PAGE] This is a hierarchical lobby with 4 games. Redirecting to lobby selection.
+lobby.tsx:116 [LOBBY PAGE] Current user ID: 1
+lobby.tsx:120 [LOBBY PAGE] Checking for game results for user ID: 1 Result: null
+lobby.tsx:162 [LOBBY PAGE] No game result found in sessionStorage
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object
+dashboard.tsx:83 [DASHBOARD] Fetching dashboard data with token...
+dashboard.tsx:90 [DASHBOARD] Dashboard data received: Object
+/api/notification-preferences/pattern_indicator_popup:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+dashboard.tsx:66 [PATTERN_POPUP] Preference check failed: Error: API error: 404
+    at apiRequest (api.ts:53:15)
+    at async checkPatternPopupPreference (dashboard.tsx:58:24)
+    at async fetchDashboardData (dashboard.tsx:99:7)
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object
+game.tsx:196 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:197 [GAME] Socket available: true
+game.tsx:198 [GAME] Socket connected: true
+game.tsx:199 [GAME] Game ID available: false
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:196 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:197 [GAME] Socket available: true
+game.tsx:198 [GAME] Socket connected: true
+game.tsx:199 [GAME] Game ID available: true
+game.tsx:202 [SOCKET] Game page connected to game 50
+game.tsx:203 [SOCKET] Attempting to join lobby room: lobby_9
+game.tsx:204 [SOCKET] Socket connected: true
+game.tsx:205 [SOCKET] Game lobbyId: 9
+game.tsx:209 [SOCKET] ✅ Emitted join_lobby for lobby 9
+game.tsx:457 [SOCKET] Setting up event listeners...
+game.tsx:476 [SOCKET] Testing socket connection...
+game.tsx:148 [GAME PAGE] DEBUG - Master card conversion attempt: Object
+game.tsx:165 [GAME PAGE] Server cards by seat populated: Object
+game.tsx:170 [GAME PAGE] Data loaded: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:391 [SOCKET] Seat taken: Object
+game.tsx:411 [SOCKET] Updated server cards by seat from seat taken: Object
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:227 [SOCKET] Game started: Object
+game.tsx:234 [SOCKET] Received master card from server
+game.tsx:246 [SOCKET] Updated server cards by seat from game started: Object
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(1)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+mobile-info-view.tsx:51 [ADMIN] Changed call speed to 1 seconds
+game.tsx:383 [SOCKET] Call speed changed: Object
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(2)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(3)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(4)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(5)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(6)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: Object
+game.tsx:218 [SOCKET] Updating called numbers: Array(7)
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: Object
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 64, order: 8, calledAt: 1756537659197, drawnNumbers: Array(8)}
+game.tsx:218 [SOCKET] Updating called numbers: (8) [27, 50, 9, 37, 25, 39, 36, 64]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 8, serverCardsBySeat: {…}, calledNumbers: Array(8)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 17, order: 9, calledAt: 1756537660198, drawnNumbers: Array(9)}
+game.tsx:218 [SOCKET] Updating called numbers: (9) [27, 50, 9, 37, 25, 39, 36, 64, 17]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 9, serverCardsBySeat: {…}, calledNumbers: Array(9)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 74, order: 10, calledAt: 1756537661198, drawnNumbers: Array(10)}
+game.tsx:218 [SOCKET] Updating called numbers: (10) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 10, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 29, order: 11, calledAt: 1756537662199, drawnNumbers: Array(11)}
+game.tsx:218 [SOCKET] Updating called numbers: (11) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 11, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 72, order: 12, calledAt: 1756537663199, drawnNumbers: Array(12)}
+game.tsx:218 [SOCKET] Updating called numbers: (12) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 12, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 46, order: 13, calledAt: 1756537664199, drawnNumbers: Array(13)}
+game.tsx:218 [SOCKET] Updating called numbers: (13) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 13, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 34, order: 14, calledAt: 1756537665199, drawnNumbers: Array(14)}
+game.tsx:218 [SOCKET] Updating called numbers: (14) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 14, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 31, order: 15, calledAt: 1756537666200, drawnNumbers: Array(15)}
+game.tsx:218 [SOCKET] Updating called numbers: (15) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 15, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 69, order: 16, calledAt: 1756537667201, drawnNumbers: Array(16)}
+game.tsx:218 [SOCKET] Updating called numbers: (16) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 16, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 13, order: 17, calledAt: 1756537668201, drawnNumbers: Array(17)}
+game.tsx:218 [SOCKET] Updating called numbers: (17) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 17, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 38, order: 18, calledAt: 1756537669201, drawnNumbers: Array(18)}
+game.tsx:218 [SOCKET] Updating called numbers: (18) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 18, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 71, order: 19, calledAt: 1756537670201, drawnNumbers: Array(19)}
+game.tsx:218 [SOCKET] Updating called numbers: (19) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 19, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 70, order: 20, calledAt: 1756537671201, drawnNumbers: Array(20)}
+game.tsx:218 [SOCKET] Updating called numbers: (20) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 20, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 68, order: 21, calledAt: 1756537672201, drawnNumbers: Array(21)}
+game.tsx:218 [SOCKET] Updating called numbers: (21) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 21, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 42, order: 22, calledAt: 1756537673202, drawnNumbers: Array(22)}
+game.tsx:218 [SOCKET] Updating called numbers: (22) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 22, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 54, order: 23, calledAt: 1756537674203, drawnNumbers: Array(23)}
+game.tsx:218 [SOCKET] Updating called numbers: (23) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 23, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 43, order: 24, calledAt: 1756537675203, drawnNumbers: Array(24)}
+game.tsx:218 [SOCKET] Updating called numbers: (24) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 24, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 56, order: 25, calledAt: 1756537676204, drawnNumbers: Array(25)}
+game.tsx:218 [SOCKET] Updating called numbers: (25) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 25, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 67, order: 26, calledAt: 1756537677204, drawnNumbers: Array(26)}
+game.tsx:218 [SOCKET] Updating called numbers: (26) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 26, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 4, order: 27, calledAt: 1756537678205, drawnNumbers: Array(27)}
+game.tsx:218 [SOCKET] Updating called numbers: (27) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 27, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 51, order: 28, calledAt: 1756537679205, drawnNumbers: Array(28)}
+game.tsx:218 [SOCKET] Updating called numbers: (28) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 28, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 19, order: 29, calledAt: 1756537680206, drawnNumbers: Array(29)}
+game.tsx:218 [SOCKET] Updating called numbers: (29) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 29, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 18, order: 30, calledAt: 1756537681206, drawnNumbers: Array(30)}
+game.tsx:218 [SOCKET] Updating called numbers: (30) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 30, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 49, order: 31, calledAt: 1756537682207, drawnNumbers: Array(31)}
+game.tsx:218 [SOCKET] Updating called numbers: (31) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 31, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 1, order: 32, calledAt: 1756537683207, drawnNumbers: Array(32)}
+game.tsx:218 [SOCKET] Updating called numbers: (32) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 32, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 47, order: 33, calledAt: 1756537684208, drawnNumbers: Array(33)}
+game.tsx:218 [SOCKET] Updating called numbers: (33) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 33, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 2, order: 34, calledAt: 1756537685209, drawnNumbers: Array(34)}
+game.tsx:218 [SOCKET] Updating called numbers: (34) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 34, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 66, order: 35, calledAt: 1756537686210, drawnNumbers: Array(35)}
+game.tsx:218 [SOCKET] Updating called numbers: (35) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 35, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 16, order: 36, calledAt: 1756537687211, drawnNumbers: Array(36)}
+game.tsx:218 [SOCKET] Updating called numbers: (36) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 36, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 22, order: 37, calledAt: 1756537688211, drawnNumbers: Array(37)}
+game.tsx:218 [SOCKET] Updating called numbers: (37) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 37, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 55, order: 38, calledAt: 1756537689212, drawnNumbers: Array(38)}
+game.tsx:218 [SOCKET] Updating called numbers: (38) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 38, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 53, order: 39, calledAt: 1756537690213, drawnNumbers: Array(39)}
+game.tsx:218 [SOCKET] Updating called numbers: (39) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 39, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 28, order: 40, calledAt: 1756537691214, drawnNumbers: Array(40)}
+game.tsx:218 [SOCKET] Updating called numbers: (40) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 40, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 21, order: 41, calledAt: 1756537692214, drawnNumbers: Array(41)}
+game.tsx:218 [SOCKET] Updating called numbers: (41) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 41, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 26, order: 42, calledAt: 1756537693215, drawnNumbers: Array(42)}
+game.tsx:218 [SOCKET] Updating called numbers: (42) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 42, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 23, order: 43, calledAt: 1756537694215, drawnNumbers: Array(43)}
+game.tsx:218 [SOCKET] Updating called numbers: (43) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 43, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 20, order: 44, calledAt: 1756537695216, drawnNumbers: Array(44)}
+game.tsx:218 [SOCKET] Updating called numbers: (44) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 44, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 40, order: 45, calledAt: 1756537696216, drawnNumbers: Array(45)}
+game.tsx:218 [SOCKET] Updating called numbers: (45) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 45, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 6, order: 46, calledAt: 1756537697217, drawnNumbers: Array(46)}
+game.tsx:218 [SOCKET] Updating called numbers: (46) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 46, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 8, order: 47, calledAt: 1756537698217, drawnNumbers: Array(47)}
+game.tsx:218 [SOCKET] Updating called numbers: (47) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 47, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 5, order: 48, calledAt: 1756537699218, drawnNumbers: Array(48)}
+game.tsx:218 [SOCKET] Updating called numbers: (48) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 48, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 11, order: 49, calledAt: 1756537700218, drawnNumbers: Array(49)}
+game.tsx:218 [SOCKET] Updating called numbers: (49) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 49, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 7, order: 50, calledAt: 1756537701217, drawnNumbers: Array(50)}
+game.tsx:218 [SOCKET] Updating called numbers: (50) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 50, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 61, order: 51, calledAt: 1756537702218, drawnNumbers: Array(51)}
+game.tsx:218 [SOCKET] Updating called numbers: (51) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 51, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 35, order: 52, calledAt: 1756537703217, drawnNumbers: Array(52)}
+game.tsx:218 [SOCKET] Updating called numbers: (52) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 52, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 10, order: 53, calledAt: 1756537704218, drawnNumbers: Array(53)}
+game.tsx:218 [SOCKET] Updating called numbers: (53) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 53, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 48, order: 54, calledAt: 1756537705218, drawnNumbers: Array(54)}
+game.tsx:218 [SOCKET] Updating called numbers: (54) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 54, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 3, order: 55, calledAt: 1756537706218, drawnNumbers: Array(55)}
+game.tsx:218 [SOCKET] Updating called numbers: (55) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 55, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 52, order: 56, calledAt: 1756537707219, drawnNumbers: Array(56)}
+game.tsx:218 [SOCKET] Updating called numbers: (56) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 56, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 73, order: 57, calledAt: 1756537708220, drawnNumbers: Array(57)}
+game.tsx:218 [SOCKET] Updating called numbers: (57) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 57, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 24, order: 58, calledAt: 1756537709221, drawnNumbers: Array(58)}
+game.tsx:218 [SOCKET] Updating called numbers: (58) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 58, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 58, order: 59, calledAt: 1756537710222, drawnNumbers: Array(59)}
+game.tsx:218 [SOCKET] Updating called numbers: (59) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 59, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 75, order: 60, calledAt: 1756537711221, drawnNumbers: Array(60)}
+game.tsx:218 [SOCKET] Updating called numbers: (60) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 60, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 33, order: 61, calledAt: 1756537712223, drawnNumbers: Array(61)}
+game.tsx:218 [SOCKET] Updating called numbers: (61) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 61, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 15, order: 62, calledAt: 1756537713223, drawnNumbers: Array(62)}
+game.tsx:218 [SOCKET] Updating called numbers: (62) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 62, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 41, order: 63, calledAt: 1756537714224, drawnNumbers: Array(63)}
+game.tsx:218 [SOCKET] Updating called numbers: (63) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 63, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 57, order: 64, calledAt: 1756537715224, drawnNumbers: Array(64)}
+game.tsx:218 [SOCKET] Updating called numbers: (64) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 64, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 32, order: 65, calledAt: 1756537716225, drawnNumbers: Array(65)}
+game.tsx:218 [SOCKET] Updating called numbers: (65) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57, 32]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 65, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 14, order: 66, calledAt: 1756537717226, drawnNumbers: Array(66)}
+game.tsx:218 [SOCKET] Updating called numbers: (66) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57, 32, 14]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 66, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 60, order: 67, calledAt: 1756537718226, drawnNumbers: Array(67)}
+game.tsx:218 [SOCKET] Updating called numbers: (67) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57, 32, 14, 60]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 67, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 59, order: 68, calledAt: 1756537719227, drawnNumbers: Array(68)}
+game.tsx:218 [SOCKET] Updating called numbers: (68) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57, 32, 14, 60, 59]
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 68, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:216 [SOCKET] Number called: {gameId: 50, number: 65, order: 69, calledAt: 1756537720227, drawnNumbers: Array(69)}
+game.tsx:218 [SOCKET] Updating called numbers: (69) [27, 50, 9, 37, 25, 39, 36, 64, 17, 74, 29, 72, 46, 34, 31, 69, 13, 38, 71, 70, 68, 42, 54, 43, 56, 67, 4, 51, 19, 18, 49, 1, 47, 2, 66, 16, 22, 55, 53, 28, 21, 26, 23, 20, 40, 6, 8, 5, 11, 7, 61, 35, 10, 48, 3, 52, 73, 24, 58, 75, 33, 15, 41, 57, 32, 14, 60, 59, 65]
+game.tsx?t=1756537171163:355 [SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====
+game.tsx?t=1756537171163:356 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"userId":1,"winningSeat":3,"winningNumbers":[10,21,33,47,65],"userSeats":[1,3],"seatCount":2,"prizeAmount":7,"totalPrizePool":10,"houseFee":3}
+game.tsx?t=1756537171163:188 [SOCKET] ===== PLAYER WON EVENT @ 1756537719440 =====
+game.tsx?t=1756537171163:189 [SOCKET] Player won data: {gameId: 50, lobbyId: 9, userId: 1, winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx?t=1756537171163:190 [SOCKET] Current user info (userInfo): null
+game.tsx?t=1756537171163:191 [SOCKET] Current user info (auth context): {id: 1, email: 'admin@bingo.com', isAdmin: true, balance: 94.5, username: undefined}
+game.tsx?t=1756537171163:192 [SOCKET] Winner user ID: 1 Current user ID: 1
+game.tsx?t=1756537171163:193 [SOCKET] Is current user the winner? true
+game.tsx?t=1756537171163:194 [SOCKET] Game ID match? 50 vs 50 = true
+game.tsx?t=1756537171163:195 [STATE] BEFORE handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:201 [GAME] Current user IS the winner, saving winner data
+game.tsx?t=1756537171163:205 [CELEBRATION] Using server-calculated prize data: {prizeAmount: 7, totalPrizePool: 10, houseFee: 3, winningSeats: Array(2), winningRow: Array(5)}
+game.tsx?t=1756537171163:219 [GAME] ===== SETTING UP WINNER CELEBRATION =====
+game.tsx?t=1756537171163:220 [GAME] Setting showCelebration to TRUE
+game.tsx?t=1756537171163:221 [GAME] Celebration data being set: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+game.tsx?t=1756537171163:228 [STATE] SETTING showCelebration to TRUE @ 1756537719445
+game.tsx?t=1756537171163:229 [DEBUG] TESTING REACT BATCHING - Using flushSync to force immediate render
+game.tsx?t=1756537171163:233 [STATE] AFTER flushSync setShowCelebration(true) - showCelebration should be: true
+game.tsx?t=1756537171163:236 [WIN] Refreshing user balance after winning...
+game.tsx?t=1756537171163:272 [STATE] END handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:461 [SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====
+game.tsx:462 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"userId":1,"winningSeat":3,"winningNumbers":[10,21,33,47,65],"userSeats":[1,3],"seatCount":2,"prizeAmount":7,"totalPrizePool":10,"houseFee":3}
+game.tsx:253 [SOCKET] ===== PLAYER WON EVENT @ 1756537719451 =====
+game.tsx:254 [SOCKET] Player won data: {gameId: 50, lobbyId: 9, userId: 1, winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx:255 [SOCKET] Current user info (userInfo): null
+game.tsx:256 [SOCKET] Current user info (auth context): {id: 1, email: 'admin@bingo.com', isAdmin: true, balance: 94.5, username: undefined}
+game.tsx:257 [SOCKET] Winner user ID: 1 Current user ID: 1
+game.tsx:258 [SOCKET] Is current user the winner? true
+game.tsx:259 [SOCKET] Game ID match? 50 vs 50 = true
+game.tsx:260 [STATE] BEFORE handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:269 [GAME] Current user IS the winner, saving winner data
+game.tsx:276 [CELEBRATION] Using server-calculated prize data: {prizeAmount: 7, totalPrizePool: 10, houseFee: 3, winningSeats: Array(2), winningRow: Array(5)}
+game.tsx:292 [GAME] ===== SETTING UP WINNER CELEBRATION =====
+game.tsx:293 [GAME] Setting showCelebration to TRUE
+game.tsx:294 [GAME] Celebration data being set: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+game.tsx:301 [STATE] SETTING showCelebration to TRUE @ 1756537719454
+game.tsx:302 [DEBUG] TESTING REACT BATCHING - Using flushSync to force immediate render
+game.tsx:497 [PATTERN CALCULATION] useEffect triggered: {hasServerCards: true, serverCardsCount: 0, calledNumbersCount: 69, serverCardsBySeat: {…}, calledNumbers: Array(10)}
+game.tsx:520 [PATTERN CALCULATION] Conditions not met - not computing patterns
+game.tsx:306 [STATE] AFTER flushSync setShowCelebration(true) - showCelebration should be: true
+game.tsx:311 [WIN] Refreshing user balance after winning...
+game.tsx:355 [STATE] END handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:360 [SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====
+game.tsx?t=1756537171163:361 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"winners":[1],"winningSeat":3,"winningNumbers":[10,21,33,47,65],"endedAt":1756537720228}
+game.tsx?t=1756537171163:276 [SOCKET] ===== GAME ENDED EVENT @ 1756537719479 =====
+game.tsx?t=1756537171163:277 [DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix
+game.tsx?t=1756537171163:278 [SOCKET] Game ended data: {gameId: 50, lobbyId: 9, winners: Array(1), winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx?t=1756537171163:279 [SOCKET] Current game ID: 50
+game.tsx?t=1756537171163:280 [SOCKET] Game ID match? true
+game.tsx?t=1756537171163:281 [STATE] BEFORE handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx?t=1756537171163:284 [GAME] ===== GAME STATUS SET TO FINISHED =====
+game.tsx?t=1756537171163:285 [STATE] SETTING gameStatus to finished @ 1756537719482
+game.tsx?t=1756537171163:286 [GAME] Current showCelebration state: false
+game.tsx?t=1756537171163:287 [GAME] Current celebrationData state: null
+game.tsx?t=1756537171163:288 [STATE] AFTER setGameStatus - gameStatus should be: finished
+game.tsx?t=1756537171163:290 [STATE] END handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx:466 [SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====
+game.tsx:467 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"winners":[1],"winningSeat":3,"winningNumbers":[10,21,33,47,65],"endedAt":1756537720228}
+game.tsx:360 [SOCKET] ===== GAME ENDED EVENT @ 1756537719484 =====
+game.tsx:361 [DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix
+game.tsx:362 [SOCKET] Game ended data: {gameId: 50, lobbyId: 9, winners: Array(1), winningSeat: 3, winningNumbers: Array(5), …}
+game.tsx:363 [SOCKET] Current game ID: 50
+game.tsx:364 [SOCKET] Game ID match? true
+game.tsx:365 [STATE] BEFORE handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx:372 [GAME] ===== GAME STATUS SET TO FINISHED =====
+game.tsx:373 [STATE] SETTING gameStatus to finished @ 1756537719485
+game.tsx:374 [GAME] Current showCelebration state: false
+game.tsx:375 [GAME] Current celebrationData state: null
+game.tsx:376 [STATE] AFTER setGameStatus - gameStatus should be: finished
+game.tsx:379 [STATE] END handleGameEnded - showCelebration: false, gameStatus: waiting
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537719524
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537719525 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx?t=1756537171163:240 [WIN] Balance updated: 95.5
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537719965
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537719966
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537719967 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx:315 [WIN] Balance updated: 95.5
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537720257
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537720265
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537720265 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537728050
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537728050
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537728051 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537728404
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537728404
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537728404 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+game.tsx:448 [GAME] Game reset received: {gameId: 50, lobbyId: 9, message: 'Game has been automatically reset. Join to play again!', resetAt: 1756537750236}
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537749526
+winner-celebration-modal-enhanced.tsx:31 [MODAL] useEffect triggered - isOpen: true @ 1756537749528
+winner-celebration-modal-enhanced.tsx:33 [MODAL] ===== MODAL MOUNTING @ 1756537749530 =====
+winner-celebration-modal-enhanced.tsx:34 [MODAL] Props received: {prizeAmount: 7, winningSeats: Array(2), winningRow: Array(5), totalPrizePool: 10, houseFee: 3}
+winner-celebration-modal-enhanced.tsx:38 [MODAL] Modal state initialized, DOM should be visible now
+winner-celebration-modal-enhanced.tsx:44 [MODAL] 45-second timer expired, calling onClose @ 1756537794539
+game.tsx:852 [GAME] Celebration modal closed (45s timer or manual), redirecting to lobby...
+winner-celebration-modal-enhanced.tsx:53 [MODAL] Cleanup - clearing timer @ 1756537794693
+game.tsx:480 [GAME] ===== SOCKET USEEFFECT UNMOUNTING =====
+game.tsx:481 [GAME] Current showCelebration state on unmount: false
+game.tsx:482 [GAME] Current celebrationData on unmount: null
+game.tsx:483 [GAME] Cleaning up socket listeners...
+lobby.tsx:199 [LOBBY PAGE] This is a hierarchical lobby with 4 games. Redirecting to lobby selection.
+lobby.tsx:116 [LOBBY PAGE] Current user ID: 1
+lobby.tsx:120 [LOBBY PAGE] Checking for game results for user ID: 1 Result: null
+lobby.tsx:162 [LOBBY PAGE] No game result found in sessionStorage
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: {lobby: '$5 Classic Bingo', gamesCount: 4, userEmail: 'admin@bingo.com'}
