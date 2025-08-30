@@ -1,0 +1,158 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+SocketContext.tsx:44 [SOCKET] No authenticated user, skipping connection
+AuthContext.tsx:40 [AUTH] Checking authentication on startup...
+AuthContext.tsx:41 [AUTH] Stored token exists: true
+AuthContext.tsx:42 [AUTH] Stored server session ID: 1756530013769-w3ybohcrmpb
+AuthContext.tsx:43 [AUTH] Full localStorage contents: Array(3)
+AuthContext.tsx:49 [AUTH] Current server session ID: 1756530447291-fsx8n3nf998
+AuthContext.tsx:52 [AUTH] Server restarted detected!
+AuthContext.tsx:53 [AUTH] Stored session: 1756530013769-w3ybohcrmpb
+AuthContext.tsx:54 [AUTH] Current session: 1756530447291-fsx8n3nf998
+AuthContext.tsx:55 [AUTH] Clearing all stored authentication data...
+login.tsx:91 [LOGIN] Quick login as: admin admin@bingo.com
+login.tsx:97 [LOGIN] Quick login response received: Object
+AuthContext.tsx:124 [AUTH] Manual login attempt...
+AuthContext.tsx:143 [AUTH] Manual login successful: Object
+AuthContext.tsx:153 [AUTH] Stored server session ID: 1756530447291-fsx8n3nf998
+login.tsx:28 [LOGIN] User already authenticated, redirecting to dashboard...
+SocketContext.tsx:54 [SOCKET] Initializing connection for user: admin@bingo.com
+dashboard.tsx:83 [DASHBOARD] Fetching dashboard data with token...
+dashboard.tsx:90 [DASHBOARD] Dashboard data received: Object
+SocketContext.tsx:73 [SOCKET] Connected successfully: j8pVmiQ4N5JApif6AAAB
+/api/notification-preferences/pattern_indicator_popup:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+dashboard.tsx:66 [PATTERN_POPUP] Preference check failed: Error: API error: 404
+    at apiRequest (api.ts:53:15)
+    at async checkPatternPopupPreference (dashboard.tsx:58:24)
+    at async fetchDashboardData (dashboard.tsx:99:7)
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object
+game.tsx:172 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:173 [GAME] Socket available: true
+game.tsx:174 [GAME] Socket connected: true
+game.tsx:175 [GAME] Game ID available: false
+game.tsx:172 [GAME] ===== SOCKET USEEFFECT MOUNTING =====
+game.tsx:173 [GAME] Socket available: true
+game.tsx:174 [GAME] Socket connected: true
+game.tsx:175 [GAME] Game ID available: true
+game.tsx:178 [SOCKET] Game page connected to game 50
+game.tsx:179 [SOCKET] Attempting to join lobby room: lobby_9
+game.tsx:180 [SOCKET] Socket connected: true
+game.tsx:181 [SOCKET] Game lobbyId: 9
+game.tsx:185 [SOCKET] ✅ Emitted join_lobby for lobby 9
+game.tsx:401 [SOCKET] Setting up event listeners...
+game.tsx:420 [SOCKET] Testing socket connection...
+game.tsx:146 [GAME PAGE] Data loaded: Object
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:361 [SOCKET] Seat taken: Object
+game.tsx:361 [SOCKET] Seat taken: Object
+game.tsx:361 [SOCKET] Seat taken: Object
+game.tsx:361 [SOCKET] Seat taken: Object
+game.tsx:203 [SOCKET] Game started: Object
+game.tsx:210 [SOCKET] Received master card from server
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(1)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(2)
+game.tsx:353 [SOCKET] Call speed changed: Object
+mobile-info-view.tsx:51 [ADMIN] Changed call speed to 1 seconds
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(3)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(4)
+compact-mobile-bingo.tsx:51 [COMPACT MOBILE] Master card received: 15 rows
+compact-mobile-bingo.tsx:58 [COMPACT MOBILE] SUCCESS - Using server master card
+compact-mobile-bingo.tsx:59 [COMPACT MOBILE] First row should be [2, 30, 43, 53, 71]: Array(5)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(5)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(6)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(7)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(8)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(9)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(10)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(11)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(12)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(13)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(14)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(15)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(16)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(17)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(18)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(19)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(20)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(21)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(22)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(23)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(24)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(25)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(26)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(27)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(28)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(29)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(30)
+game.tsx:192 [SOCKET] Number called: Object
+game.tsx:194 [SOCKET] Updating called numbers: Array(31)
+game.tsx:405 [SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====
+game.tsx:406 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"userId":1,"winningSeat":3,"winningNumbers":[12,26,32,48,65],"userSeats":[3,4],"seatCount":2}
+game.tsx:218 [SOCKET] ===== PLAYER WON EVENT @ 1756530613542 =====
+game.tsx:219 [SOCKET] Player won data: Object
+game.tsx:220 [SOCKET] Current user info: null
+game.tsx:221 [SOCKET] Winner user ID: 1 Current user ID: undefined
+game.tsx:222 [SOCKET] Is current user the winner? false
+game.tsx:223 [SOCKET] Game ID match? 50 vs 50 = true
+game.tsx:224 [STATE] BEFORE handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:298 [GAME] Current user is NOT the winner, saving loser data
+game.tsx:303 [GAME] Winner participant: undefined Winner display name: Unknown Player
+game.tsx:311 [GAME] ===== SETTING UP LOSER TOAST =====
+game.tsx:312 [GAME] Current user is LOSER. Winner: Unknown Player
+game.tsx:313 [GAME] Toast data: Object
+game.tsx:325 [STATE] END handlePlayerWon - showCelebration: false, gameStatus: waiting
+game.tsx:410 [SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====
+game.tsx:411 [SOCKET] Raw data: {"gameId":50,"lobbyId":9,"winners":[1],"winningSeat":3,"winningNumbers":[12,26,32,48,65],"endedAt":1756530614367}
+game.tsx:330 [SOCKET] ===== GAME ENDED EVENT @ 1756530613573 =====
+game.tsx:331 [DEBUG] RE-ENABLED handleGameEnded to test with flushSync fix
+game.tsx:332 [SOCKET] Game ended data: Object
+game.tsx:333 [SOCKET] Current game ID: 50
+game.tsx:334 [SOCKET] Game ID match? true
+game.tsx:335 [STATE] BEFORE handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx:342 [GAME] ===== GAME STATUS SET TO FINISHED =====
+game.tsx:343 [STATE] SETTING gameStatus to finished @ 1756530613573
+game.tsx:344 [GAME] Current showCelebration state: false
+game.tsx:345 [GAME] Current celebrationData state: null
+game.tsx:346 [STATE] AFTER setGameStatus - gameStatus should be: finished
+game.tsx:349 [STATE] END handleGameEnded - showCelebration: false, gameStatus: waiting
+game.tsx:320 [GAME] Redirecting loser to lobby after toast...
+game.tsx:424 [GAME] ===== SOCKET USEEFFECT UNMOUNTING =====
+game.tsx:425 [GAME] Current showCelebration state on unmount: false
+game.tsx:426 [GAME] Current celebrationData on unmount: null
+game.tsx:427 [GAME] Cleaning up socket listeners...
+lobby.tsx:116 [LOBBY PAGE] Current user ID: 1
+lobby.tsx:120 [LOBBY PAGE] Checking for game results for user ID: 1 Result: null
+lobby.tsx:162 [LOBBY PAGE] No game result found in sessionStorage
+lobby.tsx:199 [LOBBY PAGE] This is a hierarchical lobby with 4 games. Redirecting to lobby selection.
+lobby-select.tsx:79 [LOBBY SELECT] Data loaded: Object

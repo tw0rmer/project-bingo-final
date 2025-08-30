@@ -217,9 +217,10 @@ export default function GamePage() {
       const timestamp = Date.now();
       console.log(`[SOCKET] ===== PLAYER WON EVENT @ ${timestamp} =====`);
       console.log('[SOCKET] Player won data:', data);
-      console.log('[SOCKET] Current user info:', userInfo);
-      console.log('[SOCKET] Winner user ID:', data.userId, 'Current user ID:', userInfo?.id);
-      console.log('[SOCKET] Is current user the winner?', data.userId === userInfo?.id);
+      console.log('[SOCKET] Current user info (userInfo):', userInfo);
+      console.log('[SOCKET] Current user info (auth context):', user);
+      console.log('[SOCKET] Winner user ID:', data.userId, 'Current user ID:', user?.id || userInfo?.id);
+      console.log('[SOCKET] Is current user the winner?', data.userId === (user?.id || userInfo?.id));
       console.log('[SOCKET] Game ID match?', data.gameId, 'vs', game.id, '=', data.gameId === game.id);
       console.log(`[STATE] BEFORE handlePlayerWon - showCelebration: ${showCelebration}, gameStatus: ${gameStatus}`);
       
@@ -228,7 +229,8 @@ export default function GamePage() {
         setGameStatus('finished');
         
         // Save celebration data to sessionStorage to show in lobby
-        if (data.userId === userInfo?.id) {
+        const currentUserId = user?.id || userInfo?.id;
+        if (data.userId === currentUserId) {
           console.log('[GAME] Current user IS the winner, saving winner data');
           // Calculate prize: 70% of total pot (NOT multiplied by seat count)
           const entryFee = lobby?.entryFee || 5;
