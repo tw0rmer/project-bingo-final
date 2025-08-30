@@ -140,8 +140,22 @@ export default function GamePage() {
 
         setParticipants(participantsData.participants || []);
         // Set master card from game data (added in games API) or participants data
-        setMasterCard(gameResponse.masterCard || participantsData.masterCard);
+        const receivedMasterCard = gameResponse.masterCard || participantsData.masterCard;
+        setMasterCard(receivedMasterCard);
         setUserInfo(userResponse);
+
+        // Convert master card to serverCardsBySeat format for pattern detection
+        if (receivedMasterCard && participantsData.participants) {
+          const cardsBySeat: Record<number, number[]> = {};
+          participantsData.participants.forEach(participant => {
+            const seatIndex = participant.seatNumber - 1; // Convert 1-based to 0-based
+            if (seatIndex >= 0 && seatIndex < receivedMasterCard.length) {
+              cardsBySeat[participant.seatNumber] = receivedMasterCard[seatIndex];
+            }
+          });
+          setServerCardsBySeat(cardsBySeat);
+          console.log('[GAME PAGE] Server cards by seat populated:', cardsBySeat);
+        }
 
         console.log('[GAME PAGE] Data loaded:', {
           game: gameResponse.name,
@@ -209,6 +223,17 @@ export default function GamePage() {
         if (data.masterCard) {
           console.log('[SOCKET] Received master card from server');
           setMasterCard(data.masterCard);
+          
+          // Update serverCardsBySeat for pattern detection
+          const cardsBySeat: Record<number, number[]> = {};
+          participants.forEach(participant => {
+            const seatIndex = participant.seatNumber - 1; // Convert 1-based to 0-based
+            if (seatIndex >= 0 && seatIndex < data.masterCard.length) {
+              cardsBySeat[participant.seatNumber] = data.masterCard[seatIndex];
+            }
+          });
+          setServerCardsBySeat(cardsBySeat);
+          console.log('[SOCKET] Updated server cards by seat from game started:', cardsBySeat);
         }
       }
     };
@@ -362,6 +387,19 @@ export default function GamePage() {
             headers: { 'Authorization': `Bearer ${token}` }
           }).then(participantsResponse => {
             setParticipants(participantsResponse.participants || []);
+            
+            // Update serverCardsBySeat if we have master card
+            if (participantsResponse.masterCard) {
+              const cardsBySeat: Record<number, number[]> = {};
+              participantsResponse.participants?.forEach(participant => {
+                const seatIndex = participant.seatNumber - 1; // Convert 1-based to 0-based
+                if (seatIndex >= 0 && seatIndex < participantsResponse.masterCard!.length) {
+                  cardsBySeat[participant.seatNumber] = participantsResponse.masterCard![seatIndex];
+                }
+              });
+              setServerCardsBySeat(cardsBySeat);
+              console.log('[SOCKET] Updated server cards by seat from seat taken:', cardsBySeat);
+            }
           }).catch(console.error);
         }
       }
@@ -377,6 +415,19 @@ export default function GamePage() {
             headers: { 'Authorization': `Bearer ${token}` }
           }).then(participantsResponse => {
             setParticipants(participantsResponse.participants || []);
+            
+            // Update serverCardsBySeat if we have master card
+            if (participantsResponse.masterCard) {
+              const cardsBySeat: Record<number, number[]> = {};
+              participantsResponse.participants?.forEach(participant => {
+                const seatIndex = participant.seatNumber - 1; // Convert 1-based to 0-based
+                if (seatIndex >= 0 && seatIndex < participantsResponse.masterCard!.length) {
+                  cardsBySeat[participant.seatNumber] = participantsResponse.masterCard![seatIndex];
+                }
+              });
+              setServerCardsBySeat(cardsBySeat);
+              console.log('[SOCKET] Updated server cards by seat from seat left:', cardsBySeat);
+            }
           }).catch(console.error);
         }
       }
