@@ -750,6 +750,30 @@ export default function GamePage() {
           <div>Pattern Progress: {patternProgress.length} patterns</div>
           <div>Called Numbers: {calledNumbers.length} numbers</div>
           <div>Server Cards: {Object.keys(serverCardsBySeat).length} seats</div>
+          <div>Game Status: {gameStatus}</div>
+          <div>Show Celebration: {showCelebration ? 'YES' : 'NO'}</div>
+          <div>Celebration Data: {celebrationData ? 'YES' : 'NO'}</div>
+          <div>Winner: {winner ? `User ${winner.userId}, Seat ${winner.seatNumber}` : 'None'}</div>
+          {userInfo?.isAdmin && (
+            <button 
+              onClick={() => {
+                console.log('[DEBUG] Testing winner modal...');
+                // Simulate winner data
+                setCelebrationData({
+                  prizeAmount: 14,
+                  winningSeats: selectedSeats.length > 0 ? selectedSeats : [1],
+                  winningRow: [1, 2, 3, 4, 5],
+                  totalPrizePool: 20,
+                  houseFee: 6
+                });
+                setShowCelebration(true);
+                console.log('[DEBUG] Should show celebration modal now');
+              }}
+              className="mt-2 px-2 py-1 bg-green-600 text-white rounded text-xs"
+            >
+              Test Winner Modal
+            </button>
+          )}
           {patternProgress.length > 0 && (
             <div className="mt-2">
               <div className="font-bold">Pattern Details:</div>
