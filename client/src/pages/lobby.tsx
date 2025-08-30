@@ -10,6 +10,9 @@ import { MasterCard } from '../components/games/master-card';
 import { MobileGameView } from '../components/games/mobile-game-view';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { cn } from '@/lib/utils';
+import { WinnerCelebrationModal } from '../components/games/winner-celebration-modal';
+import { WinnerCelebrationModalEnhanced } from '../components/games/winner-celebration-modal-enhanced';
+import { useToast } from '../hooks/use-toast';
 
 interface Lobby {
   id: number;
@@ -59,9 +62,24 @@ const LobbyPage: React.FC = () => {
   const [serverCardsBySeat, setServerCardsBySeat] = useState<Record<number, number[]>>({});
   const [isPaused, setIsPaused] = useState(false);
   const [callMs, setCallMs] = useState(3000);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState<{
+    prizeAmount: number;
+    winningSeats: number[];
+    winningRow: number[];
+    totalPrizePool?: number;
+    houseFee?: number;
+  } | null>(null);
+  const [showLoserModal, setShowLoserModal] = useState(false);
+  const [loserData, setLoserData] = useState<{
+    winnerId: number;
+    winnerName: string;
+    winnerSeats: number[];
+  } | null>(null);
 
   const { socket, isConnected } = useSocket();
-  const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
+const { toast } = useToast();
+const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
 
   // Load deterministic lobby cards for waiting phase
   useEffect(() => {
@@ -81,6 +99,41 @@ const LobbyPage: React.FC = () => {
   const getBalanceAsNumber = (balance: number | string): number => {
     return typeof balance === 'string' ? parseFloat(balance) || 0 : balance;
   };
+
+  // Check for game results from previous game
+  useEffect(() => {
+    const gameResult = sessionStorage.getItem('gameResult');
+    if (gameResult) {
+      try {
+        const result = JSON.parse(gameResult);
+        // Check if result is recent (within last 5 minutes)
+        if (result.timestamp && Date.now() - result.timestamp < 5 * 60 * 1000) {
+          if (result.type === 'winner') {
+            setCelebrationData({
+              prizeAmount: result.prizeAmount,
+              winningSeats: result.winningSeats,
+              winningRow: result.winningRow,
+              totalPrizePool: result.totalPrizePool,
+              houseFee: result.houseFee
+            });
+            setShowCelebration(true);
+          } else if (result.type === 'loser') {
+            setLoserData({
+              winnerId: result.winnerId,
+              winnerName: result.winnerName,
+              winnerSeats: result.winnerSeats
+            });
+            setShowLoserModal(true);
+          }
+        }
+        // Clear the stored result after showing
+        sessionStorage.removeItem('gameResult');
+      } catch (e) {
+        console.error('Failed to parse game result:', e);
+        sessionStorage.removeItem('gameResult');
+      }
+    }
+  }, []);
 
   // Check if this is a new hierarchical lobby and redirect to game selection
   useEffect(() => {
@@ -147,7 +200,7 @@ const LobbyPage: React.FC = () => {
     };
 
     if (lobbyId) {
-      checkLobbyType();
+      checkGameType();
     } else {
       setError('Invalid lobby ID');
       setLoading(false);
@@ -405,7 +458,7 @@ const LobbyPage: React.FC = () => {
       const token = localStorage.getItem('token');
       console.log('[DEBUG BUTTON] Token exists:', !!token);
       
-      const response = await apiRequest(`/games/${lobbyId}/leave`, {
+      const response = await apiRequest<{ userBalance?: number }>(`/games/${lobbyId}/leave`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -421,7 +474,7 @@ const LobbyPage: React.FC = () => {
       }
 
       // Refresh participants
-      const participantsResponse = await apiRequest(`/games/${lobbyId}/participants`, {
+      const participantsResponse = await apiRequest<Participant[]>(`/games/${lobbyId}/participants`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setParticipants(participantsResponse);
@@ -587,7 +640,7 @@ const LobbyPage: React.FC = () => {
               )}>{lobby.name}</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
-              {!isMobile && <ConnectionStatus showDetails={false} className="text-xs" />}
+                             {!isMobile && <ConnectionStatus />}
               <div className="text-xs text-gray-700">
                 {!isMobile && <span>Balance: </span>}${getBalanceAsNumber(user.balance).toFixed(2)}
               </div>
@@ -659,7 +712,7 @@ const LobbyPage: React.FC = () => {
                 isConnected={isConnected}
                 isPaused={isPaused}
                 gameStatus={gameStatus}
-                onLeaveLobby={handleLeaveLobby}
+                                 onLeaveLobby={handleLeaveGame}
               />
             </div>
           ) : (
@@ -707,7 +760,7 @@ const LobbyPage: React.FC = () => {
                 {currentUserParticipations.length > 0 && (
                   <div className="bg-red-50 rounded p-2 border border-red-200 flex items-center justify-center">
                     <button
-                      onClick={handleLeaveLobby}
+                                             onClick={handleLeaveGame}
                       disabled={joining || gameStatus === 'active'}
                       className={`px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ${
                         gameStatus === 'active' 
@@ -914,6 +967,80 @@ const LobbyPage: React.FC = () => {
           {toastMsg}
         </div>
       )}
+      
+      {/* Winner Celebration Modal */}
+      {showCelebration && celebrationData && (
+        <>
+          <div className="hidden lg:block">
+            <WinnerCelebrationModalEnhanced
+              isOpen={showCelebration}
+              onClose={() => setShowCelebration(false)}
+              prizeAmount={celebrationData.prizeAmount}
+              winningSeats={celebrationData.winningSeats}
+              winningRow={celebrationData.winningRow}
+              duration={45}
+              totalPrizePool={celebrationData.totalPrizePool}
+              houseFee={celebrationData.houseFee}
+            />
+          </div>
+          <div className="lg:hidden">
+            <WinnerCelebrationModal
+              isOpen={showCelebration}
+              onClose={() => setShowCelebration(false)}
+              prizeAmount={celebrationData.prizeAmount}
+              winningSeats={celebrationData.winningSeats}
+              winningRow={celebrationData.winningRow}
+              duration={45}
+              totalPrizePool={celebrationData.totalPrizePool}
+              houseFee={celebrationData.houseFee}
+            />
+          </div>
+        </>
+      )}
+      
+      {/* Loser Modal */}
+      {showLoserModal && loserData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 max-w-md mx-4 text-white animate-modal-slide-up">
+            <div className="text-center space-y-4">
+              <div className="text-6xl mb-4">😔</div>
+              <h2 className="text-3xl font-bold text-red-400">Game Over!</h2>
+              <p className="text-xl text-gray-300">
+                {loserData.winnerName} won this round
+              </p>
+              <p className="text-sm text-gray-400">
+                Winning seats: {loserData.winnerSeats.join(', ')}
+              </p>
+              <div className="pt-4">
+                <p className="text-lg text-yellow-400 font-semibold">
+                  Better luck next time! 🍀
+                </p>
+              </div>
+              <button
+                                 onClick={() => {
+                   setShowLoserModal(false);
+                   toast({
+                     title: "Ready for the next game!",
+                     description: "You can join the next round whenever you're ready.",
+                     duration: 3000,
+                   });
+                 }}
+                className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <style>{`
+        @keyframes modal-slide-up {
+          0% { transform: translateY(100px) scale(0.9); opacity: 0; }
+          100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .animate-modal-slide-up { animation: modal-slide-up 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+      `}</style>
     </SiteLayout>
   );
 };

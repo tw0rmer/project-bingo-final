@@ -8,7 +8,7 @@ interface WinnerCelebrationModalProps {
   prizeAmount: number;
   winningSeats: number[];
   winningRow: number[];
-  duration?: number; // Duration in seconds, default 30
+  duration?: number; // Duration in seconds, default 45
   totalPrizePool?: number;
   houseFee?: number;
 }
@@ -19,7 +19,7 @@ export function WinnerCelebrationModal({
   prizeAmount,
   winningSeats,
   winningRow,
-  duration = 30,
+  duration = 45,
   totalPrizePool,
   houseFee
 }: WinnerCelebrationModalProps) {

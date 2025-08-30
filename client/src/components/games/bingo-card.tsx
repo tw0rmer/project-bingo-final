@@ -88,9 +88,9 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
   // This prevents confusion from cached random cards
 
   // Calculate which rows are close to winning (for visual effects)
-  const getRowWinningProgress = (rowIndex: number): { isCloseToWin: boolean; isVeryClose: boolean; numbersNeeded: number } => {
+  const getRowWinningProgress = (rowIndex: number): { isCloseToWin: boolean; isVeryClose: boolean; numbersNeeded: number; missingNumbers: number[] } => {
     if (!calledNumbers || bingoCard.length === 0 || !bingoCard[rowIndex]) {
-      return { isCloseToWin: false, isVeryClose: false, numbersNeeded: 5 };
+      return { isCloseToWin: false, isVeryClose: false, numbersNeeded: 5, missingNumbers: [] };
     }
     
     const row = bingoCard[rowIndex].map(cell => cell.value);
@@ -100,8 +100,16 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
     return {
       isCloseToWin: numbersNeeded <= 2 && numbersNeeded > 0, // 1-2 numbers away
       isVeryClose: numbersNeeded === 1, // 1 number away
-      numbersNeeded
+      numbersNeeded,
+      missingNumbers: progress.numbersNeeded
     };
+  };
+
+  // Check if a specific number is needed for winning (for individual cell effects)
+  const isNumberNeededForWin = (rowIndex: number, numberValue: number): boolean => {
+    if (!selectedSeats.includes(rowIndex + 1)) return false;
+    const winProgress = getRowWinningProgress(rowIndex);
+    return winProgress.missingNumbers.includes(numberValue);
   };
 
   // Auto-mark numbers when calledNumbers prop changes
@@ -172,6 +180,38 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
       getPhaseStyles(),
       "w-full"
     )}>
+      {/* Floating Win Anticipation Banner */}
+      {gamePhase === 'playing' && selectedSeats.length > 0 && (() => {
+        const closestSeat = selectedSeats[0];
+        const winProgress = getRowWinningProgress(closestSeat - 1);
+        if (winProgress.isVeryClose) {
+          return (
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+              <div className="bg-gradient-to-r from-red-500 via-orange-500 to-red-500 text-white px-4 py-2 rounded-full shadow-lg border-2 border-yellow-300 animate-pulse">
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  <span className="animate-spin">🎯</span>
+                  <span>ALMOST THERE! Need: {winProgress.missingNumbers.join(', ')}</span>
+                  <span className="animate-spin">🎯</span>
+                </div>
+              </div>
+            </div>
+          );
+        } else if (winProgress.isCloseToWin) {
+          return (
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20">
+              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg border border-yellow-300">
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  <span>⚡</span>
+                  <span>Getting Close! {winProgress.numbersNeeded} numbers away</span>
+                  <span>⚡</span>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })()}
+      
       {/* Mobile-Responsive Grid Container */}
       <div className="overflow-x-auto">
         <div className="min-w-[300px] grid grid-cols-6 gap-[1px] sm:gap-[2px] select-none">
@@ -224,8 +264,10 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                       ? "ring-2 ring-yellow-400 shadow-[0_0_10px_#facc15] bg-yellow-400 text-black animate-pulse"
                       : "ring-2 ring-red-500 shadow-[0_0_10px_#ef4444] bg-red-600 text-white animate-pulse"),
                     // Winner prediction visual effects - only for selected seats during gameplay
-                    gamePhase === 'playing' && isSelected && winProgress.isVeryClose && "ring-2 ring-orange-400 shadow-[0_0_15px_#fb923c] animate-pulse",
-                    gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && !winProgress.isVeryClose && "ring-1 ring-amber-300 shadow-[0_0_8px_#fbbf24]"
+                    gamePhase === 'playing' && isSelected && winProgress.isVeryClose && "ring-2 ring-orange-400 shadow-[0_0_15px_#fb923c] animate-pulse scale-105",
+                    gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && !winProgress.isVeryClose && "ring-1 ring-amber-300 shadow-[0_0_8px_#fbbf24]",
+                    // Hover effects for available seats that could lead to winning
+                    !isSelected && !isOccupied && gamePhase === 'lobby' && "hover:ring-2 hover:ring-blue-400 hover:shadow-lg hover:scale-105 transition-all duration-200"
                   )}
                 >
                   <div className="flex items-center justify-between leading-none">
@@ -277,9 +319,12 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                         : "bg-gray-100 text-gray-900",
                         // Winner prediction for individual numbers - add subtle glow to missing numbers in close-to-win rows
                         gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isVeryClose && 
-                          "ring-1 ring-orange-300 shadow-[0_0_8px_#fed7aa] bg-orange-50 animate-pulse",
+                          "ring-2 ring-orange-400 shadow-[0_0_12px_#fb923c] bg-orange-50 animate-pulse scale-105",
                         gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isCloseToWin && !winProgress.isVeryClose &&
-                          "ring-1 ring-amber-200 shadow-[0_0_4px_#fef3c7] bg-amber-50"
+                          "ring-1 ring-amber-300 shadow-[0_0_6px_#fbbf24] bg-amber-50",
+                        // Enhanced effect for numbers specifically needed for winning
+                        gamePhase === 'playing' && isSelected && !number.isMarked && isNumberNeededForWin(rowIndex, number.value) &&
+                          "ring-2 ring-purple-400 shadow-[0_0_15px_#a855f7] bg-purple-50 animate-pulse scale-105"
                     )}
                   >
                     {number.value}

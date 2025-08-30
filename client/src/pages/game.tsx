@@ -10,6 +10,7 @@ import { BingoCard } from '../components/games/bingo-card';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { MobileGameView } from '../components/games/mobile-game-view';
 import { WinnerCelebrationModal } from '../components/games/winner-celebration-modal';
+import { WinnerCelebrationModalEnhanced } from '../components/games/winner-celebration-modal-enhanced';
 import { EmojiReactions } from '../components/games/EmojiReactions';
 import { PatternIndicator } from '../components/games/PatternIndicator';
 import { detectRowPatternProgress } from '../utils/patternDetection';
@@ -84,6 +85,7 @@ export default function GamePage() {
   const [currentCallSpeed, setCurrentCallSpeed] = useState<number>(5);
   const [winner, setWinner] = useState<{ seatNumber: number; userId: number } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [gameResetLobbyId, setGameResetLobbyId] = useState<number | null>(null);
   const [celebrationData, setCelebrationData] = useState<{
     prizeAmount: number;
     winningSeats: number[];
@@ -202,14 +204,14 @@ export default function GamePage() {
         setWinner({ userId: data.userId, seatNumber: data.winningSeat || data.seatNumber });
         setGameStatus('finished');
         
-        // Show celebration modal if the current user won
+        // Save celebration data to sessionStorage to show in lobby
         if (data.userId === userInfo?.id) {
           // Calculate prize: 70% of total pot (NOT multiplied by seat count)
           const entryFee = lobby?.entryFee || 5;
           const participantCount = participants.length;
           const totalPrize = Math.floor(entryFee * participantCount * 0.7 * 100) / 100;
           
-          console.log('[CELEBRATION] Triggering winner celebration:', {
+          console.log('[CELEBRATION] Saving winner data for lobby display:', {
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
             winningRow: data.winningNumbers || []
@@ -219,14 +221,19 @@ export default function GamePage() {
           const totalPool = entryFee * participantCount;
           const houseAmount = Math.floor(totalPool * 0.3 * 100) / 100;
           
-          setCelebrationData({
+          // Save to sessionStorage for lobby to display
+          sessionStorage.setItem('gameResult', JSON.stringify({
+            type: 'winner',
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
             winningRow: data.winningNumbers || [],
             totalPrizePool: totalPool,
-            houseFee: houseAmount
-          });
-          setShowCelebration(true);
+            houseFee: houseAmount,
+            timestamp: Date.now()
+          }));
+          
+          // Don't show modal here - will show in lobby after redirect
+          // setShowCelebration(true);
           
           // CRITICAL: Refresh user balance after winning
           const token = localStorage.getItem('token');
@@ -250,17 +257,21 @@ export default function GamePage() {
             setShowCelebration(false);
           }, 30000);
         } else {
-          // If someone else won, show prominent announcement
+          // Save loser data for other players
           const winnerParticipant = participants.find(p => p.userId === data.userId);
           const winnerEmail = winnerParticipant?.user?.email || 'Unknown Player';
           const winnerDisplay = winnerEmail.split('@')[0];
           
-          toast({
-            title: "🎉 Game Over! We Have a Winner!",
-            description: `${winnerDisplay} (Seat ${data.winningSeat || data.seatNumber}) won the game!`,
-            duration: 8000,
-          });
-          setToastMsg(`🏆 ${winnerDisplay} won on seat ${data.winningSeat || data.seatNumber}!`);
+          // Save to sessionStorage for lobby to display
+          sessionStorage.setItem('gameResult', JSON.stringify({
+            type: 'loser',
+            winnerId: data.userId,
+            winnerName: winnerDisplay,
+            winnerSeats: data.userSeats || [data.winningSeat || data.seatNumber],
+            timestamp: Date.now()
+          }));
+          
+          // Don't show toast here - will show in lobby after redirect
         }
       }
     };
@@ -269,6 +280,13 @@ export default function GamePage() {
       console.log('[SOCKET] Game ended:', data);
       if (data.gameId === game.id) {
         setGameStatus('finished');
+        
+        // Immediately redirect ALL players to lobby
+        // The winner/loser modals will show in the lobby
+        console.log('[GAME] Redirecting all players to lobby...');
+        setTimeout(() => {
+          setLocation(`/lobby/${game.lobbyId}`);
+        }, 1000); // Small delay to ensure data is saved
       }
     };
 
@@ -310,6 +328,17 @@ export default function GamePage() {
       }
     };
 
+    // Handle game reset - redirect back to lobby AFTER modal closes
+    const handleGameReset = (data: any) => {
+      console.log('[GAME] Game reset received:', data);
+      
+      // Store the lobby ID for redirect after modal closes
+      setGameResetLobbyId(data.lobbyId);
+      
+      // Don't close the modal immediately - let it run its course
+      // The modal will handle the redirect when it closes
+    };
+
     socket.on('number_called', handleNumberCalled);
     socket.on('gameStarted', handleGameStarted);
     socket.on('player_won', handlePlayerWon);
@@ -317,6 +346,7 @@ export default function GamePage() {
     socket.on('call_speed_changed', handleCallSpeedChanged);
     socket.on('seat_taken', handleSeatTaken);
     socket.on('seat_left', handleSeatLeft);
+    socket.on('game_reset', handleGameReset);
     
     return () => {
       socket.off('number_called', handleNumberCalled);
@@ -326,6 +356,7 @@ export default function GamePage() {
       socket.off('call_speed_changed', handleCallSpeedChanged);
       socket.off('seat_taken', handleSeatTaken);
       socket.off('seat_left', handleSeatLeft);
+      socket.off('game_reset', handleGameReset);
     };
   }, [socket, isConnected, game?.id, game?.lobbyId]);
 
@@ -661,19 +692,7 @@ export default function GamePage() {
         />
       </div>
 
-      {/* Winner Celebration Modal */}
-      {showCelebration && celebrationData && (
-        <WinnerCelebrationModal
-          isOpen={showCelebration}
-          onClose={() => setShowCelebration(false)}
-          prizeAmount={celebrationData.prizeAmount}
-          winningSeats={celebrationData.winningSeats}
-          winningRow={celebrationData.winningRow}
-          duration={30}
-          totalPrizePool={celebrationData.totalPrizePool}
-          houseFee={celebrationData.houseFee}
-        />
-      )}
+      {/* Modals now display in lobby after redirect - keeping for fallback */}
       
       {/* Emoji Reactions - Only show during active games and when authenticated */}
       {gameStatus === 'active' && game && lobby && userInfo && isConnected && (
@@ -693,6 +712,722 @@ export default function GamePage() {
           />
         </div>
       )}
+      
+      {/* Debug Info - Remove this after testing */}
+      {userInfo && (
+        <div className="fixed top-20 right-4 z-30 bg-black/80 text-white p-3 rounded text-xs max-w-xs">
+          <div>Selected Seats: {selectedSeats.join(', ') || 'None'}</div>
+          <div>Pattern Progress: {patternProgress.length} patterns</div>
+          <div>Called Numbers: {calledNumbers.length} numbers</div>
+          <div>Server Cards: {Object.keys(serverCardsBySeat).length} seats</div>
+          {patternProgress.length > 0 && (
+            <div className="mt-2">
+              <div className="font-bold">Pattern Details:</div>
+              {patternProgress.slice(0, 3).map((p, i) => (
+                <div key={i} className="text-xs">
+                  Seat {p.seat}: {Math.round(p.progress * 100)}% ({p.numbersNeeded.length} needed)
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
+}
+
+        }
+
+        return prev - 1;
+
+      });
+
+    }, 1000);
+
+
+
+    return () => clearInterval(interval);
+
+  }, [gameStatus]);
+
+
+
+  const handleJoinGame = async (seatNumber: number) => {
+
+    if (!game || !userInfo) return;
+
+
+
+    try {
+
+      setJoining(true);
+
+      const token = localStorage.getItem('token');
+
+
+
+      await apiRequest(`/games/${gameId}/join`, {
+
+        method: 'POST',
+
+        headers: { 
+
+          'Authorization': `Bearer ${token}`,
+
+          'Content-Type': 'application/json'
+
+        },
+
+        body: JSON.stringify({ seatNumber })
+
+      });
+
+
+
+      // Refresh participant data
+
+      const participantsResponse = await apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
+
+        headers: { 'Authorization': `Bearer ${token}` }
+
+      });
+
+      setParticipants(participantsResponse.participants || []);
+
+
+
+    } catch (error: any) {
+
+      console.error('[GAME PAGE] Join error:', error);
+
+      setError(error.message || 'Failed to join game');
+
+    } finally {
+
+      setJoining(false);
+
+    }
+
+  };
+
+
+
+  const handleBackToLobby = () => {
+
+    if (lobby) {
+
+      setLocation(`/lobby-select/${lobby.id}`);
+
+    } else {
+
+      setLocation('/dashboard');
+
+    }
+
+  };
+
+
+
+  const handleBackToDashboard = () => {
+
+    setLocation('/dashboard');
+
+  };
+
+
+
+  const handleStartGame = async () => {
+
+    if (!game || !userInfo?.isAdmin) return;
+
+    
+
+    try {
+
+      const token = localStorage.getItem('token');
+
+      await apiRequest(`/admin/games/${gameId}/start`, {
+
+        method: 'POST',
+
+        headers: { 
+
+          'Authorization': `Bearer ${token}`,
+
+          'Content-Type': 'application/json'
+
+        }
+
+      });
+
+      
+
+      // Refresh game data
+
+      const gameResponse = await apiRequest<Game>(`/games/${gameId}`, {
+
+        headers: { 'Authorization': `Bearer ${token}` }
+
+      });
+
+      setGame(gameResponse);
+
+      setGameStatus('active');
+
+      setToastMsg('Game started successfully!');
+
+    } catch (error: any) {
+
+      console.error('Failed to start game:', error);
+
+      setError(error.message || 'Failed to start game');
+
+    }
+
+  };
+
+
+
+  const getUserSeat = () => {
+
+    if (!userInfo) return null;
+
+    return participants.find(p => p.userId === userInfo.id);
+
+  };
+
+
+
+  const isUserInGame = () => {
+
+    return getUserSeat() !== undefined;
+
+  };
+
+
+
+  const getAvailableSeats = () => {
+
+    const occupiedSeats = participants.map(p => p.seatNumber);
+
+    const available = [];
+
+    for (let i = 1; i <= (game?.maxSeats || 15); i++) {
+
+      if (!occupiedSeats.includes(i)) {
+
+        available.push(i);
+
+      }
+
+    }
+
+    return available;
+
+  };
+
+
+
+  if (loading) {
+
+    return (
+
+      <SiteLayout hideAuthButtons>
+
+        <div className="max-w-7xl mx-auto p-6">
+
+          <div className="flex items-center justify-center min-h-96">
+
+            <div className="animate-spin w-8 h-8 border-4 border-casino-gold border-t-transparent rounded-full" />
+
+          </div>
+
+        </div>
+
+      </SiteLayout>
+
+    );
+
+  }
+
+
+
+  if (error) {
+
+    return (
+
+      <SiteLayout hideAuthButtons>
+
+        <div className="max-w-7xl mx-auto p-6">
+
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+
+            <p className="text-red-600 mb-4">{error}</p>
+
+            <div className="flex gap-2 justify-center">
+
+              <Button onClick={handleBackToDashboard} variant="outline">
+
+                <ArrowLeft className="w-4 h-4 mr-2" />
+
+                Back to Dashboard
+
+              </Button>
+
+              {lobby && (
+
+                <Button onClick={handleBackToLobby} variant="outline">
+
+                  Back to Lobby
+
+                </Button>
+
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </SiteLayout>
+
+    );
+
+  }
+
+
+
+  if (!game || !lobby || !userInfo) {
+
+    return null;
+
+  }
+
+
+
+  const getBalanceAsNumber = (balance: number | string): number => {
+
+    return typeof balance === 'string' ? parseFloat(balance) || 0 : balance;
+
+  };
+
+
+
+  const currentUserParticipations = participants.filter(p => p.userId === userInfo?.id);
+
+  const selectedSeats = currentUserParticipations.map(p => p.seatNumber);
+
+  const canAffordEntry = userInfo ? getBalanceAsNumber(userInfo.balance) >= parseFloat(lobby?.entryFee?.toString() || '0') : false;
+
+
+
+  const handleSeatSelection = async (seatNumber: number) => {
+
+    if (!game || !userInfo || joining) return;
+
+
+
+    // Check if seat is already selected by this user
+
+    const isAlreadySelected = selectedSeats.includes(seatNumber);
+
+    
+
+    if (isAlreadySelected) {
+
+      // Deselect seat (leave game for this seat)
+
+      try {
+
+        setJoining(true);
+
+        const token = localStorage.getItem('token');
+
+        await apiRequest(`/games/${gameId}/leave`, {
+
+          method: 'POST',
+
+          headers: { 
+
+            'Authorization': `Bearer ${token}`,
+
+            'Content-Type': 'application/json'
+
+          },
+
+          body: JSON.stringify({ seatNumber })
+
+        });
+
+
+
+        // Refresh participant data AND game data (for updated seat counts)
+
+        const [participantsResponse, updatedGameResponse] = await Promise.all([
+
+          apiRequest<ParticipantsResponse>(`/games/${gameId}/participants`, {
+
+            headers: { 'Authorization': `Bearer ${token}` }
+
+          }),
+
+          apiRequest<Game>(`/games/${gameId}`, {
+
+            headers: { 'Authorization': `Bearer ${token}` }
+
+          })
+
+        ]);
+
+        setParticipants(participantsResponse.participants || []);
+
+        setGame(updatedGameResponse);
+
+      } catch (error: any) {
+
+        setError(error.message || 'Failed to leave game');
+
+      } finally {
+
+        setJoining(false);
+
+      }
+
+    } else {
+
+      // Select seat (join game)
+
+      await handleJoinGame(seatNumber);
+
+    }
+
+  };
+
+
+
+  const renderBingoCard = () => {
+
+    if (!game || !lobby) return null;
+
+
+
+    const gamePhase = gameStatus || game.status === 'waiting' ? 'lobby' : game.status === 'active' ? 'playing' : 'finished';
+
+
+
+    return (
+
+      <div className="w-full">
+
+        <BingoCard
+
+          onSeatSelect={(seatNumber) => {
+
+            if (gamePhase === 'lobby' && !joining) {
+
+              handleSeatSelection(seatNumber);
+
+            }
+
+          }}
+
+          selectedSeats={selectedSeats}
+
+          participants={participants.map(p => ({ ...p, user: p.user || null }))}
+
+          isJoining={joining}
+
+          gamePhase={gamePhase}
+
+          calledNumbers={calledNumbers}
+
+          masterCard={masterCard}
+
+          onWin={(pattern, rowNumbers) => {
+
+            if (selectedSeats.length === 0) return;
+
+            const token = localStorage.getItem('token');
+
+            const primarySeat = selectedSeats[0];
+
+            apiRequest(`/games/${gameId}/claim`, {
+
+              method: 'POST',
+
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+
+              body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
+
+            }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+
+          }}
+
+          winnerSeatNumber={winner?.seatNumber}
+
+          winnerUserId={winner?.userId}
+
+          myUserId={userInfo?.id}
+
+          lobbyId={game.id}
+
+          serverCardsBySeat={serverCardsBySeat}
+
+        />
+
+      </div>
+
+    );
+
+  };
+
+
+
+  // Both desktop and mobile use the same tabbed interface now
+
+  // Desktop gets a header, mobile doesn't
+
+
+
+  // Unified view with optional desktop header
+
+  return (
+
+    <div className="min-h-screen bg-gray-900 text-white">
+
+      {/* Desktop header (only show on desktop) */}
+
+      {!isMobile && (
+
+        <div className="bg-gray-800 border-b border-gray-700 p-4">
+
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+
+            <div className="flex items-center gap-4">
+
+              <Button 
+
+                onClick={handleBackToLobby} 
+
+                variant="outline" 
+
+                size="sm"
+
+                className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+
+              >
+
+                <ArrowLeft className="w-4 h-4 mr-2" />
+
+                Back to Lobby
+
+              </Button>
+
+              <div>
+
+                <h1 className="text-xl font-bold text-white">{game?.name}</h1>
+
+                <p className="text-gray-400 text-sm">{lobby?.name}</p>
+
+              </div>
+
+            </div>
+
+            <div className="flex items-center gap-4">
+
+              {/* Admin Start Game Button */}
+
+              {userInfo?.isAdmin && game?.status === 'waiting' && (
+
+                <Button 
+
+                  onClick={handleStartGame}
+
+                  className="bg-green-600 hover:bg-green-700 text-white"
+
+                  size="sm"
+
+                >
+
+                  🚀 Start Game
+
+                </Button>
+
+              )}
+
+              <div className="text-right">
+
+                <p className="text-sm text-gray-400">Your Balance</p>
+
+                <p className="text-xl font-bold text-green-400">
+
+                  ${typeof userInfo?.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo?.balance?.toString() || '0').toFixed(2)}
+
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+      
+
+      {/* Tabbed game interface for both desktop and mobile */}
+
+      <div className={!isMobile ? "max-w-7xl mx-auto" : "h-full"}>
+
+        <MobileGameView
+
+          currentNumber={currentNumber}
+
+          nextCallIn={nextCallIn}
+
+          currentCallSpeed={currentCallSpeed}
+
+          gameId={gameId}
+
+          lobby={lobby}
+
+          participants={participants}
+
+          selectedSeats={selectedSeats}
+
+          onSeatSelect={handleSeatSelection}
+
+          isJoining={joining}
+
+          gamePhase={gameStatus === 'waiting' ? 'lobby' : gameStatus === 'active' ? 'playing' : 'finished'}
+
+          calledNumbers={calledNumbers}
+
+          onWin={(pattern, rowNumbers) => {
+
+            if (selectedSeats.length === 0) return;
+
+            const token = localStorage.getItem('token');
+
+            const primarySeat = selectedSeats[0];
+
+            apiRequest(`/games/${gameId}/claim`, {
+
+              method: 'POST',
+
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+
+              body: JSON.stringify({ userId: userInfo!.id, seatNumber: primarySeat, numbers: rowNumbers }),
+
+            }).then(() => setToastMsg('Win validated!')).catch((e) => setToastMsg(e.message));
+
+          }}
+
+          winnerSeatNumber={winner?.seatNumber}
+
+          winnerUserId={winner?.userId}
+
+          myUserId={userInfo?.id}
+
+          lobbyId={game?.id || 0}
+
+          serverCardsBySeat={serverCardsBySeat}
+
+          masterCard={masterCard}
+
+          user={userInfo}
+
+          currentUserParticipation={participants.find(p => p.userId === userInfo?.id) || null}
+
+          canAffordEntry={canAffordEntry}
+
+          isConnected={isConnected}
+
+          isPaused={isPaused}
+
+          gameStatus={gameStatus}
+
+          onLeaveLobby={handleBackToLobby}
+
+          onStartGame={userInfo?.isAdmin ? handleStartGame : undefined}
+
+          gameData={game}
+
+        />
+
+      </div>
+
+
+
+      {/* Winner Celebration Modal */}
+
+      {showCelebration && celebrationData && (
+
+        <WinnerCelebrationModal
+
+          isOpen={showCelebration}
+
+          onClose={() => setShowCelebration(false)}
+
+          prizeAmount={celebrationData.prizeAmount}
+
+          winningSeats={celebrationData.winningSeats}
+
+          winningRow={celebrationData.winningRow}
+
+          duration={30}
+
+          totalPrizePool={celebrationData.totalPrizePool}
+
+          houseFee={celebrationData.houseFee}
+
+        />
+
+      )}
+
+      
+
+      {/* Emoji Reactions - Only show during active games and when authenticated */}
+
+      {gameStatus === 'active' && game && lobby && userInfo && isConnected && (
+
+        <EmojiReactions
+
+          gameId={gameId}
+
+          lobbyId={lobby.id}
+
+          userId={userInfo.id}
+
+        />
+
+      )}
+
+      
+
+      {/* Pattern Indicator - Show for selected seats when authenticated */}
+
+      {selectedSeats.length > 0 && patternProgress.length > 0 && userInfo && (
+
+        <div className="fixed bottom-20 right-4 z-30 max-w-xs">
+
+          <PatternIndicator
+
+            patterns={patternProgress.filter(p => selectedSeats.includes(p.seat))}
+
+            compact={isMobile}
+
+          />
+
+        </div>
+
+      )}
+
+    </div>
+
+  );
+
 }
