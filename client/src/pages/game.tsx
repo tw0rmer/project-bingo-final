@@ -169,6 +169,10 @@ export default function GamePage() {
 
   // Socket connection for real-time game updates
   useEffect(() => {
+    console.log('[GAME] ===== SOCKET USEEFFECT MOUNTING =====');
+    console.log('[GAME] Socket available:', !!socket);
+    console.log('[GAME] Socket connected:', isConnected);
+    console.log('[GAME] Game ID available:', !!game?.id);
     if (!socket || !isConnected || !game?.id) return;
 
     console.log(`[SOCKET] Game page connected to game ${game.id}`);
@@ -385,16 +389,33 @@ export default function GamePage() {
       // The modal will handle the redirect when it closes
     };
 
+    console.log('[SOCKET] Setting up event listeners...');
     socket.on('number_called', handleNumberCalled);
     socket.on('gameStarted', handleGameStarted);
-    socket.on('player_won', handlePlayerWon);
-    socket.on('game_ended', handleGameEnded);
+    socket.on('player_won', (data) => {
+      console.log('[SOCKET] ===== RAW PLAYER_WON EVENT RECEIVED =====');
+      console.log('[SOCKET] Raw data:', JSON.stringify(data));
+      handlePlayerWon(data);
+    });
+    socket.on('game_ended', (data) => {
+      console.log('[SOCKET] ===== RAW GAME_ENDED EVENT RECEIVED =====');
+      console.log('[SOCKET] Raw data:', JSON.stringify(data));
+      handleGameEnded(data);
+    });
     socket.on('call_speed_changed', handleCallSpeedChanged);
     socket.on('seat_taken', handleSeatTaken);
     socket.on('seat_left', handleSeatLeft);
     socket.on('game_reset', handleGameReset);
     
+    // Test socket connection
+    console.log('[SOCKET] Testing socket connection...');
+    socket.emit('ping', { gameId: game.id, test: 'connection_test' });
+    
     return () => {
+      console.log('[GAME] ===== SOCKET USEEFFECT UNMOUNTING =====');
+      console.log('[GAME] Current showCelebration state on unmount:', showCelebration);
+      console.log('[GAME] Current celebrationData on unmount:', celebrationData);
+      console.log('[GAME] Cleaning up socket listeners...');
       socket.off('number_called', handleNumberCalled);
       socket.off('gameStarted', handleGameStarted);
       socket.off('player_won', handlePlayerWon);
