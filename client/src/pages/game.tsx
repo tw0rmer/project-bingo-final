@@ -239,7 +239,7 @@ export default function GamePage() {
             timestamp: Date.now()
           };
           console.log('[GAME] Saving winner game result to sessionStorage:', winnerGameResult);
-          sessionStorage.setItem('gameResult', JSON.stringify(winnerGameResult));
+          sessionStorage.setItem(`gameResult_${userInfo?.id}`, JSON.stringify(winnerGameResult));
           
           // Don't show modal here - will show in lobby after redirect
           // setShowCelebration(true);
@@ -283,7 +283,7 @@ export default function GamePage() {
             timestamp: Date.now()
           };
           console.log('[GAME] Saving loser game result to sessionStorage:', loserGameResult);
-          sessionStorage.setItem('gameResult', JSON.stringify(loserGameResult));
+          sessionStorage.setItem(`gameResult_${userInfo?.id}`, JSON.stringify(loserGameResult));
           
           // Don't show toast here - will show in lobby after redirect
         }

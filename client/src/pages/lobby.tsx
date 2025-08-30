@@ -102,8 +102,26 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
 
   // Check for game results from previous game
   useEffect(() => {
-    const gameResult = sessionStorage.getItem('gameResult');
-    console.log('[LOBBY PAGE] Checking for game results:', gameResult);
+    // First get the current user info to check for their specific result
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    // Decode the user ID from the token or get it from the API
+    // For now, try both possible user IDs (1 and 2) until we find data
+    let gameResult = null;
+    let userId = null;
+    
+    // Try to find stored game result for any user
+    for (let id = 1; id <= 10; id++) {
+      const result = sessionStorage.getItem(`gameResult_${id}`);
+      if (result) {
+        gameResult = result;
+        userId = id;
+        break;
+      }
+    }
+    
+    console.log('[LOBBY PAGE] Checking for game results for user ID:', userId, 'Result:', gameResult);
     if (gameResult) {
       try {
         const result = JSON.parse(gameResult);
@@ -132,16 +150,16 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
           }
           // Clear the stored result after a delay to ensure modal is rendered
           setTimeout(() => {
-            sessionStorage.removeItem('gameResult');
-            console.log('[LOBBY PAGE] Cleared game result from sessionStorage');
+            sessionStorage.removeItem(`gameResult_${userId}`);
+            console.log('[LOBBY PAGE] Cleared game result from sessionStorage for user:', userId);
           }, 1000);
         } else {
           console.log('[LOBBY PAGE] Game result is too old, clearing...');
-          sessionStorage.removeItem('gameResult');
+          sessionStorage.removeItem(`gameResult_${userId}`);
         }
       } catch (e) {
         console.error('Failed to parse game result:', e);
-        sessionStorage.removeItem('gameResult');
+        sessionStorage.removeItem(`gameResult_${userId}`);
       }
     } else {
       console.log('[LOBBY PAGE] No game result found in sessionStorage');
