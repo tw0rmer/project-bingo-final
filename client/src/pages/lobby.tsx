@@ -103,12 +103,16 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
   // Check for game results from previous game
   useEffect(() => {
     const gameResult = sessionStorage.getItem('gameResult');
+    console.log('[LOBBY PAGE] Checking for game results:', gameResult);
     if (gameResult) {
       try {
         const result = JSON.parse(gameResult);
+        console.log('[LOBBY PAGE] Parsed game result:', result);
         // Check if result is recent (within last 5 minutes)
         if (result.timestamp && Date.now() - result.timestamp < 5 * 60 * 1000) {
+          console.log('[LOBBY PAGE] Game result is recent, processing...');
           if (result.type === 'winner') {
+            console.log('[LOBBY PAGE] Showing winner celebration modal');
             setCelebrationData({
               prizeAmount: result.prizeAmount,
               winningSeats: result.winningSeats,
@@ -118,6 +122,7 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
             });
             setShowCelebration(true);
           } else if (result.type === 'loser') {
+            console.log('[LOBBY PAGE] Showing loser modal');
             setLoserData({
               winnerId: result.winnerId,
               winnerName: result.winnerName,
@@ -125,13 +130,21 @@ const isMobile = useIsMobile(1024); // Use 1024px as breakpoint (lg in Tailwind)
             });
             setShowLoserModal(true);
           }
+          // Clear the stored result after a delay to ensure modal is rendered
+          setTimeout(() => {
+            sessionStorage.removeItem('gameResult');
+            console.log('[LOBBY PAGE] Cleared game result from sessionStorage');
+          }, 1000);
+        } else {
+          console.log('[LOBBY PAGE] Game result is too old, clearing...');
+          sessionStorage.removeItem('gameResult');
         }
-        // Clear the stored result after showing
-        sessionStorage.removeItem('gameResult');
       } catch (e) {
         console.error('Failed to parse game result:', e);
         sessionStorage.removeItem('gameResult');
       }
+    } else {
+      console.log('[LOBBY PAGE] No game result found in sessionStorage');
     }
   }, []);
 

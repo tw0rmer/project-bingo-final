@@ -223,7 +223,7 @@ export default function GamePage() {
           const houseAmount = Math.floor(totalPool * 0.3 * 100) / 100;
           
           // Save to sessionStorage for lobby to display
-          sessionStorage.setItem('gameResult', JSON.stringify({
+          const winnerGameResult = {
             type: 'winner',
             prizeAmount: totalPrize,
             winningSeats: data.userSeats || selectedSeats,
@@ -232,7 +232,9 @@ export default function GamePage() {
             houseFee: houseAmount,
             originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
             timestamp: Date.now()
-          }));
+          };
+          console.log('[GAME] Saving winner game result to sessionStorage:', winnerGameResult);
+          sessionStorage.setItem('gameResult', JSON.stringify(winnerGameResult));
           
           // Don't show modal here - will show in lobby after redirect
           // setShowCelebration(true);
@@ -265,14 +267,16 @@ export default function GamePage() {
           const winnerDisplay = winnerEmail.split('@')[0];
           
           // Save to sessionStorage for lobby to display
-          sessionStorage.setItem('gameResult', JSON.stringify({
+          const loserGameResult = {
             type: 'loser',
             winnerId: data.userId,
             winnerName: winnerDisplay,
             winnerSeats: data.userSeats || [data.winningSeat || data.seatNumber],
             originalLobbyId: game.lobbyId, // Save the original lobby where the game was held
             timestamp: Date.now()
-          }));
+          };
+          console.log('[GAME] Saving loser game result to sessionStorage:', loserGameResult);
+          sessionStorage.setItem('gameResult', JSON.stringify(loserGameResult));
           
           // Don't show toast here - will show in lobby after redirect
         }
