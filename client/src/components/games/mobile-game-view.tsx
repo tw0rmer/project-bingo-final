@@ -144,6 +144,39 @@ export function MobileGameView({
                 </div>
               </div>
             </div>
+
+            {/* Game Navigation Buttons */}
+            <div className="flex-shrink-0 px-3 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-gray-200">
+              <div className="text-xs font-medium text-gray-700 mb-2 text-center">Game Rooms</div>
+              <div className="grid grid-cols-4 gap-2">
+                {availableGames && availableGames.length > 0 ? (
+                  availableGames.map((game) => (
+                    <button
+                      key={game.id}
+                      onClick={() => {
+                        // Navigate to the specific game using the actual game ID
+                        window.location.href = `/games/${game.id}`;
+                      }}
+                      className={cn(
+                        "text-xs font-bold py-2 px-2 rounded-xl transition-all duration-200",
+                        "bg-gradient-to-r from-indigo-500 to-purple-600 text-white",
+                        "hover:from-indigo-600 hover:to-purple-700",
+                        "active:scale-95 transform",
+                        "focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-50",
+                        "shadow-lg"
+                      )}
+                      data-testid={`button-game-${game.gameNumber}`}
+                    >
+                      Game {game.gameNumber}
+                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-4 text-center text-xs text-gray-500 py-2">
+                    No games available
+                  </div>
+                )}
+              </div>
+            </div>
             
             {/* Compact Mobile Bingo Card */}
             <div className="flex-1 overflow-hidden">
