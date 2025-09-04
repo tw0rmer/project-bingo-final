@@ -1,7 +1,7 @@
 // Dashboard routes for the bingo game application
 import { Router } from 'express';
 import { db } from '../db';
-import { users, lobbies } from '../../shared/schema';
+import { users, lobbies, winners, games, walletTransactions } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
@@ -26,6 +26,26 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
     const allLobbies = await db.select().from(lobbies);
     console.log('[DASHBOARD] Lobbies found:', allLobbies.length);
 
+    // Get user's games won data - use winners table instead of games table
+    const allWinners = await db.select().from(winners);
+    const userWinnings = allWinners.filter((w: any) => w.userId === user.id);
+    const totalWinnings = userWinnings.reduce((sum: number, win: any) => sum + (win.amount || 0), 0);
+    const gamesWon = userWinnings.length; // Count unique wins from winners table
+
+    // Get recent transactions for the user
+    const allTransactions = await db.select().from(walletTransactions);
+    const userTransactions = allTransactions
+      .filter((t: any) => t.userId === user.id)
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5)
+      .map((t: any) => ({
+        id: t.id,
+        type: t.type,
+        amount: t.amount,
+        description: t.description,
+        timestamp: t.createdAt
+      }));
+
     const responseData = {
       user: {
         id: user.id,
@@ -40,10 +60,15 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
         maxSeats: lobby.maxSeats,
         seatsTaken: lobby.seatsTaken,
         status: lobby.status
-      }))
+      })),
+      stats: {
+        totalWinnings: totalWinnings,
+        gamesWon: gamesWon
+      },
+      recentTransactions: userTransactions
     };
 
-    console.log('[DASHBOARD] Sending response for user:', responseData.user.email, 'isAdmin:', responseData.user.isAdmin);
+    console.log('[DASHBOARD] Sending response for user:', responseData.user.email, 'isAdmin:', responseData.user.isAdmin, 'winnings:', totalWinnings, 'gamesWon:', gamesWon);
     res.json(responseData);
   } catch (error) {
     console.error('[DASHBOARD] Dashboard error:', error);

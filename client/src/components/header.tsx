@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Crown, Menu, X } from "lucide-react";
+import { Crown, Menu, X, Sparkles, Star, Home, Gamepad2, BookOpen, Trophy, Info, Phone, Target } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
@@ -7,29 +7,54 @@ import { useState } from "react";
 export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean }) {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
   return (
-    <header className="bg-white shadow-lg border-b-4 border-casino-gold">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="flex justify-between items-center py-2 sm:py-4">
-          {/* Logo - more compact on mobile */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-red-700 to-orange-600 rounded-full flex items-center justify-center">
+    <header className="relative bg-white/98 backdrop-blur-md shadow-lg border-b border-gray-200/50 overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-gradient-to-r from-amber-50/20 via-orange-50/10 to-red-50/20"></div>
+      
+      {/* Floating decorative elements */}
+      <div className="absolute top-3 right-16 opacity-10">
+        <Sparkles className="text-amber-400 animate-pulse" size={14} />
+      </div>
+      <div className="absolute top-6 left-1/3 opacity-8">
+        <Star className="text-orange-400 animate-bounce-soft" size={10} />
+      </div>
+      <div className="absolute bottom-2 right-1/4 opacity-6">
+        <Crown className="text-red-400 animate-pulse" size={12} />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex justify-between items-center py-4 sm:py-6">
+          {/* Enhanced Logo */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md transform hover:scale-105 transition-all duration-300">
               <Crown className="text-white" size={20} />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold casino-red">WildCard</h1>
-              <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Premium Bingo</p>
+              <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-600 to-red-600">
+                WildCard
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium hidden sm:block">Premium Bingo</p>
             </div>
           </div>
 
-          {/* Navigation - Better responsive layout */}
-          <nav className="hidden md:flex flex-wrap justify-center space-x-2 lg:space-x-6 xl:space-x-8">
-            <Link href="/" className="text-sm lg:text-lg font-medium casino-red hover:text-rose-gold transition-colors px-2 py-1">
-              Home
+          {/* Enhanced Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            <Link href="/" className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-amber-600 transition-all duration-300 rounded-lg hover:bg-amber-50/80">
+              <div className="flex items-center space-x-2">
+                <Home size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>Home</span>
+              </div>
             </Link>
-            <Link href="/games" className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1">
-              Games
+            
+            <Link href="/games" className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-orange-600 transition-all duration-300 rounded-lg hover:bg-orange-50/80">
+              <div className="flex items-center space-x-2">
+                <Gamepad2 size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>Games</span>
+              </div>
             </Link>
+            
             <button 
               onClick={() => {
                 if (window.location.pathname === '/') {
@@ -38,10 +63,14 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#how-to-play';
                 }
               }}
-              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+              className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-yellow-600 transition-all duration-300 rounded-lg hover:bg-yellow-50/80"
             >
-              How to Play
+              <div className="flex items-center space-x-2">
+                <BookOpen size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>How to Play</span>
+              </div>
             </button>
+            
             <button 
               onClick={() => {
                 if (window.location.pathname === '/') {
@@ -50,10 +79,14 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#winners';
                 }
               }}
-              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+              className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-green-600 transition-all duration-300 rounded-lg hover:bg-green-50/80"
             >
-              Winners
+              <div className="flex items-center space-x-2">
+                <Trophy size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>Winners</span>
+              </div>
             </button>
+            
             <button 
               onClick={() => {
                 if (window.location.pathname === '/') {
@@ -62,10 +95,14 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#about';
                 }
               }}
-              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+              className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-all duration-300 rounded-lg hover:bg-blue-50/80"
             >
-              About
+              <div className="flex items-center space-x-2">
+                <Info size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>About</span>
+              </div>
             </button>
+            
             <button 
               onClick={() => {
                 if (window.location.pathname === '/') {
@@ -74,33 +111,40 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#contact';
                 }
               }}
-              className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1"
+              className="group relative px-4 py-2 text-sm font-semibold text-gray-700 hover:text-purple-600 transition-all duration-300 rounded-lg hover:bg-purple-50/80"
             >
-              Contact
+              <div className="flex items-center space-x-2">
+                <Phone size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>Contact</span>
+              </div>
             </button>
+            
             {user && (
-              <Link href="/achievements" className="text-sm lg:text-lg font-medium text-gray-700 hover:casino-red transition-colors px-2 py-1">
-                🏆 Achievements
+              <Link href="/achievements" className="group relative px-4 py-2 text-sm font-semibold text-amber-600 hover:text-amber-700 transition-all duration-300 rounded-lg bg-amber-50/80 hover:bg-amber-100/80 shadow-sm">
+                <div className="flex items-center space-x-2">
+                  <Trophy size={16} />
+                  <span>Achievements</span>
+                </div>
               </Link>
             )}
           </nav>
 
-          {/* Desktop Auth Buttons - Only show for non-logged-in users */}
+          {/* Enhanced Desktop Auth Buttons */}
           {!hideAuthButtons && !user && (
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-3">
               <Link href="/login">
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="px-6 py-3 text-lg font-medium casino-red border-2 border-casino-red hover:bg-casino-red hover:text-white"
+                  size="sm"
+                  className="px-6 py-2 text-sm font-semibold border border-gray-300 text-gray-700 hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50/50 transition-all duration-300 rounded-lg"
                 >
                   Login
                 </Button>
               </Link>
               <Link href="/register">
                 <Button
-                  size="lg"
-                  className="px-6 py-3 text-lg font-medium bg-casino-gold text-white hover:bg-yellow-500 shadow-lg"
+                  size="sm"
+                  className="px-6 py-2 text-sm font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md transition-all duration-300 rounded-lg"
                 >
                   Sign Up
                 </Button>
@@ -108,45 +152,50 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
             </div>
           )}
 
-          {/* Mobile Menu Button Only */}
+          {/* Enhanced Mobile Menu Button */}
           <div className="flex lg:hidden items-center">
             <Button 
               variant="ghost" 
-              className="p-2"
+              className="p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all duration-300"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="button-mobile-menu"
             >
               {mobileMenuOpen ? (
-                <X className="text-2xl casino-red" />
+                <X className="text-xl text-gray-600" />
               ) : (
-                <Menu className="text-2xl casino-red" />
+                <Menu className="text-xl text-gray-600" />
               )}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Enhanced Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
-          <nav className="flex flex-col space-y-2 p-4">
+        <div className="lg:hidden bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-lg relative z-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-orange-50/20"></div>
+          <nav className="flex flex-col space-y-2 p-6 relative z-10">
             
             <Link 
               href="/" 
-              className="text-lg font-medium casino-red hover:text-rose-gold transition-colors py-2"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-amber-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-amber-50/80"
               onClick={() => setMobileMenuOpen(false)}
               data-testid="link-mobile-home"
             >
-              Home
+              <Home size={18} />
+              <span>Home</span>
             </Link>
+            
             <Link 
               href="/games" 
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-orange-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-orange-50/80"
               onClick={() => setMobileMenuOpen(false)}
               data-testid="link-mobile-games"
             >
-              Games
+              <Gamepad2 size={18} />
+              <span>Games</span>
             </Link>
+            
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -156,11 +205,13 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#how-to-play';
                 }
               }}
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-yellow-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-yellow-50/80 text-left"
               data-testid="link-mobile-how-to-play"
             >
-              How to Play
+              <BookOpen size={18} />
+              <span>How to Play</span>
             </button>
+            
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -170,11 +221,13 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#winners';
                 }
               }}
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-green-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-green-50/80 text-left"
               data-testid="link-mobile-winners"
             >
-              Winners
+              <Trophy size={18} />
+              <span>Winners</span>
             </button>
+            
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -184,11 +237,13 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#about';
                 }
               }}
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-blue-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-blue-50/80 text-left"
               data-testid="link-mobile-about"
             >
-              About
+              <Info size={18} />
+              <span>About</span>
             </button>
+            
             <button 
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -198,32 +253,34 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                   window.location.href = '/#contact';
                 }
               }}
-              className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2 text-left"
+              className="flex items-center space-x-3 text-base font-semibold text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-purple-50/80 text-left"
               data-testid="link-mobile-contact"
             >
-              Contact
+              <Phone size={18} />
+              <span>Contact</span>
             </button>
             
             {/* Achievements link for logged in users */}
             {user && (
               <Link 
                 href="/achievements" 
-                className="text-lg font-medium text-gray-700 hover:casino-red transition-colors py-2"
+                className="flex items-center space-x-3 text-base font-semibold text-amber-600 hover:text-amber-700 transition-all duration-300 py-3 px-4 rounded-lg bg-amber-50/80 hover:bg-amber-100/80"
                 onClick={() => setMobileMenuOpen(false)}
                 data-testid="link-mobile-achievements"
               >
-                🏆 Achievements
+                <Trophy size={18} />
+                <span>Achievements</span>
               </Link>
             )}
             
-            {/* Login/Signup buttons if not logged in */}
+            {/* Enhanced Login/Signup buttons if not logged in */}
             {!hideAuthButtons && !user && (
-              <div className="border-t border-gray-200 pt-4 mt-4 space-y-2">
+              <div className="border-t border-gray-200/50 pt-6 mt-6 space-y-3">
                 <Link href="/login">
                   <Button
                     variant="outline"
-                    size="lg"
-                    className="w-full px-6 py-3 text-lg font-medium casino-red border-2 border-casino-red hover:bg-casino-red hover:text-white"
+                    size="sm"
+                    className="w-full px-6 py-3 text-base font-semibold text-gray-700 border border-gray-300 hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50/50 transition-all duration-300 rounded-lg"
                     onClick={() => setMobileMenuOpen(false)}
                     data-testid="button-mobile-login"
                   >
@@ -232,8 +289,8 @@ export function Header({ hideAuthButtons = false }: { hideAuthButtons?: boolean 
                 </Link>
                 <Link href="/register">
                   <Button
-                    size="lg"
-                    className="w-full px-6 py-3 text-lg font-medium bg-casino-gold text-white hover:bg-yellow-500 shadow-lg"
+                    size="sm"
+                    className="w-full px-6 py-3 text-base font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md transition-all duration-300 rounded-lg"
                     onClick={() => setMobileMenuOpen(false)}
                     data-testid="button-mobile-signup"
                   >

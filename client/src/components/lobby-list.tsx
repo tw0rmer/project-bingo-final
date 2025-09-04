@@ -65,51 +65,146 @@ export function LobbyList() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {lobbies.map((lobby) => (
+        {lobbies.map((lobby, index) => {
+          const isPopular = index === 1; // Make the middle lobby popular
+          const isPremium = lobby.entryFee >= 25;
+          
+          return (
           <Card 
             key={lobby.id} 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-500"
+              className={`group relative overflow-hidden cursor-pointer border-0 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
+                isPopular 
+                  ? 'bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 shadow-lg' 
+                  : isPremium 
+                    ? 'bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 shadow-lg'
+                    : 'bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 shadow-lg'
+              }`}
             onClick={() => handleLobbySelect(lobby)}
             data-tutorial="lobby-card"
           >
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-xl">{lobby.name}</CardTitle>
-                <Badge variant={lobby.status === 'active' ? 'default' : 'secondary'}>
-                  {lobby.status}
-                </Badge>
+              {/* Popular badge */}
+              {isPopular && (
+                <div className="absolute -top-2 -right-2 z-20">
+                  <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg transform rotate-12">
+                    🔥 POPULAR
+                  </div>
               </div>
-              {lobby.description && (
-                <p className="text-gray-600 text-sm">{lobby.description}</p>
               )}
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <DollarSign className="w-6 h-6 mx-auto text-blue-600 mb-1" />
-                    <div className="text-lg font-bold text-blue-600">${lobby.entryFee}</div>
-                    <div className="text-xs text-gray-600">Entry Fee</div>
+              
+              {/* Premium badge */}
+              {isPremium && !isPopular && (
+                <div className="absolute -top-2 -right-2 z-20">
+                  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg transform rotate-12">
+                    💎 PREMIUM
                   </div>
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <Trophy className="w-6 h-6 mx-auto text-green-600 mb-1" />
-                    <div className="text-lg font-bold text-green-600">{lobby.gamesCount || 0}</div>
-                    <div className="text-xs text-gray-600">Games Available</div>
-                  </div>
+                </div>
+              )}
+
+              {/* Decorative corner elements */}
+              <div className="absolute top-0 left-0 w-20 h-20 opacity-10">
+                <div className={`absolute top-2 left-2 w-3 h-3 rounded-full ${
+                  isPopular ? 'bg-orange-400' : isPremium ? 'bg-purple-400' : 'bg-green-400'
+                }`}></div>
+                <div className={`absolute top-5 left-5 w-2 h-2 rounded-full ${
+                  isPopular ? 'bg-red-400' : isPremium ? 'bg-indigo-400' : 'bg-teal-400'
+                }`}></div>
                 </div>
                 
-                <div className="flex items-center justify-center text-gray-600">
-                  <Gamepad2 className="w-4 h-4 mr-2" />
-                  <span className="text-sm">{lobby.gamesCount || 0} active games</span>
+              <CardHeader className="relative z-10">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-2xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
+                    {lobby.name}
+                  </CardTitle>
+                  <Badge 
+                    variant={lobby.status === 'active' ? 'default' : 'secondary'}
+                    className={`${
+                      lobby.status === 'active' 
+                        ? isPopular 
+                          ? 'bg-green-500 hover:bg-green-600' 
+                          : 'bg-green-500 hover:bg-green-600'
+                        : 'bg-gray-400'
+                    } text-white font-semibold`}
+                  >
+                    {lobby.status === 'active' ? '🟢 LIVE' : '⚪ OFFLINE'}
+                  </Badge>
+                </div>
+                {lobby.description && (
+                  <p className="text-gray-600 text-sm mt-2">{lobby.description}</p>
+                )}
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`relative overflow-hidden rounded-xl p-4 text-center transform transition-all duration-200 group-hover:scale-105 ${
+                      isPopular 
+                        ? 'bg-gradient-to-br from-yellow-100 to-orange-100 border border-orange-200' 
+                        : isPremium 
+                          ? 'bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200'
+                          : 'bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200'
+                    }`}>
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <DollarSign className={`w-8 h-8 mx-auto mb-2 ${
+                        isPopular ? 'text-orange-600' : isPremium ? 'text-purple-600' : 'text-green-600'
+                      }`} />
+                      <div className={`text-2xl font-black ${
+                        isPopular ? 'text-orange-700' : isPremium ? 'text-purple-700' : 'text-green-700'
+                      }`}>
+                        ${lobby.entryFee}
+                      </div>
+                      <div className="text-xs text-gray-600 font-semibold uppercase tracking-wide">Entry Fee</div>
+                    </div>
+                    <div className={`relative overflow-hidden rounded-xl p-4 text-center transform transition-all duration-200 group-hover:scale-105 ${
+                      isPopular 
+                        ? 'bg-gradient-to-br from-amber-100 to-yellow-100 border border-amber-200' 
+                        : isPremium 
+                          ? 'bg-gradient-to-br from-blue-100 to-cyan-100 border border-blue-200'
+                          : 'bg-gradient-to-br from-teal-100 to-cyan-100 border border-teal-200'
+                    }`}>
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <Trophy className={`w-8 h-8 mx-auto mb-2 ${
+                        isPopular ? 'text-amber-600' : isPremium ? 'text-blue-600' : 'text-teal-600'
+                      }`} />
+                      <div className={`text-2xl font-black ${
+                        isPopular ? 'text-amber-700' : isPremium ? 'text-blue-700' : 'text-teal-700'
+                      }`}>
+                        {lobby.gamesCount || 0}
+                      </div>
+                      <div className="text-xs text-gray-600 font-semibold uppercase tracking-wide">Games</div>
+                    </div>
                 </div>
 
-                <Button className="w-full" data-testid={`button-enter-lobby-${lobby.id}`}>
+                  <div className="flex items-center justify-center text-gray-600 bg-white/50 rounded-lg py-2 px-4">
+                    <Gamepad2 className="w-5 h-5 mr-2 text-gray-500" />
+                    <span className="text-sm font-medium">{lobby.gamesCount || 0} active games waiting</span>
+                  </div>
+
+                  <Button 
+                    className={`w-full py-4 text-lg font-bold rounded-xl transition-all duration-300 transform group-hover:scale-105 shadow-lg ${
+                      isPopular 
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-orange-200' 
+                        : isPremium 
+                          ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-200'
+                          : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white shadow-green-200'
+                    }`}
+                    data-testid={`button-enter-lobby-${lobby.id}`}
+                  >
+                    <Play className="mr-2" size={20} />
                   Enter Lobby
                 </Button>
               </div>
             </CardContent>
+              
+              {/* Hover glow effect */}
+              <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl ${
+                isPopular 
+                  ? 'bg-gradient-to-br from-orange-400 to-red-400' 
+                  : isPremium 
+                    ? 'bg-gradient-to-br from-purple-400 to-indigo-400'
+                    : 'bg-gradient-to-br from-green-400 to-teal-400'
+              }`}></div>
           </Card>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -484,6 +484,29 @@ class GameEngine {
           } catch (achievementError) {
             console.error(`[GAME ENGINE] Failed to process achievements for user ${winnerId}:`, achievementError);
           }
+          
+          // Emit real-time events for dashboard updates
+          this.io.to(`user_${winnerId}`).emit('balance_updated', {
+            userId: winnerId,
+            newBalance: newBalance,
+            oldBalance: currentUser.balance,
+            change: totalPrize
+          });
+          
+          this.io.to(`user_${winnerId}`).emit('transaction_created', {
+            userId: winnerId,
+            amount: totalPrize,
+            type: 'prize_win',
+            description: `Game ${gameId} winner prize (${userSeats.length} seats)`
+          });
+          
+          // Emit game won event for dashboard games won count update
+          this.io.to(`user_${winnerId}`).emit('game_won', {
+            userId: winnerId,
+            gameId: gameId,
+            lobbyId: gameState.lobbyId,
+            prizeAmount: totalPrize
+          });
         } else {
           throw new Error(`Winner user ${winnerId} not found in database`);
         }

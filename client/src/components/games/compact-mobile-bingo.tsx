@@ -119,37 +119,46 @@ export function CompactMobileBingo({
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-white p-2">
-      {/* Header */}
-      <div className="flex-shrink-0 text-center mb-2 bg-gray-50 rounded-lg p-2">
-        <div className="text-sm font-bold text-gray-900">All 15 Seats</div>
-        <div className="text-xs text-gray-600">Select up to 2 seats to play</div>
+    <div className="w-full h-full flex flex-col bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl p-4">
+      {/* Enhanced Header */}
+      <div className="flex-shrink-0 text-center mb-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-4 border border-indigo-200/50">
+        <div className="text-lg font-bold text-gray-800 mb-2">All 15 Seats</div>
+        <div className="text-sm text-gray-600 mb-3">Select up to 2 seats to play</div>
         {selectedSeats.length > 0 && (
-          <div className="text-xs text-blue-600 font-medium mt-1">
+          <div className="text-sm text-blue-600 font-bold bg-blue-100 rounded-xl px-3 py-2 border border-blue-200">
             Selected: {selectedSeats.join(', ')} ({selectedSeats.length}/2)
           </div>
         )}
       </div>
 
-      {/* Scrollable Bingo Grid */}
+      {/* Enhanced Scrollable Bingo Grid */}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
-        <div className="space-y-1">
-          {/* Sticky Header Row */}
-          <div className="sticky top-0 bg-white z-10 grid grid-cols-6 gap-1 pb-1">
-            <div className="bg-indigo-600 text-white font-bold text-center rounded flex items-center justify-center text-xs h-8">
+        <div className="space-y-2">
+          {/* Enhanced Sticky Header Row */}
+          <div className="sticky top-0 z-10 grid grid-cols-6 gap-2 pb-2">
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-center rounded-2xl flex items-center justify-center text-sm h-10 shadow-lg border border-indigo-400/30">
               Seat
             </div>
-            {['B', 'I', 'N', 'G', 'O'].map((letter) => (
+            {['B', 'I', 'N', 'G', 'O'].map((letter, index) => {
+              const gradients = [
+                'from-red-500 to-red-600',      // B
+                'from-orange-500 to-orange-600', // I  
+                'from-yellow-500 to-yellow-600', // N
+                'from-green-500 to-green-600',   // G
+                'from-blue-500 to-blue-600'     // O
+              ];
+              return (
               <div 
                 key={letter} 
-                className="bg-blue-600 text-white font-bold text-center rounded flex items-center justify-center text-xs h-8"
+                  className={`bg-gradient-to-br ${gradients[index]} text-white font-bold text-center rounded-2xl flex items-center justify-center text-sm h-10 shadow-lg border border-white/20`}
               >
                 {letter}
               </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* All 15 Seat Rows */}
+          {/* Enhanced All 15 Seat Rows */}
           {Array.from({ length: 15 }, (_, i) => i + 1).map((seatNumber) => {
             const rowIndex = seatNumber - 1;
             const participant = participants.find(p => p.seatNumber === seatNumber);
@@ -159,45 +168,45 @@ export function CompactMobileBingo({
             const canDeselect = isMySelection && !isJoining;
 
             return (
-              <div key={seatNumber} className="grid grid-cols-6 gap-1">
-                {/* Seat Cell */}
+              <div key={seatNumber} className="grid grid-cols-6 gap-2">
+                {/* Enhanced Seat Cell */}
                 <button
                   onClick={() => (canSelect || canDeselect) && gamePhase !== 'playing' && onSeatSelect(seatNumber)}
                   disabled={isOccupiedByOther || (isJoining && !isMySelection) || (!canSelect && !canDeselect) || gamePhase === 'playing'}
                   className={cn(
-                    "rounded p-1 font-medium text-xs transition-all touch-manipulation h-12",
-                    "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    "rounded-2xl p-2 font-bold text-sm transition-all touch-manipulation h-12 shadow-lg border",
+                    "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
                     "active:scale-95",
-                    isMySelection && "bg-emerald-600 text-white ring-2 ring-emerald-400",
-                    isOccupiedByOther && "bg-red-600 text-white cursor-not-allowed",
-                    !isMySelection && !isOccupiedByOther && canSelect && "bg-gray-100 text-gray-900 hover:bg-blue-100",
-                    !isMySelection && !isOccupiedByOther && !canSelect && "bg-gray-200 text-gray-500 cursor-not-allowed",
-                    winnerSeatNumber === seatNumber && "animate-pulse ring-2 ring-yellow-400"
+                    isMySelection && "bg-gradient-to-br from-emerald-500 to-green-600 text-white ring-2 ring-emerald-400 shadow-emerald-500/30",
+                    isOccupiedByOther && "bg-gradient-to-br from-red-500 to-red-600 text-white cursor-not-allowed ring-2 ring-red-400 shadow-red-500/30",
+                    !isMySelection && !isOccupiedByOther && canSelect && "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 border-gray-300/50",
+                    !isMySelection && !isOccupiedByOther && !canSelect && "bg-gradient-to-br from-gray-200 to-gray-300 text-gray-500 cursor-not-allowed border-gray-400/50",
+                    winnerSeatNumber === seatNumber && "animate-pulse ring-4 ring-yellow-400 shadow-[0_0_20px_#facc15]"
                   )}
                   data-testid={`button-seat-${seatNumber}`}
                 >
                   <div className="font-bold">#{seatNumber}</div>
-                  <div className="text-[10px] truncate">
+                  <div className="text-xs truncate opacity-90">
                     {participant ? participant?.user?.email?.split('@')[0] : 'Open'}
                   </div>
                 </button>
 
-                {/* Number Cells */}
+                {/* Enhanced Number Cells */}
                 {bingoCard[rowIndex]?.map((number, colIndex) => (
                   <button
                     key={colIndex}
                     onClick={() => handleNumberClick(rowIndex, colIndex)}
                     disabled={gamePhase !== 'playing'}
                     className={cn(
-                      "rounded font-bold text-sm transition-all touch-manipulation h-12",
-                      "focus:outline-none focus:ring-2 focus:ring-blue-500",
+                      "rounded-2xl font-bold text-sm transition-all touch-manipulation h-12 shadow-lg border",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
                       "flex items-center justify-center",
                       gamePhase === 'playing' && "cursor-pointer active:scale-95",
                       gamePhase !== 'playing' && "cursor-default",
                       number.isMarked 
-                        ? "bg-green-600 text-white ring-1 ring-green-400" 
-                        : "bg-gray-100 text-gray-900 hover:bg-gray-200",
-                      winnerSeatNumber === seatNumber && number.isMarked && "bg-yellow-400 text-black"
+                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white ring-2 ring-blue-400 shadow-blue-500/30" 
+                        : "bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-gray-300/50",
+                      winnerSeatNumber === seatNumber && number.isMarked && "bg-gradient-to-br from-yellow-400 to-amber-500 text-black ring-4 ring-yellow-400 shadow-[0_0_20px_#facc15] animate-pulse"
                     )}
                     data-testid={`button-number-${seatNumber}-${colIndex}`}
                   >

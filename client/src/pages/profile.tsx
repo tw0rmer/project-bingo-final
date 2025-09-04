@@ -1,14 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { authApiRequest } from '@/lib/api';
+import { 
+  User, 
+  Shield, 
+  Trophy, 
+  ArrowLeft, 
+  Edit, 
+  Save, 
+  X, 
+  Crown, 
+  Target, 
+  DollarSign, 
+  TrendingUp, 
+  AlertTriangle,
+  Trash2,
+  Sparkles,
+  Star
+} from 'lucide-react';
+
+interface ProfileStats {
+  totalWinnings: number;
+  gamesWon: number;
+}
+
+interface DashboardData {
+  user: any;
+  lobbies: any[];
+  recentTransactions: any[];
+  stats?: {
+    totalWinnings: number;
+    gamesWon: number;
+  };
+}
 
 export default function ProfilePage() {
   const [, setLocation] = useLocation();
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'account' | 'security' | 'winnings'>('account');
   const [isEditing, setIsEditing] = useState(false);
+  const [profileStats, setProfileStats] = useState<ProfileStats>({ totalWinnings: 0, gamesWon: 0 });
   const [formData, setFormData] = useState({
     email: user?.email || '',
     username: (user as any)?.username || '',
@@ -16,6 +50,27 @@ export default function ProfilePage() {
     newPassword: '',
     confirmPassword: ''
   });
+
+  // Fetch profile stats when component mounts
+  useEffect(() => {
+    const fetchProfileStats = async () => {
+      try {
+        const data = await authApiRequest<DashboardData>('/dashboard');
+        if (data.stats) {
+          setProfileStats({
+            totalWinnings: data.stats.totalWinnings || 0,
+            gamesWon: data.stats.gamesWon || 0
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile stats:', error);
+      }
+    };
+
+    if (user) {
+      fetchProfileStats();
+    }
+  }, [user]);
 
   if (!user) {
     setLocation('/login');
@@ -39,112 +94,152 @@ export default function ProfilePage() {
   };
 
   const tabs = [
-    { id: 'account', label: 'Account', icon: '👤' },
-    { id: 'security', label: 'Security', icon: '🔒' },
-    { id: 'winnings', label: 'Winnings', icon: '🏆' }
+    { id: 'account', label: 'Account', icon: User },
+    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'winnings', label: 'Winnings', icon: Trophy }
   ];
 
   return (
     <SiteLayout>
-      <div className="max-w-4xl mx-auto p-4 sm:p-6">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <button
-              onClick={() => setLocation('/dashboard')}
-              className="text-casino-red hover:opacity-80 transition-colors text-sm"
-            >
-              ← Back to Dashboard
-            </button>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-          <p className="text-gray-600">Manage your account information and preferences</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        {/* Animated Background Decorations */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full animate-bounce-soft"></div>
+          <div className="absolute bottom-20 left-20 w-28 h-28 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-40 right-10 w-20 h-20 bg-gradient-to-br from-yellow-400/20 to-red-400/20 rounded-full animate-bounce-soft"></div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-1 overflow-x-auto">
-              {tabs.map((tab) => (
+        <div className="max-w-4xl mx-auto p-4 sm:p-6 relative z-10">
+          {/* Enhanced Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={() => setLocation('/dashboard')}
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50 shadow-lg hover:shadow-xl"
+            >
+                <ArrowLeft size={16} />
+                Back to Dashboard
+            </button>
+            </div>
+            <div className="text-center bg-white/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-gray-200/50 shadow-2xl">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <User size={32} className="text-white" />
+                </div>
+                <div className="floating-sparkles">
+                  <Sparkles size={20} className="text-yellow-500 animate-pulse" />
+                  <Star size={16} className="text-orange-500 animate-bounce-soft" />
+                </div>
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-3">Profile Settings</h1>
+              <p className="text-gray-600 text-lg">Manage your account information and preferences</p>
+            </div>
+        </div>
+
+                  {/* Enhanced Tabs */}
+          <div className="mb-8">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl border-2 border-gray-200/50 shadow-xl overflow-hidden">
+              <nav className="flex">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                      className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 font-bold text-sm transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-casino-gold text-casino-red bg-yellow-50'
-                      : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-105'
+                          : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="text-base">{tab.icon}</span>
+                      <Icon size={20} />
                   <span>{tab.label}</span>
                 </button>
-              ))}
+                  );
+                })}
             </nav>
           </div>
         </div>
 
-        {/* Account Tab */}
+                  {/* Enhanced Account Tab */}
         {activeTab === 'account' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Account Information</h2>
+            <div className="space-y-8">
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200/50">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <User size={24} className="text-white" />
+                    </div>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Account Information</h2>
+                  </div>
                 <Button
                   onClick={() => setIsEditing(!isEditing)}
-                  variant={isEditing ? 'outline' : 'default'}
-                  className={isEditing ? 'border-casino-red text-casino-red' : 'bg-casino-gold hover:bg-yellow-500'}
-                >
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                      isEditing 
+                        ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl' 
+                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+                    }`}
+                  >
+                    {isEditing ? <X size={18} /> : <Edit size={18} />}
                   {isEditing ? 'Cancel' : 'Edit'}
                 </Button>
               </div>
 
-              <div className="grid gap-6">
+                              <div className="grid gap-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Email Address</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     disabled={!isEditing}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-casino-gold focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500 text-lg transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Username</label>
                   <input
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     disabled={!isEditing}
                     placeholder="Set your username"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-casino-gold focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500 text-lg transition-all duration-300"
                   />
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Account Status</label>
-                    <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-lg">
-                      <span className="text-green-700 font-medium">✅ Active</span>
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-6 border-2 border-green-200/50">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold">✓</span>
+                        </div>
+                        <label className="block text-sm font-bold text-gray-700">Account Status</label>
+                      </div>
+                      <div className="text-xl font-bold text-green-700">Active</div>
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
-                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
-                      <span className="text-gray-700 font-medium">
-                        {user.isAdmin ? '👑 Admin' : '🎯 Player'}
-                      </span>
+                    <div className="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-2xl p-6 border-2 border-purple-200/50">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                          {user.isAdmin ? <Crown size={16} className="text-white" /> : <Target size={16} className="text-white" />}
+                        </div>
+                        <label className="block text-sm font-bold text-gray-700">Account Type</label>
+                      </div>
+                      <div className="text-xl font-bold text-purple-700">
+                        {user.isAdmin ? 'Admin' : 'Player'}
                     </div>
                   </div>
                 </div>
 
                 {isEditing && (
-                  <div className="flex gap-3">
+                    <div className="flex gap-4">
                     <Button
                       onClick={handleSaveProfile}
-                      className="bg-green-600 hover:bg-green-700"
+                        className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 px-8 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                     >
+                        <Save size={18} />
                       Save Changes
                     </Button>
                   </div>
@@ -152,17 +247,22 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Account Balance Card */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Balance</h3>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-green-600">${parseFloat(user.balance || '0').toFixed(2)}</p>
-                  <p className="text-sm text-gray-600 mt-1">Available balance</p>
+              {/* Enhanced Account Balance Card */}
+              <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-3xl p-8 border-2 border-green-200/50 shadow-2xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <DollarSign size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">Account Balance</h3>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-4xl font-bold text-green-700 mb-2">${(user.balance || '0').toString()}</p>
+                    <p className="text-gray-600 text-lg">Available balance</p>
                 </div>
                 <Button
                   onClick={() => setLocation('/add-balance')}
-                  className="bg-casino-gold hover:bg-yellow-500"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 px-8 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Add Funds
                 </Button>
@@ -171,159 +271,191 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Security Tab */}
+                  {/* Enhanced Security Tab */}
         {activeTab === 'security' && (
+            <div className="space-y-8">
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200/50">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Shield size={24} className="text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Change Password</h2>
+                </div>
+                
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Change Password</h2>
-              
-              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Current Password</label>
                   <input
                     type="password"
                     value={formData.currentPassword}
                     onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-casino-gold focus:border-transparent"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-400/30 focus:border-red-500 text-lg transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">New Password</label>
                   <input
                     type="password"
                     value={formData.newPassword}
                     onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-casino-gold focus:border-transparent"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-400/30 focus:border-red-500 text-lg transition-all duration-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Confirm New Password</label>
                   <input
                     type="password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-casino-gold focus:border-transparent"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-400/30 focus:border-red-500 text-lg transition-all duration-300"
                   />
                 </div>
 
                 <Button
                   onClick={handleChangePassword}
-                  className="bg-casino-red hover:opacity-90"
+                    className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white py-4 px-8 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                   disabled={!formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
                 >
+                    <Shield size={18} />
                   Update Password
                 </Button>
               </div>
             </div>
 
-            {/* Account Security Info */}
-            <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">🔒 Account Security</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-blue-700 font-medium">Two-Factor Authentication:</span>
-                  <span className="text-blue-900">Coming Soon</span>
+              {/* Enhanced Account Security Info */}
+              <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-3xl p-8 border-2 border-blue-200/50 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Shield size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">Account Security</h3>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-700 font-medium">Login Notifications:</span>
-                  <span className="text-blue-900">Enabled</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-700 font-medium">Account Created:</span>
-                  <span className="text-blue-900">{new Date(user.createdAt || '').toLocaleDateString()}</span>
+                <div className="space-y-4 text-lg">
+                  <div className="flex justify-between items-center p-4 bg-white/80 rounded-2xl border border-blue-200/50">
+                    <span className="text-blue-700 font-bold">Two-Factor Authentication:</span>
+                    <span className="text-blue-900 font-bold">Coming Soon</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-white/80 rounded-2xl border border-blue-200/50">
+                    <span className="text-blue-700 font-bold">Login Notifications:</span>
+                    <span className="text-green-700 font-bold">Enabled</span>
+                  </div>
+                  <div className="flex justify-between items-center p-4 bg-white/80 rounded-2xl border border-blue-200/50">
+                    <span className="text-blue-700 font-bold">Account Created:</span>
+                    <span className="text-blue-900 font-bold">{new Date().toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Winnings Tab */}
+                  {/* Enhanced Winnings Tab */}
         {activeTab === 'winnings' && (
-          <div className="space-y-6">
-            {/* Winnings Summary */}
-            <div className="grid sm:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Winnings</h3>
-                <p className="text-3xl font-bold text-green-600">$0.00</p>
-                <p className="text-sm text-gray-600 mt-1">All-time earnings</p>
+            <div className="space-y-8">
+              {/* Enhanced Winnings Summary */}
+              <div className="grid sm:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-3xl p-8 border-2 border-green-200/50 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <DollarSign size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">Total Winnings</h3>
+                  </div>
+                  <p className="text-4xl font-bold text-green-700 mb-2">${profileStats.totalWinnings.toFixed(2)}</p>
+                  <p className="text-gray-600 text-lg">All-time earnings</p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-3xl p-8 border-2 border-blue-200/50 shadow-2xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <Trophy size={20} className="text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">Games Won</h3>
+                  </div>
+                  <p className="text-4xl font-bold text-blue-700 mb-2">{profileStats.gamesWon}</p>
+                  <p className="text-gray-600 text-lg">Total victories</p>
+                </div>
               </div>
               
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Games Won</h3>
-                <p className="text-3xl font-bold text-blue-600">0</p>
-                <p className="text-sm text-gray-600 mt-1">Total victories</p>
+              {/* Enhanced Withdrawal Section */}
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200/50">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <DollarSign size={24} className="text-white" />
               </div>
-              
-              <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Win Rate</h3>
-                <p className="text-3xl font-bold text-purple-600">0%</p>
-                <p className="text-sm text-gray-600 mt-1">Success percentage</p>
-              </div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Withdraw Winnings</h3>
             </div>
-
-            {/* Withdrawal Section */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">💸 Withdraw Winnings</h3>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                <p className="text-yellow-800 text-sm">
+                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-200/50 rounded-2xl p-6 mb-6">
+                  <p className="text-yellow-800 text-lg font-medium">
                   <strong>Coming Soon:</strong> Withdrawal functionality is currently being developed. 
                   You'll be able to withdraw your winnings via e-transfer, PayPal, and other methods.
                 </p>
               </div>
               
-              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Withdrawal Method</label>
-                  <select className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" disabled>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Withdrawal Method</label>
+                    <select className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl bg-gray-50 text-lg" disabled>
                     <option>E-Transfer (Coming Soon)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Amount</label>
                   <input
                     type="number"
                     placeholder="0.00"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl bg-gray-50 text-lg"
                     disabled
                   />
                 </div>
               </div>
               
-              <Button className="mt-4 bg-gray-400" disabled>
+                <Button className="mt-6 bg-gray-400 py-4 px-8 rounded-2xl text-lg font-bold" disabled>
                 Request Withdrawal (Coming Soon)
               </Button>
             </div>
 
-            {/* Recent Winnings */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">🏆 Recent Winnings</h3>
-              <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-4">🎯</div>
-                <p>No winnings yet!</p>
-                <p className="text-sm mt-2">Start playing to see your wins here.</p>
-              </div>
+              {/* Enhanced Recent Winnings */}
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200/50">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Trophy size={24} className="text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Recent Winnings</h3>
+                </div>
+                <div className="text-center py-12 text-gray-500">
+                  <div className="text-6xl mb-6">🎯</div>
+                  <p className="text-2xl font-bold mb-2">No winnings yet!</p>
+                  <p className="text-lg">Start playing to see your wins here.</p>
+                </div>
             </div>
           </div>
         )}
 
-        {/* Danger Zone */}
-        <div className="mt-8 bg-red-50 rounded-xl p-6 border border-red-200">
-          <h3 className="text-lg font-semibold text-red-900 mb-4">⚠️ Danger Zone</h3>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium text-red-800 mb-2">Delete Account</h4>
-              <p className="text-red-700 text-sm mb-3">
+          {/* Enhanced Danger Zone */}
+          <div className="mt-8 bg-gradient-to-r from-red-100 to-pink-100 rounded-3xl p-8 border-2 border-red-200/50 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                <AlertTriangle size={24} className="text-white" />
+              </div>
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-red-700 to-pink-700 bg-clip-text text-transparent">Danger Zone</h3>
+            </div>
+            <div className="space-y-6">
+              <div className="bg-white/80 rounded-2xl p-6 border border-red-200/50">
+                <h4 className="font-bold text-red-800 mb-3 text-lg">Delete Account</h4>
+                <p className="text-red-700 text-lg mb-4">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
               <Button
                 variant="outline"
-                className="border-red-300 text-red-700 hover:bg-red-100"
+                  className="flex items-center gap-2 border-2 border-red-300 text-red-700 hover:bg-red-100 py-3 px-6 rounded-2xl font-bold"
                 onClick={() => alert('Account deletion feature will be implemented soon!')}
               >
+                  <Trash2 size={18} />
                 Delete Account
               </Button>
+              </div>
             </div>
           </div>
         </div>

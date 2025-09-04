@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, ChevronDown, ChevronUp, Headphones } from "lucide-react";
+import { HelpCircle, ChevronDown, ChevronUp, Headphones, MessageCircle, Sparkles, Star } from "lucide-react";
 
 export function GamesFAQ() {
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
@@ -59,95 +59,169 @@ export function GamesFAQ() {
   ];
 
   return (
-    <section className="py-16 bg-light-cream">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-dark-brown mb-4">
-            <HelpCircle className="inline mr-3 casino-gold" size={40} />
+    <section className="py-20 bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-cyan-300 to-blue-400 rounded-full opacity-20 animate-bounce-soft"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-indigo-300 to-purple-400 rounded-full opacity-15 animate-bounce-soft" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Floating sparkles */}
+        <div className="absolute top-32 right-1/4 opacity-20">
+          <Sparkles className="text-blue-400 animate-pulse" size={20} />
+        </div>
+        <div className="absolute bottom-40 left-1/3 opacity-15">
+          <Star className="text-indigo-400 animate-bounce-soft" size={16} />
+        </div>
+      </div>
+      
+      <div className="max-w-5xl mx-auto px-4 relative z-10">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-8 shadow-2xl">
+            <HelpCircle className="text-white" size={48} />
+          </div>
+          
+          <h2 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 mb-6">
             Games FAQ
           </h2>
-          <p className="text-xl text-gray-600">
+          
+          <p className="text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
             Everything you need to know about our three exciting bingo game types
           </p>
+          
+          {/* Quick highlights */}
+          <div className="flex justify-center items-center space-x-6 text-lg font-semibold">
+            <div className="flex items-center text-blue-600">
+              <MessageCircle className="mr-2" size={20} />
+              <span>Instant Answers</span>
+            </div>
+            <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+            <div className="flex items-center text-indigo-600">
+              <Headphones className="mr-2" size={20} />
+              <span>Expert Support</span>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
           {gamesFaqs.map((faq) => (
-            <div key={faq.id} className="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div key={faq.id} className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-gradient-to-r from-cyan-200 to-blue-200 transform hover:scale-105 transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/30 to-blue-50/30"></div>
               <button 
                 onClick={() => toggleFaq(faq.id)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
+                className="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gradient-to-r hover:from-cyan-50/50 hover:to-blue-50/50 transition-all duration-200 relative z-10"
               >
-                <h3 className="text-lg font-semibold text-dark-brown pr-4">{faq.question}</h3>
+                <h3 className="text-xl font-bold text-gray-800 pr-4 group-hover:text-gray-900 transition-colors">{faq.question}</h3>
+                <div className={`transition-all duration-300 ${openItems.has(faq.id) ? 'rotate-180' : 'rotate-0'}`}>
                 {openItems.has(faq.id) ? (
-                  <ChevronUp className="casino-gold flex-shrink-0" size={20} />
+                    <ChevronUp className="text-blue-600" size={24} />
                 ) : (
-                  <ChevronDown className="casino-gold flex-shrink-0" size={20} />
+                    <ChevronDown className="text-blue-600" size={24} />
                 )}
+                </div>
               </button>
               {openItems.has(faq.id) && (
-                <div className="px-6 pb-4 text-gray-700 text-lg">
+                <div className="px-8 pb-6 text-gray-700 text-lg leading-relaxed relative z-10 animate-fade-in">
+                  <div className="border-t border-blue-100 pt-4">
                   {faq.answer}
+                  </div>
                 </div>
               )}
+              
+              {/* Decorative element */}
+              <div className="absolute top-4 right-4 opacity-10">
+                <MessageCircle className="text-blue-400" size={16} />
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Game-specific help sections */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-casino-gold">
-            <h4 className="text-xl font-bold text-dark-brown mb-3">Classic Bingo Help</h4>
-            <p className="text-gray-600 mb-4">Need help with traditional gameplay, chat features, or patterns?</p>
+        {/* Enhanced Game-specific help sections */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+          <div className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gradient-to-r from-yellow-200 to-orange-200 transform hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/30 to-orange-50/30"></div>
+            <div className="relative z-10">
+              <h4 className="text-2xl font-black text-gray-800 mb-4">Classic Bingo Help</h4>
+              <p className="text-gray-700 mb-6 font-medium">Need help with traditional gameplay, chat features, or patterns?</p>
             <Button 
               variant="outline" 
-              className="w-full border-casino-gold casino-gold hover:bg-casino-gold hover:text-white"
+                className="w-full border-2 border-yellow-400 text-yellow-600 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-orange-500 hover:text-white font-bold py-3 rounded-xl transition-all duration-300"
             >
               Classic Game Guide
             </Button>
+            </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-casino-red">
-            <h4 className="text-xl font-bold text-dark-brown mb-3">Speed Bingo Help</h4>
-            <p className="text-gray-600 mb-4">Questions about fast gameplay, auto-mark, or turbo bonuses?</p>
+          <div className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gradient-to-r from-red-200 to-pink-200 transform hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-50/30 to-pink-50/30"></div>
+            <div className="relative z-10">
+              <h4 className="text-2xl font-black text-gray-800 mb-4">Speed Bingo Help</h4>
+              <p className="text-gray-700 mb-6 font-medium">Questions about fast gameplay, auto-mark, or turbo bonuses?</p>
             <Button 
               variant="outline" 
-              className="w-full border-casino-red casino-red hover:bg-casino-red hover:text-white"
+                className="w-full border-2 border-red-400 text-red-600 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 hover:text-white font-bold py-3 rounded-xl transition-all duration-300"
             >
               Speed Game Guide
             </Button>
+            </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-rose-gold">
-            <h4 className="text-xl font-bold text-dark-brown mb-3">Themed Bingo Help</h4>
-            <p className="text-gray-600 mb-4">Learn about special patterns, themes, and seasonal events?</p>
+          <div className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gradient-to-r from-purple-200 to-indigo-200 transform hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/30 to-indigo-50/30"></div>
+            <div className="relative z-10">
+              <h4 className="text-2xl font-black text-gray-800 mb-4">Themed Bingo Help</h4>
+              <p className="text-gray-700 mb-6 font-medium">Learn about special patterns, themes, and seasonal events?</p>
             <Button 
               variant="outline" 
-              className="w-full border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white"
+                className="w-full border-2 border-purple-400 text-purple-600 hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-500 hover:text-white font-bold py-3 rounded-xl transition-all duration-300"
             >
               Themed Game Guide
             </Button>
           </div>
         </div>
+        </div>
 
-        {/* Contact Support */}
-        <div className="text-center mt-12">
-          <div className="bg-gradient-to-br from-cream to-white rounded-xl p-8 shadow-lg border-2 border-casino-gold">
-            <h3 className="text-2xl font-bold text-dark-brown mb-4">Still Need Help?</h3>
-            <p className="text-lg text-gray-600 mb-6">
+        {/* Enhanced Contact Support */}
+        <div className="text-center mt-16">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border-2 border-gradient-to-r from-cyan-200 to-blue-200 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/30 to-blue-50/30"></div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
+                <Headphones className="text-white" size={32} />
+        </div>
+
+              <h3 className="text-3xl font-black text-gray-800 mb-4">Still Need Help?</h3>
+              <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
               Our friendly support team is available 24/7 to help you with any game-related questions
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-casino-gold text-white px-8 py-3 text-lg font-semibold hover:bg-yellow-500">
-                <Headphones className="mr-2" size={20} />
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-10 py-4 text-lg font-bold shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-2xl">
+                  <Headphones className="mr-3" size={20} />
                 Live Chat Support
               </Button>
               <Button 
                 variant="outline" 
-                className="px-8 py-3 text-lg border-2 border-casino-gold casino-gold hover:bg-casino-gold hover:text-white"
+                  className="px-10 py-4 text-lg border-2 border-cyan-400 text-cyan-600 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-blue-600 hover:text-white font-bold rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105"
               >
+                  <MessageCircle className="mr-2" size={20} />
                 Email Support
               </Button>
+              </div>
+              
+              {/* Support stats */}
+              <div className="flex justify-center items-center space-x-8 text-sm font-semibold">
+                <div className="flex items-center text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <span>24/7 Available</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                <div className="flex items-center text-blue-600">
+                  <MessageCircle className="mr-2" size={16} />
+                  <span>Average Response: 2 mins</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

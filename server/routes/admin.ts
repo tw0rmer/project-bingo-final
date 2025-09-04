@@ -342,13 +342,65 @@ router.delete('/lobbies/:id', authenticateToken, requireAdmin, async (req: AuthR
       return res.status(400).json({ message: 'Invalid lobby ID' });
     }
     
-    // In a real app, you'd want to check if there are active games first
-    await db.delete(lobbies).where(eq(lobbies.id, lobbyId));
-    
-    res.json({ message: 'Lobby deleted successfully' });
+    console.log('[ADMIN] Deleting lobby:', lobbyId);
+
+    // Get all games in this lobby first
+    const allGames = await db.select().from(games);
+    const lobbyGames = allGames.filter((game: any) => game.lobbyId === lobbyId);
+    console.log('[ADMIN] Found', lobbyGames.length, 'games in lobby');
+
+    // Delete all participants from the games
+    for (const game of lobbyGames) {
+      try {
+        const allParticipants = await db.select().from(gameParticipants);
+        const gameParticipantsList = allParticipants.filter((p: any) => p.gameId === game.id);
+        console.log('[ADMIN] Found', gameParticipantsList.length, 'participants in game', game.id);
+        
+        for (const participant of gameParticipantsList) {
+          await db.delete(gameParticipants).where(eq(gameParticipants.id, participant.id));
+        }
+      } catch (error) {
+        console.log('[ADMIN] Error deleting game participants for game', game.id, ':', error);
+      }
+    }
+
+    // Delete all games in the lobby
+    for (const game of lobbyGames) {
+      try {
+        await db.delete(games).where(eq(games.id, game.id));
+        console.log('[ADMIN] Deleted game', game.id);
+      } catch (error) {
+        console.log('[ADMIN] Error deleting game', game.id, ':', error);
+      }
+    }
+
+    // Delete lobby participants
+    try {
+      const allParticipants = await db.select().from(lobbyParticipants);
+      const lobbyParticipantsList = allParticipants.filter((p: any) => p.lobbyId === lobbyId);
+      console.log('[ADMIN] Found', lobbyParticipantsList.length, 'lobby participants');
+      
+      for (const participant of lobbyParticipantsList) {
+        await db.delete(lobbyParticipants).where(eq(lobbyParticipants.id, participant.id));
+      }
+    } catch (error) {
+      console.log('[ADMIN] Error deleting lobby participants:', error);
+    }
+
+    // Delete the lobby
+    try {
+      await db.delete(lobbies).where(eq(lobbies.id, lobbyId));
+      console.log('[ADMIN] Deleted lobby', lobbyId);
+    } catch (error) {
+      console.log('[ADMIN] Error deleting lobby:', error);
+      return res.status(500).json({ message: 'Failed to delete lobby: ' + error.message });
+    }
+
+    console.log('[ADMIN] Successfully deleted lobby', lobbyId, 'and', lobbyGames.length, 'games');
+    res.json({ message: 'Lobby deleted successfully', gamesDeleted: lobbyGames.length });
   } catch (error) {
-    console.error('Delete lobby error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('[ADMIN] Delete lobby error:', error);
+    res.status(500).json({ message: 'Internal server error: ' + error.message });
   }
 });
 

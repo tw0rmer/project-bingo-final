@@ -1,8 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const [debugEnabled, setDebugEnabled] = useState(false);
+
+  // Check if debug mode is enabled
+  useEffect(() => {
+    const checkDebugMode = () => {
+      const enabled = localStorage.getItem('debugEnabled') === 'true';
+      setDebugEnabled(enabled);
+    };
+
+    checkDebugMode();
+    
+    // Listen for changes to debug mode
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'debugEnabled') {
+        checkDebugMode();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for changes
+    const interval = setInterval(checkDebugMode, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const refreshStats = () => {
     if ((window as any).debugLogger) {
@@ -42,6 +70,11 @@ export default function DebugPanel() {
     const interval = setInterval(refreshStats, 5000); // Refresh every 5 seconds
     return () => clearInterval(interval);
   }, []);
+
+  // Don't render anything if debug mode is disabled
+  if (!debugEnabled) {
+    return null;
+  }
 
   if (!isOpen) {
     return (

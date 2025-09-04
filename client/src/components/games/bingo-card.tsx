@@ -149,25 +149,28 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
 
   const getPhaseStyles = () => {
     switch (gamePhase) {
-      case 'lobby': return 'border-amber-500/40 bg-amber-500/5';
-      case 'playing': return 'border-emerald-500/40 bg-emerald-500/5';
-      case 'finished': return 'border-purple-500/40 bg-purple-500/5';
-      default: return 'border-blue-500/40 bg-blue-500/5';
+      case 'lobby': return 'border-amber-400/50 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 shadow-amber-500/20';
+      case 'playing': return 'border-emerald-400/50 bg-gradient-to-br from-emerald-500/20 to-green-500/20 shadow-emerald-500/20';
+      case 'finished': return 'border-purple-400/50 bg-gradient-to-br from-purple-500/20 to-pink-500/20 shadow-purple-500/20';
+      default: return 'border-blue-400/50 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 shadow-blue-500/20';
     }
   };
 
-  // Show loading state if card hasn't loaded yet
+  // Enhanced loading state if card hasn't loaded yet
   if (bingoCard.length === 0) {
     return (
       <div className={cn(
-        "relative rounded-md border p-4",
-        "bg-white border-gray-200",
+        "relative rounded-3xl border-2 p-8",
+        "bg-gray-800/95 backdrop-blur-sm border-gray-600/50",
         getPhaseStyles(),
-        "w-full flex items-center justify-center min-h-[400px]"
+        "w-full flex items-center justify-center min-h-[400px] shadow-2xl"
       )}>
-        <div className="text-gray-500 text-center">
-          <div className="mb-2">Loading bingo card...</div>
-          <div className="text-sm text-gray-400">Waiting for server data</div>
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-white border-t-transparent"></div>
+          </div>
+          <div className="text-xl font-bold text-white mb-2">Loading Bingo Card...</div>
+          <div className="text-gray-300">Waiting for server data</div>
         </div>
       </div>
     );
@@ -175,10 +178,10 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
 
   return (
     <div className={cn(
-      "relative rounded-md border p-1 sm:p-2",
-      "bg-white border-gray-200",
+      "relative rounded-3xl border-2 p-3 sm:p-4",
+      "bg-gray-900/95 backdrop-blur-sm border-gray-500/50",
       getPhaseStyles(),
-      "w-full"
+      "w-full shadow-2xl"
     )}>
       {/* Floating Win Anticipation Banner */}
       {gamePhase === 'playing' && selectedSeats.length > 0 && (() => {
@@ -212,18 +215,26 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
         return null;
       })()}
       
-      {/* Mobile-Responsive Grid Container */}
+      {/* Enhanced Mobile-Responsive Grid Container */}
       <div className="overflow-x-auto">
-        <div className="min-w-[300px] grid grid-cols-6 gap-[1px] sm:gap-[2px] select-none">
-          {/* Headers Row */}
-          <div className="bg-indigo-600 text-white font-semibold text-center h-6 sm:h-7 rounded text-[9px] sm:text-[11px] flex flex-col items-center justify-center leading-none">
-            <span className="text-[10px] sm:text-[12px]">🪑</span>
-            <span className="text-[8px] sm:text-[10px]">Seats</span>
+        <div className="min-w-[350px] grid grid-cols-6 gap-[2px] sm:gap-[3px] select-none">
+          {/* Enhanced Headers Row */}
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-center h-8 sm:h-9 rounded-2xl text-[10px] sm:text-[12px] flex flex-col items-center justify-center leading-none shadow-lg border border-indigo-400/30">
+            <span className="text-[12px] sm:text-[14px]">🪑</span>
+            <span className="text-[9px] sm:text-[11px] font-medium">Seats</span>
           </div>
-          {['B', 'I', 'N', 'G', 'O'].map((letter, index) => (
-            <div key={letter} className="bg-blue-600 text-white font-semibold text-center h-6 sm:h-7 rounded text-[9px] sm:text-[11px] flex flex-col items-center justify-center leading-none">
-              <span className="text-[10px] sm:text-[12px] font-bold">{letter}</span>
-              <span className="text-[7px] sm:text-[9px] opacity-75">
+          {['B', 'I', 'N', 'G', 'O'].map((letter, index) => {
+            const gradients = [
+              'from-red-500 to-red-600',      // B
+              'from-orange-500 to-orange-600', // I  
+              'from-yellow-500 to-yellow-600', // N
+              'from-green-500 to-green-600',   // G
+              'from-blue-500 to-blue-600'     // O
+            ];
+            return (
+              <div key={letter} className={`bg-gradient-to-br ${gradients[index]} text-white font-bold text-center h-8 sm:h-9 rounded-2xl text-[10px] sm:text-[12px] flex flex-col items-center justify-center leading-none shadow-lg border border-white/20`}>
+                <span className="text-[12px] sm:text-[14px] font-black">{letter}</span>
+                <span className="text-[8px] sm:text-[10px] opacity-90 font-medium">
                 {index === 0 && "1-15"}
                 {index === 1 && "16-30"}
                 {index === 2 && "31-45"}
@@ -231,7 +242,8 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                 {index === 4 && "61-75"}
               </span>
             </div>
-          ))}
+            );
+          })}
 
           {/* 15 rows - only render if we have card data */}
           {bingoCard.length > 0 && Array.from({ length: 15 }, (_, rowIndex) => {
@@ -243,7 +255,7 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
 
             return (
               <div key={rowIndex} className="contents">
-                {/* Mobile-Responsive Seat Cell */}
+                {/* Enhanced Mobile-Responsive Seat Cell */}
                 <button
                   onClick={() => {
                     if (isJoining) return;
@@ -254,20 +266,18 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                   disabled={(isOccupied && !isSelected) || isJoining}
                   title={isOccupied ? `Seat ${seatNumber}: ${participant?.user?.email || 'Unknown User'}` : `Seat ${seatNumber}: Available`}
                   className={cn(
-                    "relative text-left px-0.5 sm:px-1 h-9 sm:h-8 rounded font-medium text-[9px] sm:text-[10.5px] transition-colors touch-manipulation",
-                    "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
+                    "relative text-left px-1 sm:px-2 h-10 sm:h-9 rounded-2xl font-bold text-[10px] sm:text-[11px] transition-all duration-300 touch-manipulation shadow-lg border",
+                    "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
                     "active:scale-95 transition-transform duration-100", // Touch feedback
-                    isSelected && "bg-emerald-600 text-white",
-                    (isOccupied && !isSelected) && "bg-red-600 text-white cursor-not-allowed",
-                    !isSelected && !isOccupied && "bg-gray-100 text-gray-900 hover:bg-blue-600 hover:text-white cursor-pointer",
+                    isSelected && "bg-gradient-to-br from-emerald-500 to-green-600 text-white border-emerald-400/50 shadow-emerald-500/30",
+                    (isOccupied && !isSelected) && "bg-gradient-to-br from-red-500 to-red-600 text-white cursor-not-allowed border-red-400/50 shadow-red-500/30",
+                    !isSelected && !isOccupied && "bg-gradient-to-br from-gray-600 to-gray-700 text-gray-200 cursor-pointer border-gray-500/50",
                     winnerSeatNumber === seatNumber && (winnerUserId && myUserId && winnerUserId === myUserId
-                      ? "ring-2 ring-yellow-400 shadow-[0_0_10px_#facc15] bg-yellow-400 text-black animate-pulse"
-                      : "ring-2 ring-red-500 shadow-[0_0_10px_#ef4444] bg-red-600 text-white animate-pulse"),
+                      ? "ring-4 ring-yellow-400 shadow-[0_0_20px_#facc15] bg-gradient-to-br from-yellow-400 to-amber-500 text-black animate-pulse border-yellow-300"
+                      : "ring-4 ring-red-500 shadow-[0_0_20px_#ef4444] bg-gradient-to-br from-red-500 to-red-600 text-white animate-pulse border-red-400"),
                     // Winner prediction visual effects - only for selected seats during gameplay
-                    gamePhase === 'playing' && isSelected && winProgress.isVeryClose && "ring-2 ring-orange-400 shadow-[0_0_15px_#fb923c] animate-pulse scale-105",
-                    gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && !winProgress.isVeryClose && "ring-1 ring-amber-300 shadow-[0_0_8px_#fbbf24]",
-                    // Hover effects for available seats that could lead to winning
-                    !isSelected && !isOccupied && gamePhase === 'lobby' && "hover:ring-2 hover:ring-blue-400 hover:shadow-lg hover:scale-105 transition-all duration-200"
+                    gamePhase === 'playing' && isSelected && winProgress.isVeryClose && "ring-4 ring-orange-400 shadow-[0_0_25px_#fb923c] animate-pulse scale-105",
+                    gamePhase === 'playing' && isSelected && winProgress.isCloseToWin && !winProgress.isVeryClose && "ring-2 ring-amber-300 shadow-[0_0_15px_#fbbf24]"
                   )}
                 >
                   <div className="flex items-center justify-between leading-none">
@@ -298,33 +308,33 @@ export function BingoCard({ onSeatSelect, selectedSeats = [], participants, isJo
                   </div>
                 </button>
 
-                {/* Mobile-Responsive Bingo Numbers */}
+                {/* Enhanced Mobile-Responsive Bingo Numbers */}
                 {bingoCard.length > 0 && bingoCard[rowIndex]?.map((number, colIndex) => (
                   <button
                     key={colIndex}
                     onClick={gamePhase === 'playing' ? () => handleNumberClick(rowIndex, colIndex) : undefined}
                     disabled={gamePhase !== 'playing'}
                     className={cn(
-                      "text-center h-9 sm:h-8 rounded font-medium text-[9px] sm:text-[11px] transition-colors leading-none touch-manipulation",
-                      "focus:outline-none focus:ring-1 focus:ring-blue-500/40",
-                      gamePhase === 'playing' && "cursor-pointer active:scale-95 transition-transform duration-100",
+                      "text-center h-10 sm:h-9 rounded-2xl font-bold text-[10px] sm:text-[12px] transition-all duration-300 leading-none touch-manipulation shadow-lg border",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
+                      gamePhase === 'playing' && "cursor-pointer active:scale-95",
                       gamePhase !== 'playing' && "cursor-default opacity-90",
                         // Winner row - all cells get full golden treatment
                       winnerSeatNumber === seatNumber && winnerUserId && myUserId && winnerUserId === myUserId
-                        ? "!bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 text-black font-extrabold shadow-[0_0_20px_#facc15] ring-4 ring-yellow-400 animate-glow scale-105 z-10"
+                        ? "!bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 text-black font-extrabold shadow-[0_0_30px_#facc15] ring-4 ring-yellow-400 animate-pulse scale-110 z-10 border-yellow-300"
                         : winnerSeatNumber === seatNumber
-                        ? "!bg-gradient-to-br from-red-400 via-red-500 to-red-600 text-white font-bold shadow-[0_0_15px_#ef4444] ring-2 ring-red-400 animate-pulse"
+                        ? "!bg-gradient-to-br from-red-400 via-red-500 to-red-600 text-white font-bold shadow-[0_0_25px_#ef4444] ring-4 ring-red-400 animate-pulse border-red-300"
                         : number.isMarked 
-                        ? "bg-blue-600 text-white font-bold" 
-                        : "bg-gray-100 text-gray-900",
+                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold border-blue-400/50 shadow-blue-500/30" 
+                        : "bg-gradient-to-br from-gray-700 to-gray-800 text-gray-200 border-gray-600/50",
                         // Winner prediction for individual numbers - add subtle glow to missing numbers in close-to-win rows
                         gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isVeryClose && 
-                          "ring-2 ring-orange-400 shadow-[0_0_12px_#fb923c] bg-orange-50 animate-pulse scale-105",
+                          "ring-4 ring-orange-400 shadow-[0_0_20px_#fb923c] bg-gradient-to-br from-orange-400/50 to-orange-500/50 animate-pulse scale-105 border-orange-400",
                         gamePhase === 'playing' && isSelected && !number.isMarked && winProgress.isCloseToWin && !winProgress.isVeryClose &&
-                          "ring-1 ring-amber-300 shadow-[0_0_6px_#fbbf24] bg-amber-50",
+                          "ring-2 ring-amber-300 shadow-[0_0_15px_#fbbf24] bg-gradient-to-br from-amber-400/30 to-amber-500/30 border-amber-400",
                         // Enhanced effect for numbers specifically needed for winning
                         gamePhase === 'playing' && isSelected && !number.isMarked && isNumberNeededForWin(rowIndex, number.value) &&
-                          "ring-2 ring-purple-400 shadow-[0_0_15px_#a855f7] bg-purple-50 animate-pulse scale-105"
+                          "ring-4 ring-purple-400 shadow-[0_0_25px_#a855f7] bg-gradient-to-br from-purple-400/50 to-purple-500/50 animate-pulse scale-105 border-purple-400"
                     )}
                   >
                     {number.value}

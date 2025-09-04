@@ -3,6 +3,32 @@ import { SiteLayout } from '@/components/SiteLayout';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 import { authApiRequest } from '@/lib/api';
+import { 
+  Users, 
+  Home, 
+  DollarSign, 
+  Trophy, 
+  ArrowLeft, 
+  Search, 
+  Settings, 
+  Trash2, 
+  Edit, 
+  Plus,
+  Play,
+  Pause,
+  Square,
+  Zap,
+  RefreshCw,
+  Eye,
+  Crown,
+  Shield,
+  Sparkles,
+  Star,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  X
+} from 'lucide-react';
 
 interface User {
   id: number;
@@ -36,7 +62,7 @@ interface Transaction {
 }
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'users' | 'lobbies' | 'transactions' | 'prizes'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'lobbies' | 'transactions' | 'prizes' | 'settings'>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [lobbies, setLobbies] = useState<Lobby[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -45,6 +71,26 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [, setLocation] = useLocation();
   const { user, logout } = useAuth();
+
+  // Debug settings state
+  const [debugEnabled, setDebugEnabled] = useState(() => {
+    return localStorage.getItem('debugEnabled') === 'true';
+  });
+
+  // Debug toggle function
+  const toggleDebugMode = (enabled: boolean) => {
+    setDebugEnabled(enabled);
+    localStorage.setItem('debugEnabled', enabled.toString());
+    
+    // Update global debug state
+    if (enabled) {
+      localStorage.setItem('debugMode', 'true');
+      console.log('🐛 Debug mode enabled by admin');
+    } else {
+      localStorage.removeItem('debugMode');
+      console.log('🐛 Debug mode disabled by admin');
+    }
+  };
 
   // Search and selection states
   const [searchTerm, setSearchTerm] = useState('');
@@ -478,10 +524,22 @@ export default function AdminPage() {
   if (loading) {
     return (
       <SiteLayout hideAuthButtons>
-        <div className="flex items-center justify-center pt-20">
-          <div className="text-center">
-            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
-            <p className="text-gray-800">Loading admin panel...</p>
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-orange-50">
+          {/* Animated Background Decorations */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-red-400/20 to-pink-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full animate-bounce-soft"></div>
+            <div className="absolute bottom-20 left-20 w-28 h-28 bg-gradient-to-br from-pink-400/20 to-red-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-40 right-10 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-pink-400/20 rounded-full animate-bounce-soft"></div>
+          </div>
+
+          <div className="flex items-center justify-center pt-20 relative z-10">
+            <div className="text-center bg-white/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-gray-200/50 shadow-2xl">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                <Settings size={32} className="text-white animate-spin" />
+              </div>
+              <p className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Loading admin panel...</p>
+            </div>
           </div>
         </div>
       </SiteLayout>
@@ -491,22 +549,35 @@ export default function AdminPage() {
   if (error) {
     return (
       <SiteLayout hideAuthButtons>
-        <div className="flex items-center justify-center pt-20">
-          <div className="text-center">
-            <p className="mb-4 text-red-600">Error: {error}</p>
-            <div className="space-x-4">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-orange-50">
+          {/* Animated Background Decorations */}
+          <div className="fixed inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-red-400/20 to-pink-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full animate-bounce-soft"></div>
+            <div className="absolute bottom-20 left-20 w-28 h-28 bg-gradient-to-br from-pink-400/20 to-red-400/20 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-40 right-10 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-pink-400/20 rounded-full animate-bounce-soft"></div>
+          </div>
+
+          <div className="flex items-center justify-center pt-20 relative z-10">
+            <div className="text-center bg-white/95 backdrop-blur-sm rounded-3xl p-8 border-2 border-gray-200/50 shadow-2xl">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                <AlertTriangle size={32} className="text-white" />
+              </div>
+              <p className="text-xl font-bold text-red-700 mb-4">Error: {error}</p>
+              <div className="flex gap-4 justify-center">
               <button
                 onClick={() => window.location.reload()}
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Retry
               </button>
               <button
                 onClick={() => setLocation('/dashboard')}
-                className="rounded bg-gray-800 px-4 py-2 text-white hover:bg-gray-900"
+                  className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Back to Dashboard
               </button>
+              </div>
             </div>
           </div>
         </div>
@@ -516,59 +587,86 @@ export default function AdminPage() {
 
   return (
     <SiteLayout hideAuthButtons>
-      <main className="mx-auto max-w-7xl p-3 sm:p-4">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Panel</h1>
-              <p className="text-sm text-gray-600 mt-1">Manage users, lobbies, and transactions</p>
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-orange-50">
+        {/* Animated Background Decorations */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-red-400/20 to-pink-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full animate-bounce-soft"></div>
+          <div className="absolute bottom-20 left-20 w-28 h-28 bg-gradient-to-br from-pink-400/20 to-red-400/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-40 right-10 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-pink-400/20 rounded-full animate-bounce-soft"></div>
+        </div>
+
+        <main className="mx-auto max-w-7xl p-3 sm:p-4 relative z-10">
+          {/* Enhanced Header */}
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div className="text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <Crown size={32} className="text-white" />
+                  </div>
+                  <div className="floating-sparkles">
+                    <Sparkles size={20} className="text-yellow-500 animate-pulse" />
+                    <Star size={16} className="text-orange-500 animate-bounce-soft" />
+                  </div>
+                </div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Admin Panel</h1>
+                <p className="text-lg text-gray-600">Manage users, lobbies, and transactions</p>
             </div>
             <button
               onClick={() => setLocation('/dashboard')}
-              className="text-casino-red hover:opacity-80 text-sm font-medium self-start sm:self-auto"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium bg-white/80 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50 shadow-lg hover:shadow-xl self-start sm:self-auto"
             >
-              ← Back to Dashboard
+                <ArrowLeft size={16} />
+                Back to Dashboard
             </button>
           </div>
         </div>
 
-        {/* Mobile-Responsive Tabs */}
-        <div className="mb-4 sm:mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
-              {[
-                { id: 'users', label: 'Users', count: users.length, icon: '👥' },
-                { id: 'lobbies', label: 'Lobbies', count: lobbies.length, icon: '🏠' },
-                { id: 'transactions', label: 'Transactions', count: transactions.length, icon: '💰' },
-                { id: 'prizes', label: 'Prize Pools', count: lobbies.filter(l => l.seatsTaken > 0).length, icon: '🏆' }
-              ].map((tab) => (
+                  {/* Enhanced Mobile-Responsive Tabs */}
+          <div className="mb-8">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl border-2 border-gray-200/50 shadow-xl overflow-hidden">
+              <nav className="flex">
+                {[
+                  { id: 'users', label: 'Users', count: users.length, icon: Users },
+                  { id: 'lobbies', label: 'Lobbies', count: lobbies.length, icon: Home },
+                  { id: 'transactions', label: 'Transactions', count: transactions.length, icon: DollarSign },
+                  { id: 'prizes', label: 'Prize Pools', count: lobbies.filter(l => l.seatsTaken > 0).length, icon: Trophy },
+                  { id: 'settings', label: 'Settings', count: 0, icon: Settings }
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex-shrink-0 flex items-center gap-2 py-2 px-3 border-b-2 font-medium text-sm transition-colors ${
+                      className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 font-bold text-sm transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-casino-gold text-casino-red bg-yellow-50'
-                      : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
+                          ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg scale-105'
+                          : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="text-base">{tab.icon}</span>
+                      <Icon size={20} />
                   <span className="whitespace-nowrap">{tab.label}</span>
-                  <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded-full text-xs">
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                        activeTab === tab.id 
+                          ? 'bg-white/20 text-white' 
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>
                     {tab.count}
                   </span>
                 </button>
-              ))}
+                  );
+                })}
             </nav>
           </div>
         </div>
 
-        {/* Users Tab */}
+                  {/* Enhanced Users Tab */}
         {activeTab === 'users' && (
-          <div className="space-y-4">
-            {/* Search and Multi-Select Controls */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="space-y-8">
+              {/* Enhanced Search and Multi-Select Controls */}
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl p-8">
+                <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
                 <div className="flex-1 w-full sm:max-w-md">
                   <div className="relative">
                     <input
@@ -576,26 +674,24 @@ export default function AdminPage() {
                       placeholder="Search by email, username, or ID..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-casino-gold focus:border-transparent"
-                    />
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
+                        className="w-full pl-12 pr-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-red-400/30 focus:border-red-500 text-lg transition-all duration-300"
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Search size={20} className="text-gray-400" />
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-6 w-full sm:w-auto">
+                    <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
                       id="select-all"
                       checked={selectAll}
                       onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="w-4 h-4 text-casino-gold bg-gray-100 border-gray-300 rounded focus:ring-casino-gold"
+                        className="w-5 h-5 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500"
                     />
-                    <label htmlFor="select-all" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="select-all" className="text-lg font-bold text-gray-700">
                       Select All ({selectedUsers.size} selected)
                     </label>
                   </div>
@@ -603,8 +699,9 @@ export default function AdminPage() {
                   {selectedUsers.size > 0 && (
                     <button
                       onClick={() => setShowBulkDeleteConfirm(true)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
                     >
+                      <Trash2 size={18} />
                       Delete Selected ({selectedUsers.size})
                     </button>
                   )}
@@ -612,80 +709,90 @@ export default function AdminPage() {
               </div>
               
               {filteredUsers.length !== users.length && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+                  <p className="text-lg font-bold text-blue-700">
                   Showing {filteredUsers.length} of {users.length} users
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* Mobile-First Card Layout */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Enhanced Mobile-First Card Layout */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredUsers.map((user) => (
-                <div key={user.id} className={`bg-white rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow ${
-                  selectedUsers.has(user.id) ? 'border-casino-gold bg-yellow-50' : 'border-gray-200'
+                <div key={user.id} className={`bg-white/95 backdrop-blur-sm rounded-3xl border-2 p-6 shadow-2xl hover:shadow-3xl transition-all duration-300 ${
+                  selectedUsers.has(user.id) ? 'border-red-500 bg-red-50/80' : 'border-gray-200/50'
                 }`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
                       {!user.isAdmin && (
                         <input
                           type="checkbox"
                           checked={selectedUsers.has(user.id)}
                           onChange={(e) => handleSelectUser(user.id, e.target.checked)}
-                          className="w-4 h-4 text-casino-gold bg-gray-100 border-gray-300 rounded focus:ring-casino-gold"
+                          className="w-5 h-5 text-red-500 bg-gray-100 border-gray-300 rounded focus:ring-red-500"
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-medium text-gray-500">ID #{user.id}</span>
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-sm font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">ID #{user.id}</span>
                           {user.isAdmin && (
-                            <span className="bg-casino-gold text-white px-2 py-0.5 rounded text-xs font-bold">ADMIN</span>
+                            <span className="bg-gradient-to-r from-red-500 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                              <Crown size={14} />
+                              ADMIN
+                            </span>
                           )}
                         </div>
-                        <h3 className="font-medium text-gray-900 truncate">{user.email}</h3>
+                        <h3 className="text-xl font-bold text-gray-800 truncate mb-1">{user.email}</h3>
                         {user.username && (
-                          <p className="text-sm text-blue-600">@{user.username}</p>
+                          <p className="text-lg text-blue-600 font-medium">@{user.username}</p>
                         )}
                         <p className="text-sm text-gray-600">Created: {new Date(user.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="mb-3">
-                    <div className="text-xs text-gray-500 mb-1">Balance</div>
-                    <div className="text-lg font-bold text-green-600">${parseFloat(user.balance).toFixed(2)}</div>
+                  <div className="mb-6">
+                    <div className="text-sm text-gray-500 mb-2 font-bold">Balance</div>
+                    <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      ${parseFloat(user.balance).toFixed(2)}
+                    </div>
                   </div>
                   
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-3">
                     <button
                       onClick={() => setShowEditUser(user)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded text-sm font-medium transition-colors"
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                     >
+                      <Edit size={18} />
                       Edit Balance
                     </button>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <button
                         onClick={() => toggleUserAdmin(user.id, !user.isAdmin)}
-                        className={`flex-1 py-1.5 px-3 rounded text-sm font-medium transition-colors ${
+                        className={`flex-1 py-3 px-4 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                           user.isAdmin 
-                            ? 'bg-red-100 hover:bg-red-200 text-red-800' 
-                            : 'bg-green-100 hover:bg-green-200 text-green-800'
+                            ? 'bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 text-red-800 shadow-lg hover:shadow-xl' 
+                            : 'bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 text-green-800 shadow-lg hover:shadow-xl'
                         }`}
                       >
+                        <Shield size={16} />
                         {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </button>
                       <button
                         onClick={() => handleBanUser(user.id, user.email)}
-                        className="bg-orange-100 hover:bg-orange-200 text-orange-800 py-1.5 px-3 rounded text-sm font-medium transition-colors"
+                        className="bg-gradient-to-r from-orange-100 to-orange-200 hover:from-orange-200 hover:to-orange-300 text-orange-800 py-3 px-4 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl"
                         title="Ban User"
                       >
-                        🚫
+                        <AlertTriangle size={16} />
                       </button>
                     </div>
                     <button
                       onClick={() => handleDeleteUser(user.id, user.email)}
-                      className="w-full bg-red-100 hover:bg-red-200 text-red-800 py-1.5 px-3 rounded text-sm font-medium transition-colors"
+                      className="w-full bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 text-red-800 py-3 px-4 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                     >
-                      🗑️ Delete User
+                      <Trash2 size={18} />
+                      Delete User
                     </button>
                   </div>
                 </div>
@@ -693,14 +800,20 @@ export default function AdminPage() {
             </div>
             
             {filteredUsers.length === 0 && users.length > 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No users match your search criteria
+              <div className="text-center py-12 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <Search size={32} className="text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-600">No users match your search criteria</p>
               </div>
             )}
             
             {users.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No users found
+              <div className="text-center py-12 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <Users size={32} className="text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-600">No users found</p>
               </div>
             )}
           </div>
@@ -708,23 +821,30 @@ export default function AdminPage() {
 
         {/* Mobile-Friendly Lobbies Tab */}
         {showBanConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Ban User</h3>
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to ban <strong>{showBanConfirm.email}</strong>? 
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <AlertTriangle size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Ban User</h3>
+                  <p className="text-lg text-gray-600">
+                    Are you sure you want to ban <strong className="text-red-600">{showBanConfirm.email}</strong>? 
                 This will prevent them from logging in and playing games.
               </p>
-              <div className="flex gap-3">
+                </div>
+              </div>
+              <div className="flex gap-4">
                 <button
                   onClick={confirmBanUser}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Ban User
                 </button>
                 <button
                   onClick={() => setShowBanConfirm(null)}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Cancel
                 </button>
@@ -733,27 +853,34 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Delete User Confirmation Modal */}
+        {/* Enhanced Delete User Confirmation Modal */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Delete User</h3>
-              <p className="text-gray-600 mb-4">
-                <strong>DANGER:</strong> This will permanently delete user <strong>{showDeleteConfirm.email}</strong> and all their data.
-              </p>
-              <p className="text-red-600 text-sm mb-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Trash2 size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Delete User</h3>
+                  <p className="text-lg text-gray-600 mb-4">
+                    <strong className="text-red-600">DANGER:</strong> This will permanently delete user <strong className="text-red-600">{showDeleteConfirm.email}</strong> and all their data.
+                  </p>
+                  <p className="text-red-600 text-lg font-bold">
                 This action cannot be undone!
               </p>
-              <div className="flex gap-3">
+                </div>
+              </div>
+              <div className="flex gap-4">
                 <button
                   onClick={confirmDeleteUser}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Delete Permanently
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(null)}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Cancel
                 </button>
@@ -762,38 +889,45 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Bulk Delete Confirmation Modal */}
+        {/* Enhanced Bulk Delete Confirmation Modal */}
         {showBulkDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Bulk Delete Users</h3>
-              <p className="text-gray-600 mb-4">
-                <strong>DANGER:</strong> This will permanently delete <strong>{selectedUsers.size} users</strong> and all their data.
-              </p>
-              <div className="bg-gray-50 rounded-md p-3 mb-4 max-h-32 overflow-y-auto">
-                <p className="text-sm text-gray-600 mb-2">Users to be deleted:</p>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Trash2 size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Bulk Delete Users</h3>
+                  <p className="text-lg text-gray-600 mb-4">
+                    <strong className="text-red-600">DANGER:</strong> This will permanently delete <strong className="text-red-600">{selectedUsers.size} users</strong> and all their data.
+                  </p>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-2xl p-4 mb-6 max-h-32 overflow-y-auto">
+                <p className="text-sm text-gray-600 mb-3 font-bold">Users to be deleted:</p>
                 {filteredUsers
                   .filter(user => selectedUsers.has(user.id))
                   .map(user => (
-                    <div key={user.id} className="text-sm text-gray-800">
+                    <div key={user.id} className="text-sm text-gray-800 mb-1">
                       • {user.email} (ID: {user.id})
                     </div>
                   ))
                 }
               </div>
-              <p className="text-red-600 text-sm mb-6">
+              <p className="text-red-600 text-lg font-bold mb-6">
                 This action cannot be undone!
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={bulkDeleteUsers}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Delete {selectedUsers.size} Users
                 </button>
                 <button
                   onClick={() => setShowBulkDeleteConfirm(false)}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                  className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Cancel
                 </button>
@@ -802,88 +936,94 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Mobile-Friendly Lobbies Tab */}
+        {/* Enhanced Lobbies Tab */}
         {activeTab === 'lobbies' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Lobby Management</h2>
+          <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Lobby Management</h2>
+                <p className="text-lg text-gray-600">Create and manage game lobbies</p>
+              </div>
               <button
                 onClick={() => setShowCreateLobby(true)}
-                className="bg-casino-gold hover:bg-yellow-500 text-white py-2 px-4 rounded-lg font-medium text-sm self-start sm:self-auto"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 self-start sm:self-auto"
               >
-                + Create Lobby
+                <Plus size={20} />
+                Create Lobby
               </button>
             </div>
             
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {lobbies.map((lobby) => (
-                <div key={lobby.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                  <div className="flex items-start justify-between mb-3">
+                <div key={lobby.id} className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-gray-500">ID #{lobby.id}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                          lobby.status === 'active' ? 'bg-green-100 text-green-700' :
-                          lobby.status === 'finished' ? 'bg-purple-100 text-purple-700' :
-                          'bg-yellow-100 text-yellow-700'
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-sm font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">ID #{lobby.id}</span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          lobby.status === 'active' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800' :
+                          lobby.status === 'finished' ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800' :
+                          'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800'
                         }`}>
                           {lobby.status.toUpperCase()}
                         </span>
                       </div>
-                      <h3 className="font-medium text-gray-900 mb-1">{lobby.name}</h3>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{lobby.name}</h3>
                       <p className="text-sm text-gray-600">Created: {new Date(lobby.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-2 mb-3 text-center">
-                    <div>
-                      <div className="text-xs text-gray-500">Entry</div>
-                      <div className="font-bold text-casino-red">${lobby.entryFee}</div>
+                  <div className="grid grid-cols-3 gap-4 mb-6 text-center">
+                    <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-3">
+                      <div className="text-sm text-gray-500 font-bold mb-1">Entry</div>
+                      <div className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">${lobby.entryFee}</div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500">Games</div>
-                      <div className="font-bold text-gray-900">{lobby.gamesCount || 0}/4</div>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3">
+                      <div className="text-sm text-gray-500 font-bold mb-1">Games</div>
+                      <div className="text-xl font-bold text-gray-800">{lobby.gamesCount || 0}/4</div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500">Max Games</div>
-                      <div className="font-bold text-green-600">{lobby.maxGames || 4}</div>
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-3">
+                      <div className="text-sm text-gray-500 font-bold mb-1">Max Games</div>
+                      <div className="text-xl font-bold text-green-600">{lobby.maxGames || 4}</div>
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {/* Game Management - View Games in this Lobby */}
                     <button
                       onClick={() => viewLobbyGames(lobby.id)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded text-sm font-medium"
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      🎮 Manage Games ({lobby.gamesCount || 0})
+                      <Eye size={18} />
+                      Manage Games ({lobby.gamesCount || 0})
                     </button>
                     
                     {/* Add New Game to Lobby */}
                     <button
                       onClick={() => addGameToLobby(lobby.id)}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white py-1.5 px-3 rounded text-sm font-medium"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                       disabled={(lobby.gamesCount || 0) >= (lobby.maxGames || 4)}
                     >
-                      ➕ Add Game {(lobby.gamesCount || 0) >= (lobby.maxGames || 4) ? '(Max Reached)' : ''}
+                      <Plus size={18} />
+                      Add Game {(lobby.gamesCount || 0) >= (lobby.maxGames || 4) ? '(Max Reached)' : ''}
                     </button>
                     
-                    <div className="grid grid-cols-3 gap-1 pt-2 border-t border-gray-100">
+                    <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-200">
                       <button
                         onClick={() => setShowEditLobby(lobby)}
-                        className="bg-gray-600 hover:bg-gray-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-3 px-2 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => resetLobby(lobby.id)}
-                        className="bg-orange-600 hover:bg-orange-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-2 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         Reset
                       </button>
                       <button
                         onClick={() => deleteLobby(lobby.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white py-1.5 px-1 rounded text-xs font-medium"
+                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 px-2 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         Delete
                       </button>
@@ -894,39 +1034,45 @@ export default function AdminPage() {
             </div>
             
             {lobbies.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No lobbies found
+              <div className="text-center py-12 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <Home size={32} className="text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-600">No lobbies found</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Mobile-Friendly Transactions Tab */}
+        {/* Enhanced Transactions Tab */}
         {activeTab === 'transactions' && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Transactions</h2>
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Recent Transactions</h2>
+              <p className="text-lg text-gray-600">Monitor all financial activities</p>
+            </div>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {transactions.map((transaction) => (
-                <div key={transaction.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                <div key={transaction.id} className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium text-gray-500">ID #{transaction.id}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                          parseFloat(transaction.amount) > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-sm font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">ID #{transaction.id}</span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          parseFloat(transaction.amount) > 0 ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800' : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800'
                         }`}>
                           {transaction.type.toUpperCase()}
                         </span>
                       </div>
-                      <p className="font-medium text-gray-900 mb-1">{transaction.description}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xl font-bold text-gray-800 mb-2">{transaction.description}</p>
+                      <p className="text-sm text-gray-600">
                         User #{transaction.userId} • {new Date(transaction.createdAt).toLocaleString()}
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className={`text-lg font-bold ${
-                        parseFloat(transaction.amount) > 0 ? 'text-green-600' : 'text-red-600'
+                      <div className={`text-2xl font-bold ${
+                        parseFloat(transaction.amount) > 0 ? 'bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent' : 'bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent'
                       }`}>
                         {parseFloat(transaction.amount) > 0 ? '+' : ''}${parseFloat(transaction.amount).toFixed(2)}
                       </div>
@@ -937,24 +1083,34 @@ export default function AdminPage() {
             </div>
             
             {transactions.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No transactions found
+              <div className="text-center py-12 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <DollarSign size={32} className="text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-600">No transactions found</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Prize Pool Management Tab */}
+        {/* Enhanced Prize Pool Management Tab */}
         {activeTab === 'prizes' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">🏆 Prize Pool Distribution System</h3>
-              <p className="text-gray-600 mb-4">
+          <div className="space-y-8">
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 shadow-2xl">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Trophy size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Prize Pool Distribution System</h3>
+                  <p className="text-lg text-gray-600">
                 Manage prize pools and distribute winnings to players. The system automatically takes 30% house cut and awards 70% to the winner.
               </p>
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {lobbies
                 .filter(lobby => lobby.seatsTaken > 0)
                 .map((lobby) => {
@@ -963,49 +1119,50 @@ export default function AdminPage() {
                   const winnerPrize = totalPool - houseTake;
                   
                   return (
-                    <div key={lobby.id} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                      <div className="flex items-start justify-between mb-3">
+                    <div key={lobby.id} className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
+                      <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h4 className="font-semibold text-gray-900">{lobby.name}</h4>
+                          <h4 className="text-xl font-bold text-gray-800 mb-1">{lobby.name}</h4>
                           <p className="text-sm text-gray-600">Lobby #{lobby.id}</p>
                         </div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          lobby.status === 'active' ? 'bg-green-100 text-green-800' :
-                          lobby.status === 'waiting' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
+                        <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          lobby.status === 'active' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800' :
+                          lobby.status === 'waiting' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800' :
+                          'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800'
                         }`}>
                           {lobby.status}
                         </div>
                       </div>
                       
-                      <div className="space-y-2 mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Entry Fee:</span>
-                          <span className="font-medium">${lobby.entryFee}</span>
+                      <div className="space-y-3 mb-6">
+                        <div className="flex justify-between text-sm bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-3">
+                          <span className="text-gray-600 font-bold">Entry Fee:</span>
+                          <span className="font-bold text-red-600">${lobby.entryFee}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Seats Taken:</span>
-                          <span className="font-medium">{lobby.seatsTaken}/{lobby.maxSeats}</span>
+                        <div className="flex justify-between text-sm bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3">
+                          <span className="text-gray-600 font-bold">Seats Taken:</span>
+                          <span className="font-bold text-blue-600">{lobby.seatsTaken}/{lobby.maxSeats}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Total Pool:</span>
-                          <span className="font-semibold text-green-600">${totalPool.toFixed(2)}</span>
+                        <div className="flex justify-between text-sm bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-3">
+                          <span className="text-gray-600 font-bold">Total Pool:</span>
+                          <span className="font-bold text-green-600">${totalPool.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">House Take (30%):</span>
-                          <span className="font-medium text-orange-600">${houseTake.toFixed(2)}</span>
+                        <div className="flex justify-between text-sm bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-3">
+                          <span className="text-gray-600 font-bold">House Take (30%):</span>
+                          <span className="font-bold text-orange-600">${houseTake.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Winner Prize (70%):</span>
-                          <span className="font-semibold text-blue-600">${winnerPrize.toFixed(2)}</span>
+                        <div className="flex justify-between text-sm bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-3">
+                          <span className="text-gray-600 font-bold">Winner Prize (70%):</span>
+                          <span className="font-bold text-purple-600">${winnerPrize.toFixed(2)}</span>
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <button
                           onClick={() => fetchPrizePoolInfo(lobby.id)}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                         >
+                          <RefreshCw size={18} />
                           Refresh Pool Info
                         </button>
                         
@@ -1017,15 +1174,17 @@ export default function AdminPage() {
                             }
                           }}
                           disabled={distributingPrize === lobby.id}
-                          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                         >
+                          <Trophy size={18} />
                           {distributingPrize === lobby.id ? 'Distributing...' : 'Distribute Prize'}
                         </button>
                         
                         <button
                           onClick={() => resetLobby(lobby.id)}
-                          className="w-full bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                          className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-3 px-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                         >
+                          <RefreshCw size={18} />
                           Reset Lobby
                         </button>
                       </div>
@@ -1035,38 +1194,171 @@ export default function AdminPage() {
             </div>
             
             {lobbies.filter(lobby => lobby.seatsTaken > 0).length === 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-                <div className="text-gray-400 text-4xl mb-4">🏆</div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Prize Pools</h3>
-                <p className="text-gray-600">
+              <div className="text-center py-12 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <Trophy size={32} className="text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">No Active Prize Pools</h3>
+                <p className="text-lg text-gray-600">
                   Prize pools will appear here when players join lobbies. Each lobby needs at least one player to generate a prize pool.
                 </p>
               </div>
             )}
           </div>
         )}
+
+        {/* Enhanced Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Settings size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">System Settings</h3>
+                  <p className="text-lg text-gray-600">
+                    Configure system-wide settings and preferences for the bingo platform.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Debug Mode Settings */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 shadow-2xl">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Zap size={24} className="text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-800 mb-1">Debug Mode</h4>
+                    <p className="text-gray-600">
+                      Enable debug panels and enhanced logging for game development and troubleshooting.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-gray-700">
+                      {debugEnabled ? 'Enabled' : 'Disabled'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {debugEnabled ? 'Debug panels visible' : 'Debug panels hidden'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => toggleDebugMode(!debugEnabled)}
+                    className={`relative inline-flex h-12 w-24 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/30 ${
+                      debugEnabled 
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                        : 'bg-gradient-to-r from-gray-400 to-gray-500'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                        debugEnabled ? 'translate-x-12' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+                <h5 className="text-lg font-bold text-gray-800 mb-3">Debug Features:</h5>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Game Debug Panel - Shows real-time game state information</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Enhanced Console Logging - Detailed browser and server logs</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Pattern Progress Tracking - Visual indicators for bingo patterns</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Socket Event Monitoring - Real-time communication debugging</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* System Information */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 shadow-2xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Shield size={24} className="text-white" />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-gray-800 mb-1">System Information</h4>
+                  <p className="text-gray-600">
+                    Current system status and configuration details.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 border border-green-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle size={16} className="text-green-600" />
+                    <span className="text-sm font-bold text-green-800">Server Status</span>
+                  </div>
+                  <p className="text-lg font-bold text-green-700">Online</p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users size={16} className="text-blue-600" />
+                    <span className="text-sm font-bold text-blue-800">Active Users</span>
+                  </div>
+                  <p className="text-lg font-bold text-blue-700">{users.filter(u => u.balance > 0).length}</p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Home size={16} className="text-purple-600" />
+                    <span className="text-sm font-bold text-purple-800">Active Lobbies</span>
+                  </div>
+                  <p className="text-lg font-bold text-purple-700">{lobbies.filter(l => l.status === 'active').length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
+      </div>
 
       {/* Modals - outside main content */}
-      {/* Ban User Confirmation Modal */}
+      {/* Enhanced Ban User Confirmation Modal */}
       {showBanConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Ban User</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to ban <strong>{showBanConfirm.email}</strong>? 
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <AlertTriangle size={32} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Ban User</h3>
+                <p className="text-lg text-gray-600">
+                  Are you sure you want to ban <strong className="text-red-600">{showBanConfirm.email}</strong>? 
               This will prevent them from logging in and playing games.
             </p>
-            <div className="flex gap-3">
+              </div>
+            </div>
+            <div className="flex gap-4">
               <button
                 onClick={confirmBanUser}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Ban User
               </button>
               <button
                 onClick={() => setShowBanConfirm(null)}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Cancel
               </button>
@@ -1075,27 +1367,81 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Delete User Confirmation Modal */}
+      {/* Enhanced Delete User Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-red-900 mb-4">🗑️ Delete User</h3>
-            <p className="text-gray-600 mb-4">
-              <strong>DANGER:</strong> This will permanently delete user <strong>{showDeleteConfirm.email}</strong> and all their data.
-            </p>
-            <p className="text-red-600 text-sm mb-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <Trash2 size={32} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Delete User</h3>
+                <p className="text-lg text-gray-600 mb-4">
+                  <strong className="text-red-600">DANGER:</strong> This will permanently delete user <strong className="text-red-600">{showDeleteConfirm.email}</strong> and all their data.
+                </p>
+                <p className="text-red-600 text-lg font-bold">
               This action cannot be undone!
             </p>
-            <div className="flex gap-3">
+              </div>
+            </div>
+            <div className="flex gap-4">
               <button
                 onClick={confirmDeleteUser}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded font-medium"
+                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Delete Permanently
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded font-medium"
+                className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Bulk Delete Confirmation Modal */}
+      {showBulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <Trash2 size={32} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">Bulk Delete Users</h3>
+                <p className="text-lg text-gray-600 mb-4">
+                  <strong className="text-red-600">DANGER:</strong> This will permanently delete <strong className="text-red-600">{selectedUsers.size} users</strong> and all their data.
+                </p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-2xl p-4 mb-6 max-h-32 overflow-y-auto">
+              <p className="text-sm text-gray-600 mb-3 font-bold">Users to be deleted:</p>
+              {filteredUsers
+                .filter(user => selectedUsers.has(user.id))
+                .map(user => (
+                  <div key={user.id} className="text-sm text-gray-800 mb-1">
+                    • {user.email} (ID: {user.id})
+                  </div>
+                ))
+              }
+            </div>
+            <p className="text-red-600 text-lg font-bold mb-6">
+              This action cannot be undone!
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={bulkDeleteUsers}
+                className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Delete {selectedUsers.size} Users
+              </button>
+              <button
+                onClick={() => setShowBulkDeleteConfirm(false)}
+                className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Cancel
               </button>
@@ -1131,50 +1477,62 @@ export default function AdminPage() {
         />
       )}
 
-      {/* Games Management Modal */}
+      {/* Enhanced Games Management Modal */}
       {showGamesModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
-                🎮 Games in {showGamesModal.lobbyName}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Eye size={32} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    Games in {showGamesModal.lobbyName}
               </h3>
+                  <p className="text-lg text-gray-600">Manage games and their status</p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowGamesModal(null)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="w-12 h-12 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
               >
-                ×
+                <X size={24} />
               </button>
             </div>
             
             {loadingGames ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-600">Loading games...</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl animate-spin">
+                  <RefreshCw size={32} className="text-white" />
+                </div>
+                <p className="text-xl font-bold text-gray-600">Loading games...</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-600">
+              <div className="space-y-6">
+                <div className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
+                  <p className="text-lg font-bold text-gray-700">
                     {showGamesModal.games.length} game(s) in this lobby (Max: 4)
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4">
                     <button
                       onClick={() => addGameToLobby(showGamesModal.lobbyId)}
-                      className={`py-2 px-4 rounded-lg font-medium ${
+                      className={`py-3 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 ${
                         showGamesModal.games.length >= 4
-                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                          : 'bg-green-600 hover:bg-green-700 text-white'
+                          ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-600 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
                       }`}
                       disabled={showGamesModal.games.length >= 4}
                     >
-                      ➕ Add New Game
+                      <Plus size={18} />
+                      Add New Game
                     </button>
                     <button
                       onClick={() => resetLobbyGames(showGamesModal.lobbyId)}
-                      className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg font-medium"
+                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 px-6 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
                     >
-                      🔄 Reset Lobby
+                      <RefreshCw size={18} />
+                      Reset Lobby
                     </button>
                   </div>
                 </div>

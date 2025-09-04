@@ -55,105 +55,105 @@ export function MobileInfoView({
     }
   };
   return (
-    <div className="w-full h-full flex flex-col p-2">
-      {/* Lobby Header */}
-      <div className="flex-shrink-0 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3 mb-2">
+    <div className="w-full h-full flex flex-col p-4 bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl">
+      {/* Enhanced Lobby Header */}
+      <div className="flex-shrink-0 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-4 mb-4 border border-indigo-200/50">
         <div className="text-center">
-          <h3 className="text-base font-bold text-gray-900">{lobby.name}</h3>
-          <p className="text-xs text-gray-600">Lobby #{lobby.id}</p>
+          <h3 className="text-lg font-bold text-gray-800">{lobby.name}</h3>
+          <p className="text-sm text-gray-600">Lobby #{lobby.id}</p>
         </div>
       </div>
 
       {/* Info Grid */}
       <div className="flex-1 overflow-y-auto space-y-2">
-        {/* Entry Fee & Game Info */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <div className="flex items-center justify-between mb-1">
-              <DollarSign size={14} className="text-green-600" />
-              <span className="text-xs text-gray-500">Entry</span>
+        {/* Enhanced Entry Fee & Game Info */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-gray-100/80 rounded-2xl border border-green-300/50 p-4 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-2">
+              <DollarSign size={16} className="text-green-600" />
+              <span className="text-sm text-gray-700">Entry</span>
             </div>
-            <div className="text-lg font-bold text-gray-900">${lobby.entryFee}</div>
-            <div className="text-[10px] text-gray-500">Per seat</div>
+            <div className="text-xl font-bold text-green-700">${lobby.entryFee}</div>
+            <div className="text-xs text-gray-600">Per seat</div>
           </div>
           
-          <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <div className="flex items-center justify-between mb-1">
-              <Users size={14} className="text-blue-600" />
-              <span className="text-xs text-gray-500">My Seats</span>
+          <div className="bg-gray-100/80 rounded-2xl border border-blue-300/50 p-4 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-2">
+              <Users size={16} className="text-blue-600" />
+              <span className="text-sm text-gray-700">My Seats</span>
             </div>
-            <div className="text-lg font-bold text-gray-900">
+            <div className="text-xl font-bold text-blue-700">
               {currentUserParticipation?.length || 0}/2
             </div>
-            <div className="text-[10px] text-gray-500">
+            <div className="text-xs text-gray-600">
               seats selected
             </div>
           </div>
         </div>
 
-        {/* Game Status */}
-        <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-600">Game Status</span>
+        {/* Enhanced Game Status */}
+        <div className="bg-gray-100/80 rounded-2xl border border-purple-300/50 p-4 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700">Game Status</span>
             <div className={cn(
-              "flex items-center gap-1",
-              isConnected ? "text-green-600" : "text-red-600"
+              "flex items-center gap-1 px-2 py-1 rounded-lg",
+              isConnected ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
             )}>
               <Wifi size={12} />
-              <span className="text-[10px] font-medium">
+              <span className="text-xs font-medium">
                 {isConnected ? "Connected" : "Offline"}
               </span>
             </div>
           </div>
           
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-3">
             {gameStatus === 'waiting' && (
               <>
-                <AlertCircle size={20} className="text-yellow-500" />
+                <AlertCircle size={24} className="text-yellow-500" />
                 <div>
-                  <div className="text-sm font-bold text-yellow-600">Waiting</div>
-                  <div className="text-[10px] text-gray-500">Game will start soon</div>
+                  <div className="text-lg font-bold text-yellow-600">Waiting</div>
+                  <div className="text-xs text-gray-600">Game will start soon</div>
                 </div>
               </>
             )}
             {gameStatus === 'active' && !isPaused && (
               <>
-                <Play size={20} className="text-green-600 animate-pulse" />
+                <Play size={24} className="text-green-500 animate-pulse" />
                 <div>
-                  <div className="text-sm font-bold text-green-600">Playing</div>
-                  <div className="text-[10px] text-gray-500">Game in progress</div>
+                  <div className="text-lg font-bold text-green-600">Playing</div>
+                  <div className="text-xs text-gray-600">Game in progress</div>
                 </div>
               </>
             )}
             {gameStatus === 'active' && isPaused && (
               <>
-                <Pause size={20} className="text-orange-600" />
+                <Pause size={24} className="text-orange-500" />
                 <div>
-                  <div className="text-sm font-bold text-orange-600">Paused</div>
-                  <div className="text-[10px] text-gray-500">Game paused</div>
+                  <div className="text-lg font-bold text-orange-600">Paused</div>
+                  <div className="text-xs text-gray-600">Game paused</div>
                 </div>
               </>
             )}
             {gameStatus === 'finished' && (
               <>
-                <CheckCircle size={20} className="text-purple-600" />
+                <CheckCircle size={24} className="text-purple-500" />
                 <div>
-                  <div className="text-sm font-bold text-purple-600">Finished</div>
-                  <div className="text-[10px] text-gray-500">Game completed</div>
+                  <div className="text-lg font-bold text-purple-600">Finished</div>
+                  <div className="text-xs text-gray-600">Game completed</div>
                 </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Prize Pool */}
-        <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-300 p-3">
+        {/* Enhanced Prize Pool */}
+        <div className="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl border border-yellow-300/50 p-4 backdrop-blur-sm">
           <div className="text-center">
-            <div className="text-xs font-medium text-yellow-800 mb-1">Prize Pool</div>
+            <div className="text-sm font-medium text-yellow-700 mb-2">Prize Pool</div>
             <div className="text-2xl font-bold text-yellow-600">
               ${(lobby.entryFee * participants.length * 0.7).toFixed(2)}
             </div>
-            <div className="text-[10px] text-yellow-700 mt-1">
+            <div className="text-xs text-yellow-700 mt-1">
               Winner takes all!
             </div>
           </div>

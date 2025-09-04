@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Users, DollarSign, Clock } from "lucide-react";
+import { Target, Users, DollarSign, Clock, Sparkles, Star } from "lucide-react";
 import { SeatSelection } from "./seat-selection";
 
 interface BingoNumber {
@@ -74,99 +74,140 @@ export function ClassicBingo() {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-cream to-light-cream">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
+    <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full opacity-20 animate-bounce-soft"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-amber-300 to-yellow-400 rounded-full opacity-15 animate-bounce-soft" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Floating sparkles */}
+        <div className="absolute top-32 right-1/4 opacity-20">
+          <Sparkles className="text-yellow-400 animate-pulse" size={20} />
+        </div>
+        <div className="absolute bottom-40 left-1/3 opacity-15">
+          <Star className="text-orange-400 animate-bounce-soft" size={16} />
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Enhanced Content */}
           <div>
-            <div className="flex items-center mb-6">
-              <div className="w-16 h-16 bg-casino-gold rounded-full flex items-center justify-center mr-4">
-                <Target className="text-white" size={28} />
+            <div className="flex items-center mb-8">
+              <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mr-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
+                <Target className="text-white" size={36} />
               </div>
-              <h2 className="text-4xl font-bold text-dark-brown">Classic Bingo</h2>
+              <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600">Classic Bingo</h2>
             </div>
             
-            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              Experience the traditional bingo you know and love! Our Classic Bingo games feature the familiar 15x6 format with comfortable pacing that gives you time to mark your cards and chat with other players.
+            <p className="text-2xl text-gray-700 mb-10 leading-relaxed">
+              Experience the traditional bingo you know and love! Our Classic Bingo games feature the familiar 15x5 format with comfortable pacing that gives you time to mark your cards and chat with other players.
             </p>
 
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-lg p-6 shadow-lg border-l-4 border-casino-gold">
-                <div className="flex items-center mb-3">
-                  <DollarSign className="casino-gold mr-2" size={20} />
-                  <h4 className="font-bold text-dark-brown">Entry Fees</h4>
+            <div className="grid grid-cols-2 gap-6 mb-10">
+              <div className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border-2 border-gradient-to-r from-yellow-200 to-orange-200 transform hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/30 to-orange-50/30"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-3">
+                      <DollarSign className="text-white" size={20} />
+                    </div>
+                    <h4 className="font-black text-gray-800">Entry Fees</h4>
+                  </div>
+                  <p className="text-3xl font-black text-green-600 mb-2">$3 - $25</p>
+                  <p className="text-gray-700 font-medium">Affordable for everyone</p>
                 </div>
-                <p className="text-2xl font-bold casino-gold">$3 - $25</p>
-                <p className="text-gray-600">Affordable for everyone</p>
               </div>
               
-              <div className="bg-white rounded-lg p-6 shadow-lg border-l-4 border-casino-gold">
-                <div className="flex items-center mb-3">
-                  <Users className="casino-gold mr-2" size={20} />
-                  <h4 className="font-bold text-dark-brown">Players</h4>
+              <div className="group relative overflow-hidden bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border-2 border-gradient-to-r from-orange-200 to-amber-200 transform hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-50/30 to-amber-50/30"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
+                      <Users className="text-white" size={20} />
+                    </div>
+                    <h4 className="font-black text-gray-800">Players</h4>
+                  </div>
+                  <p className="text-3xl font-black text-blue-600 mb-2">Up to 15</p>
+                  <p className="text-gray-700 font-medium">Perfect community size</p>
                 </div>
-                <p className="text-2xl font-bold casino-gold">Up to 15</p>
-                <p className="text-gray-600">Perfect community size</p>
               </div>
             </div>
 
             <Button 
               onClick={handleNewGame}
               size="lg"
-              className="bg-casino-gold text-white px-8 py-4 text-xl font-bold hover:bg-yellow-500 shadow-lg"
+              className="bg-gradient-to-r from-yellow-500 via-orange-500 to-amber-600 hover:from-yellow-600 hover:via-orange-600 hover:to-amber-700 text-white px-12 py-6 text-2xl font-black shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-2xl"
             >
-              New Game
+              <Target className="mr-3" size={24} />
+              Start New Game
             </Button>
           </div>
 
-          {/* Visual */}
-          <div className="bg-white rounded-xl shadow-2xl p-8 border-4 border-casino-gold">
-            <h3 className="text-2xl font-bold casino-red mb-6 text-center">Classic Bingo Card</h3>
-            <div className="flex gap-2 mb-6">
-              {/* Seat Selection Column */}
-              <SeatSelection
-                onSeatSelect={handleSeatSelect}
-                selectedSeat={selectedSeat}
-                takenSeats={takenSeats}
-              />
-
-              {/* Bingo Card Grid */}
-              <div className="grid grid-cols-5 gap-2 flex-1">
-              {/* Header Row */}
-              <div className="bg-casino-red text-white font-bold text-center py-3 rounded text-lg">B</div>
-              <div className="bg-casino-red text-white font-bold text-center py-3 rounded text-lg">I</div>
-              <div className="bg-casino-red text-white font-bold text-center py-3 rounded text-lg">N</div>
-              <div className="bg-casino-red text-white font-bold text-center py-3 rounded text-lg">G</div>
-              <div className="bg-casino-red text-white font-bold text-center py-3 rounded text-lg">O</div>
-              
-                {/* Bingo Numbers */}
-                {bingoCard.map((row, rowIndex) => 
-                  row.map((number, colIndex) => (
-                    <button
-                      key={`${rowIndex}-${colIndex}`}
-                      onClick={() => handleNumberClick(rowIndex, colIndex)}
-                      className={`
-                        text-center py-3 rounded border font-bold text-lg
-                        transition-colors cursor-pointer
-                        ${number.isMarked 
-                        ? 'bg-casino-gold text-white' 
-                          : 'bg-gray-100 text-dark-brown hover:bg-casino-gold hover:text-white'
-                        }
-                      `}
-                  >
-                      {number.value}
-                    </button>
-                ))
-              )}
+          {/* Enhanced Visual */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-3xl transform rotate-3 opacity-20"></div>
+            <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border-4 border-gradient-to-r from-yellow-400 via-orange-500 to-amber-500 relative z-10">
+              <div className="absolute top-4 right-4">
+                <Star className="text-yellow-400 animate-pulse" size={20} />
               </div>
-            </div>
-            <div className="text-center">
-              <p className="text-gray-600 mb-2">
-                <strong>15 rows × 6 columns</strong> = 15 seats + 75 numbers
-              </p>
-              <p className="text-casino-red font-semibold">
-                Click numbers to mark them!
-              </p>
+              
+              <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600 mb-8 text-center">
+                Classic Bingo Card (15x5)
+              </h3>
+              
+              <div className="flex gap-4 mb-8">
+                {/* Seat Selection Column */}
+                <SeatSelection
+                  onSeatSelect={handleSeatSelect}
+                  selectedSeat={selectedSeat}
+                  takenSeats={takenSeats}
+                />
+
+                {/* Enhanced Bingo Card Grid */}
+                <div className="grid grid-cols-5 gap-3 flex-1">
+                  {/* Enhanced Header Row */}
+                  <div className="bg-gradient-to-br from-red-500 to-pink-600 text-white font-black text-center py-4 rounded-xl shadow-lg text-xl">B</div>
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 text-white font-black text-center py-4 rounded-xl shadow-lg text-xl">I</div>
+                  <div className="bg-gradient-to-br from-yellow-500 to-orange-500 text-white font-black text-center py-4 rounded-xl shadow-lg text-xl">N</div>
+                  <div className="bg-gradient-to-br from-green-500 to-yellow-500 text-white font-black text-center py-4 rounded-xl shadow-lg text-xl">G</div>
+                  <div className="bg-gradient-to-br from-blue-500 to-green-500 text-white font-black text-center py-4 rounded-xl shadow-lg text-xl">O</div>
+                  
+                  {/* Enhanced Bingo Numbers */}
+                  {bingoCard.map((row, rowIndex) => 
+                    row.map((number, colIndex) => (
+                      <button
+                        key={`${rowIndex}-${colIndex}`}
+                        onClick={() => handleNumberClick(rowIndex, colIndex)}
+                        className={`
+                          text-center py-3 rounded-xl border-2 font-bold text-lg
+                          transition-all duration-300 cursor-pointer transform hover:scale-105
+                          ${number.isMarked 
+                          ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white border-yellow-300 shadow-lg scale-105' 
+                            : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-gray-200 hover:bg-gradient-to-br hover:from-yellow-50 hover:to-orange-50 hover:border-yellow-300'
+                          }
+                        `}
+                    >
+                        {number.value}
+                      </button>
+                  ))
+                )}
+                </div>
+              </div>
+              
+              <div className="text-center bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
+                <p className="text-gray-700 mb-3">
+                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600">15 rows × 5 columns</span>
+                  <br />
+                  <span className="text-lg text-yellow-700">= 75 numbers & maximum winning chances!</span>
+                </p>
+                <p className="text-orange-600 font-bold flex items-center justify-center">
+                  <Sparkles className="mr-2" size={16} />
+                  Click numbers to mark them!
+                  <Sparkles className="ml-2" size={16} />
+                </p>
+              </div>
             </div>
           </div>
         </div>

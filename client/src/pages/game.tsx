@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import { apiRequest } from '../lib/api';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Users, DollarSign, Trophy, Play } from 'lucide-react';
+import { ArrowLeft, Users, DollarSign, Trophy, Play, Sparkles, Star, Crown, Gamepad2, Timer, RefreshCw, Target, Zap } from 'lucide-react';
 import { BingoCard } from '../components/games/bingo-card';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { MobileGameView } from '../components/games/mobile-game-view';
@@ -623,9 +623,30 @@ export default function GamePage() {
   if (loading) {
     return (
       <SiteLayout hideAuthButtons>
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="flex items-center justify-center min-h-96">
-            <div className="animate-spin w-8 h-8 border-4 border-casino-gold border-t-transparent rounded-full" />
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full animate-bounce-soft"></div>
+            <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-purple-400/20 to-pink-500/20 rounded-full animate-pulse"></div>
+            <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-red-500/20 rounded-full animate-bounce-soft" style={{ animationDelay: '1s' }}></div>
+            
+            {/* Floating sparkles */}
+            <div className="absolute top-32 right-1/4 opacity-20">
+              <Sparkles className="text-blue-400 animate-pulse" size={20} />
+            </div>
+            <div className="absolute bottom-40 left-1/3 opacity-15">
+              <Star className="text-purple-400 animate-bounce-soft" size={16} />
+            </div>
+          </div>
+          
+          <div className="text-center relative z-10">
+            <div className="bg-gray-800/95 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border-2 border-gradient-to-r from-blue-500/30 to-purple-500/30">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+              </div>
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-2">Loading Game</h2>
+              <p className="text-gray-300 font-medium">Preparing your bingo experience...</p>
+            </div>
           </div>
         </div>
       </SiteLayout>
@@ -635,19 +656,37 @@ export default function GamePage() {
   if (error) {
     return (
       <SiteLayout hideAuthButtons>
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <div className="flex gap-2 justify-center">
-              <Button onClick={handleBackToDashboard} variant="outline">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-pink-900 flex items-center justify-center relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-red-400/20 to-pink-500/20 rounded-full animate-bounce-soft"></div>
+            <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-pink-400/20 to-orange-500/20 rounded-full animate-pulse"></div>
+          </div>
+          
+          <div className="text-center relative z-10">
+            <div className="bg-gray-800/95 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border-2 border-gradient-to-r from-red-500/30 to-pink-500/30 max-w-md">
+              <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-white text-4xl">⚠️</span>
+              </div>
+              <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-400 mb-4">Error</h1>
+              <p className="text-gray-300 mb-8 font-medium">{error}</p>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={handleBackToDashboard}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Button>
               {lobby && (
-                <Button onClick={handleBackToLobby} variant="outline">
+                  <Button 
+                    onClick={handleBackToLobby}
+                    className="border-2 border-gray-500 text-gray-300 hover:bg-gray-700 px-8 py-3 rounded-2xl font-bold transition-all duration-300"
+                  >
                   Back to Lobby
                 </Button>
               )}
+              </div>
             </div>
           </div>
         </div>
@@ -751,44 +790,81 @@ export default function GamePage() {
   // Both desktop and mobile use the same tabbed interface now
   // Desktop gets a header, mobile doesn't
 
-  // Unified view with optional desktop header
+  // Enhanced unified view with optional desktop header
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Desktop header (only show on desktop) */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full animate-bounce-soft"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-br from-purple-400/10 to-pink-500/10 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-pink-400/10 to-red-500/10 rounded-full animate-bounce-soft" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Floating sparkles */}
+        <div className="absolute top-32 right-1/4 opacity-10">
+          <Sparkles className="text-blue-400 animate-pulse" size={20} />
+        </div>
+        <div className="absolute bottom-40 left-1/3 opacity-10">
+          <Star className="text-purple-400 animate-bounce-soft" size={16} />
+        </div>
+      </div>
+      
+      {/* Enhanced Desktop header (only show on desktop) */}
       {!isMobile && (
-        <div className="bg-gray-800 border-b border-gray-700 p-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="bg-gray-800/95 backdrop-blur-sm border-b-2 border-gradient-to-r from-blue-500/30 to-purple-500/30 p-6 relative z-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-800/50 to-slate-800/50"></div>
+          
+          {/* Floating decorative elements */}
+          <div className="absolute top-4 right-4">
+            <Gamepad2 className="text-blue-400/30 animate-pulse" size={24} />
+          </div>
+          <div className="absolute top-6 left-6">
+            <Target className="text-purple-400/30 animate-bounce-soft" size={16} />
+          </div>
+          
+          <div className="max-w-7xl mx-auto flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-6">
               <Button 
                 onClick={handleBackToLobby} 
-                variant="outline" 
-                size="sm"
-                className="bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+                className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-2xl font-bold shadow-lg transition-all duration-300 transform hover:scale-105 border border-gray-500"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Lobby
               </Button>
+              <div className="flex items-center">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg mr-4">
+                  <Crown className="text-white" size={28} />
+                </div>
               <div>
-                <h1 className="text-xl font-bold text-white">{game?.name}</h1>
-                <p className="text-gray-400 text-sm">{lobby?.name}</p>
+                  <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    {game?.name}
+                  </h1>
+                  <p className="text-gray-300 text-lg font-medium">{lobby?.name}</p>
               </div>
             </div>
+            </div>
+            
             <div className="flex items-center gap-4">
-              {/* Admin Start Game Button */}
+              {/* Enhanced Admin Start Game Button */}
               {userInfo?.isAdmin && game?.status === 'waiting' && (
                 <Button 
                   onClick={handleStartGame}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  size="sm"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl transition-all duration-300 transform hover:scale-105"
                 >
+                  <Zap className="mr-2" size={20} />
                   🚀 Start Game
                 </Button>
               )}
-              <div className="text-right">
-                <p className="text-sm text-gray-400">Your Balance</p>
-                <p className="text-xl font-bold text-green-400">
+              
+              <div className="bg-gray-700/70 rounded-2xl px-6 py-4 shadow-lg backdrop-blur-sm border border-gray-600/50">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <DollarSign className="w-5 h-5 text-green-400 mr-2" />
+                    <p className="text-sm text-gray-300 font-bold uppercase tracking-wider">Your Balance</p>
+                  </div>
+                  <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">
                   ${typeof userInfo?.balance === 'number' ? userInfo.balance.toFixed(2) : parseFloat(userInfo?.balance?.toString() || '0').toFixed(2)}
                 </p>
+                </div>
               </div>
             </div>
           </div>
@@ -822,7 +898,7 @@ export default function GamePage() {
           winnerSeatNumber={winner?.seatNumber}
           winnerUserId={winner?.userId}
           myUserId={userInfo?.id}
-          lobbyId={game?.id || 0}
+          lobbyId={game?.lobbyId || 0}
           serverCardsBySeat={serverCardsBySeat}
           masterCard={masterCard}
           user={userInfo}
@@ -876,35 +952,87 @@ export default function GamePage() {
         </div>
       )}
       
-      {/* Debug Info - Remove this after testing */}
-      {userInfo && (
-        <div className="fixed top-20 right-4 z-30 bg-black/80 text-white p-3 rounded text-xs max-w-xs">
-          <div>Selected Seats: {selectedSeats.join(', ') || 'None'}</div>
-          <div>Pattern Progress: {patternProgress.length} patterns</div>
-          <div>Called Numbers: {calledNumbers.length} numbers</div>
+      {/* Enhanced Debug Panel */}
+      {userInfo && localStorage.getItem('debugEnabled') === 'true' && (
+        <div className="fixed top-20 right-4 z-30 bg-gray-800/95 backdrop-blur-sm border-2 border-gradient-to-r from-blue-500/30 to-purple-500/30 text-white p-4 rounded-3xl text-xs max-w-xs shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-800/50 to-slate-800/50 rounded-3xl"></div>
+          
+          {/* Header */}
+          <div className="relative z-10 mb-3">
+            <div className="flex items-center mb-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
+                <Target className="text-white" size={12} />
+              </div>
+              <h3 className="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Game Debug</h3>
+            </div>
+          </div>
+          
+          <div className="relative z-10 space-y-2">
+            <div className="bg-gray-700/70 rounded-xl p-2">
+              <div className="flex items-center mb-1">
+                <Users className="w-3 h-3 text-blue-400 mr-1" />
+                <span className="font-bold text-blue-400">Selected Seats:</span>
+              </div>
+              <div className="text-gray-300">{selectedSeats.join(', ') || 'None'}</div>
+            </div>
+            
+            <div className="bg-gray-700/70 rounded-xl p-2">
+              <div className="flex items-center mb-1">
+                <Target className="w-3 h-3 text-purple-400 mr-1" />
+                <span className="font-bold text-purple-400">Pattern Progress:</span>
+              </div>
+              <div className="text-gray-300">{patternProgress.length} patterns</div>
+            </div>
+            
+            <div className="bg-gray-700/70 rounded-xl p-2">
+              <div className="flex items-center mb-1">
+                <Gamepad2 className="w-3 h-3 text-green-400 mr-1" />
+                <span className="font-bold text-green-400">Game Info:</span>
+              </div>
+              <div className="text-gray-300 text-xs space-y-1">
+                <div>Called Numbers: {calledNumbers.length}</div>
           <div>Server Cards: {Object.keys(serverCardsBySeat).length} seats</div>
           <div>Master Card: {masterCard ? 'YES' : 'NO'}</div>
           <div>Participants: {participants.length} total</div>
-          <div>Game Status: {gameStatus}</div>
+                <div>Status: <span className={`font-bold ${gameStatus === 'active' ? 'text-green-400' : gameStatus === 'waiting' ? 'text-yellow-400' : 'text-red-400'}`}>{gameStatus.toUpperCase()}</span></div>
+              </div>
+            </div>
+            
+            <div className="bg-gray-700/70 rounded-xl p-2">
+              <div className="flex items-center mb-1">
+                <Trophy className="w-3 h-3 text-yellow-400 mr-1" />
+                <span className="font-bold text-yellow-400">Winner Info:</span>
+              </div>
+              <div className="text-gray-300 text-xs space-y-1">
           <div>Show Celebration: {showCelebration ? 'YES' : 'NO'}</div>
           <div>Celebration Data: {celebrationData ? 'YES' : 'NO'}</div>
           <div>Winner: {winner ? `User ${winner.userId}, Seat ${winner.seatNumber}` : 'None'}</div>
           {celebrationData && (
-            <div className="mt-1 text-xs">
+                  <div className="mt-1 space-y-1">
               <div>Prize: ${celebrationData.prizeAmount}</div>
               <div>Seats: {celebrationData.winningSeats?.join(',') || 'None'}</div>
             </div>
           )}
+              </div>
+            </div>
+            
           {patternProgress.length > 0 && (
-            <div className="mt-2">
-              <div className="font-bold">Pattern Details:</div>
+              <div className="bg-gray-700/70 rounded-xl p-2">
+                <div className="flex items-center mb-1">
+                  <Zap className="w-3 h-3 text-pink-400 mr-1" />
+                  <span className="font-bold text-pink-400">Pattern Details:</span>
+                </div>
+                <div className="text-gray-300 text-xs space-y-1">
               {patternProgress.slice(0, 3).map((p, i) => (
-                <div key={i} className="text-xs">
-                  Seat {p.seat}: {Math.round(p.progress * 100)}% ({p.numbersNeeded.length} needed)
+                    <div key={i} className="flex justify-between">
+                      <span>Seat {p.seat}:</span>
+                      <span className="text-pink-400 font-bold">{Math.round(p.progress * 100)}% ({p.numbersNeeded.length} needed)</span>
                 </div>
               ))}
+                </div>
             </div>
           )}
+          </div>
         </div>
       )}
     </div>
