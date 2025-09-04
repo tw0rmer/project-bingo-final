@@ -161,13 +161,13 @@ export function CompactMobileBingo({
             <div className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 justify-center">
               🔥 Called Numbers ({calledNumbers.length}/75)
             </div>
-            <div className="flex flex-wrap gap-1 justify-center max-h-16 overflow-y-auto">
-              {calledNumbers.slice(-15).map((num, idx) => (
+            <div className="flex flex-wrap gap-1 justify-center">
+              {calledNumbers.slice(-10).map((num, idx) => (
                 <span 
                   key={idx} 
                   className={cn(
                     "px-2 py-1 rounded-lg text-xs font-bold border transition-all duration-300 flex items-center justify-center min-w-7",
-                    idx === calledNumbers.slice(-15).length - 1 
+                    idx === calledNumbers.slice(-10).length - 1 
                       ? "bg-gradient-to-br from-red-500 to-red-600 text-white border-red-400 shadow-lg animate-pulse scale-110" 
                       : "bg-gradient-to-br from-yellow-300 to-yellow-400 text-black border-yellow-500 shadow-sm"
                   )}
@@ -177,9 +177,9 @@ export function CompactMobileBingo({
                 </span>
               ))}
             </div>
-            {calledNumbers.length > 15 && (
+            {calledNumbers.length > 10 && (
               <div className="text-xs text-gray-600 text-center mt-1">
-                Showing last 15 numbers
+                Showing last 10 numbers
               </div>
             )}
           </div>
