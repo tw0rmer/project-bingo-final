@@ -910,6 +910,7 @@ export default function GamePage() {
           onLeaveLobby={handleBackToLobby}
           onStartGame={userInfo?.isAdmin ? handleStartGame : undefined}
           gameData={game}
+          patternProgress={patternProgress}
         />
       </div>
 

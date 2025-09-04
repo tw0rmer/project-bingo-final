@@ -29,6 +29,7 @@ interface MobileGameViewProps {
   serverRow?: number[];
   serverCardsBySeat?: Record<number, number[]>;
   masterCard?: number[][] | null; // Server master card that ALL players see
+  patternProgress?: any[]; // Pattern progress for visual effects
   
   // Additional lobby info
   lobby: any;
@@ -43,7 +44,6 @@ interface MobileGameViewProps {
   // Admin functionality
   onStartGame?: () => void;
   gameData?: any;
-  participants?: any[];
 }
 
 type MobileTab = 'card' | 'master' | 'players' | 'info';
@@ -77,7 +77,8 @@ export function MobileGameView({
   onLeaveLobby,
   onStartGame,
   gameData,
-  participants: gameParticipants
+  participants: gameParticipants,
+  patternProgress = []
 }: MobileGameViewProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>('card');
   const [availableGames, setAvailableGames] = useState<any[]>([]);
@@ -152,7 +153,7 @@ export function MobileGameView({
                 <div className="w-1/2">
                   <IntegratedMasterCard 
                     calledNumbers={calledNumbers}
-                    currentNumber={currentNumber}
+                    currentNumber={currentNumber || undefined}
                     nextCallIn={nextCallIn}
                   />
                 </div>
@@ -164,7 +165,7 @@ export function MobileGameView({
                     participants={participants}
                     selectedSeats={selectedSeats}
                     gamePhase={gamePhase}
-                    currentNumber={currentNumber}
+                    currentNumber={currentNumber || undefined}
                     nextCallIn={nextCallIn}
                     onGameSwitch={(gameId) => {
                       // Find the actual game from available games
@@ -199,6 +200,7 @@ export function MobileGameView({
                 serverRow={serverRow}
                 serverCardsBySeat={serverCardsBySeat}
                 masterCard={masterCard}
+                patternProgress={patternProgress}
               />
             </div>
           </div>
@@ -208,7 +210,7 @@ export function MobileGameView({
         return (
           <MobileMasterCard 
             calledNumbers={calledNumbers}
-            currentNumber={currentNumber}
+            currentNumber={currentNumber || undefined}
             nextCallIn={nextCallIn}
           />
         );

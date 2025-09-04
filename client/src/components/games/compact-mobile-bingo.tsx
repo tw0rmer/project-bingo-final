@@ -22,6 +22,7 @@ interface CompactMobileBingoProps {
   serverRow?: number[];
   serverCardsBySeat?: Record<number, number[]>;
   masterCard?: number[][] | null; // Server master card that ALL players see
+  patternProgress?: any[]; // Pattern progress for row highlighting
 }
 
 // REMOVED: Random card generation - All cards must come from server to ensure consistency
@@ -40,7 +41,8 @@ export function CompactMobileBingo({
   lobbyId,
   serverRow,
   serverCardsBySeat,
-  masterCard
+  masterCard,
+  patternProgress = []
 }: CompactMobileBingoProps) {
   const [bingoCard, setBingoCard] = useState<BingoNumber[][]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,29 @@ export function CompactMobileBingo({
     return participant && participant.userId !== myUserId;
   };
 
+  // Helper function to get row visual effects based on pattern progress
+  const getRowEffects = (seatNumber: number) => {
+    // Only apply effects to rows the current user has selected
+    if (!selectedSeats.includes(seatNumber)) return '';
+    
+    const seatProgress = patternProgress.find(p => p.seat === seatNumber);
+    if (!seatProgress) return '';
+    
+    const { progress } = seatProgress;
+    
+    // "On Fire" effects based on completion percentage
+    if (progress >= 0.8) {
+      return 'ring-4 ring-red-500 shadow-[0_0_20px_#ef4444] animate-pulse bg-gradient-to-br from-red-50 to-orange-100';
+    }
+    if (progress >= 0.6) {
+      return 'ring-2 ring-orange-400 shadow-[0_0_10px_#fb923c] bg-gradient-to-br from-orange-50 to-yellow-100';
+    }
+    if (progress >= 0.4) {
+      return 'ring-1 ring-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50';
+    }
+    return '';
+  };
+
   return (
     <div className="w-full h-full flex flex-col bg-white/95 backdrop-blur-sm rounded-3xl border-2 border-gray-200/50 shadow-2xl p-4">
       {/* Enhanced Header */}
@@ -130,6 +155,36 @@ export function CompactMobileBingo({
           </div>
         )}
       </div>
+
+      {/* Horizontal Called Numbers Display */}
+      {calledNumbers.length > 0 && (
+        <div className="flex-shrink-0 mb-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-3 border border-yellow-200/50">
+          <div className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+            🔥 Called Numbers ({calledNumbers.length}/75)
+          </div>
+          <div className="flex flex-wrap gap-1 justify-center max-h-20 overflow-y-auto">
+            {calledNumbers.slice(-20).map((num, idx) => (
+              <span 
+                key={idx} 
+                className={cn(
+                  "px-2 py-1 rounded-lg text-xs font-bold border transition-all duration-300 flex items-center justify-center min-w-8",
+                  idx === calledNumbers.slice(-20).length - 1 
+                    ? "bg-gradient-to-br from-red-500 to-red-600 text-white border-red-400 shadow-lg animate-pulse scale-110" 
+                    : "bg-gradient-to-br from-yellow-300 to-yellow-400 text-black border-yellow-500 shadow-sm"
+                )}
+                data-testid={`called-number-${num}`}
+              >
+                {num}
+              </span>
+            ))}
+          </div>
+          {calledNumbers.length > 20 && (
+            <div className="text-xs text-gray-600 text-center mt-1">
+              Showing last 20 numbers
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Enhanced Scrollable Bingo Grid */}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
@@ -167,8 +222,14 @@ export function CompactMobileBingo({
             const canSelect = !isOccupiedByOther && !isJoining && selectedSeats.length < 2;
             const canDeselect = isMySelection && !isJoining;
 
+            // Add row effects for selected seats
+            const rowEffectsClass = getRowEffects(seatNumber);
+            
             return (
-              <div key={seatNumber} className="grid grid-cols-6 gap-2">
+              <div key={seatNumber} className={cn(
+                "grid grid-cols-6 gap-2 transition-all duration-300",
+                rowEffectsClass && `p-2 rounded-2xl ${rowEffectsClass}`
+              )}>
                 {/* Enhanced Seat Cell */}
                 <button
                   onClick={() => (canSelect || canDeselect) && gamePhase !== 'playing' && onSeatSelect(seatNumber)}
@@ -189,30 +250,65 @@ export function CompactMobileBingo({
                   <div className="text-xs truncate opacity-90">
                     {participant ? participant?.user?.email?.split('@')[0] : 'Open'}
                   </div>
+                  {/* Progress indicator on seat button */}
+                  {rowEffectsClass && (
+                    <div className="absolute -top-1 -right-1 text-xs z-10">
+                      {patternProgress.find(p => p.seat === seatNumber)?.progress >= 0.8 ? '🔥' : 
+                       patternProgress.find(p => p.seat === seatNumber)?.progress >= 0.6 ? '⚡' : '✨'}
+                    </div>
+                  )}
                 </button>
 
-                {/* Enhanced Number Cells */}
-                {bingoCard[rowIndex]?.map((number, colIndex) => (
-                  <button
-                    key={colIndex}
-                    onClick={() => handleNumberClick(rowIndex, colIndex)}
-                    disabled={gamePhase !== 'playing'}
-                    className={cn(
-                      "rounded-2xl font-bold text-sm transition-all touch-manipulation h-12 shadow-lg border",
-                      "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
-                      "flex items-center justify-center",
-                      gamePhase === 'playing' && "cursor-pointer active:scale-95",
-                      gamePhase !== 'playing' && "cursor-default",
-                      number.isMarked 
-                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white ring-2 ring-blue-400 shadow-blue-500/30" 
-                        : "bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-gray-300/50",
-                      winnerSeatNumber === seatNumber && number.isMarked && "bg-gradient-to-br from-yellow-400 to-amber-500 text-black ring-4 ring-yellow-400 shadow-[0_0_20px_#facc15] animate-pulse"
-                    )}
-                    data-testid={`button-number-${seatNumber}-${colIndex}`}
-                  >
-                    {number.value}
-                  </button>
-                ))}
+                {/* Enhanced Number Cells with Progressive Effects */}
+                {bingoCard[rowIndex]?.map((number, colIndex) => {
+                  // Get enhanced styling for marked numbers based on pattern progress
+                  const seatProgress = patternProgress.find(p => p.seat === seatNumber);
+                  const isUserSeat = selectedSeats.includes(seatNumber);
+                  const progress = seatProgress?.progress || 0;
+                  
+                  // Enhanced marked number styling based on row progress
+                  const getMarkedNumberStyle = () => {
+                    if (!number.isMarked) return "bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-gray-300/50";
+                    
+                    // Winner styling takes priority
+                    if (winnerSeatNumber === seatNumber) {
+                      return "bg-gradient-to-br from-yellow-400 to-amber-500 text-black ring-4 ring-yellow-400 shadow-[0_0_20px_#facc15] animate-pulse";
+                    }
+                    
+                    // Progressive intensity for user's seats based on pattern progress
+                    if (isUserSeat && progress >= 0.8) {
+                      return "bg-gradient-to-br from-red-500 to-red-600 text-white ring-2 ring-red-400 shadow-red-500/50 animate-pulse";
+                    }
+                    if (isUserSeat && progress >= 0.6) {
+                      return "bg-gradient-to-br from-orange-500 to-orange-600 text-white ring-2 ring-orange-400 shadow-orange-500/30";
+                    }
+                    if (isUserSeat && progress >= 0.4) {
+                      return "bg-gradient-to-br from-yellow-500 to-yellow-600 text-black ring-1 ring-yellow-400 shadow-yellow-500/20";
+                    }
+                    
+                    // Default marked styling
+                    return "bg-gradient-to-br from-blue-500 to-blue-600 text-white ring-2 ring-blue-400 shadow-blue-500/30";
+                  };
+                  
+                  return (
+                    <button
+                      key={colIndex}
+                      onClick={() => handleNumberClick(rowIndex, colIndex)}
+                      disabled={gamePhase !== 'playing'}
+                      className={cn(
+                        "rounded-2xl font-bold text-sm transition-all touch-manipulation h-12 shadow-lg border",
+                        "focus:outline-none focus:ring-2 focus:ring-blue-400/50",
+                        "flex items-center justify-center",
+                        gamePhase === 'playing' && "cursor-pointer active:scale-95",
+                        gamePhase !== 'playing' && "cursor-default",
+                        getMarkedNumberStyle()
+                      )}
+                      data-testid={`button-number-${seatNumber}-${colIndex}`}
+                    >
+                      {number.value}
+                    </button>
+                  );
+                })}
               </div>
             );
           })}
