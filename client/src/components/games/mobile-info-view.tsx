@@ -14,6 +14,7 @@ interface MobileInfoViewProps {
   user?: any;
   gameId?: number;
   currentCallSpeed?: number;
+  onStartGame?: () => void;
 }
 
 export function MobileInfoView({ 
@@ -27,7 +28,8 @@ export function MobileInfoView({
   onLeaveLobby,
   user,
   gameId,
-  currentCallSpeed = 5
+  currentCallSpeed = 5,
+  onStartGame
 }: MobileInfoViewProps) {
   
   const handleSpeedChange = async (seconds: number) => {
@@ -223,12 +225,27 @@ export function MobileInfoView({
           </ul>
         </div>
 
-        {/* ADMIN CONTROLS - Only visible to admins during active games */}
-        {user?.isAdmin && gameStatus === 'active' && (
+        {/* ADMIN CONTROLS - Visible to admins for both waiting and active games */}
+        {user?.isAdmin && (gameStatus === 'waiting' || gameStatus === 'active') && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
             <h4 className="text-red-800 font-semibold mb-3 text-sm">⚙️ Admin Controls</h4>
             
-            {/* Game Speed Control */}
+            {/* Start Game Button - Only visible when waiting */}
+            {gameStatus === 'waiting' && onStartGame && (
+              <div className="mb-3">
+                <button
+                  onClick={onStartGame}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-bold shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  data-testid="admin-start-game-mobile"
+                >
+                  <Play size={16} />
+                  🚀 Start Game
+                </button>
+              </div>
+            )}
+            
+            {/* Game Speed Control - Only visible during active games */}
+            {gameStatus === 'active' && (
             <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded">
               <label className="block text-blue-800 font-medium text-xs mb-2">
                 🎯 Number Call Speed
@@ -249,6 +266,7 @@ export function MobileInfoView({
                 Numbers called every {currentCallSpeed} second{currentCallSpeed > 1 ? 's' : ''}
               </div>
             </div>
+            )}
           </div>
         )}
 

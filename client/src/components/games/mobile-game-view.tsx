@@ -234,6 +234,7 @@ export function MobileGameView({
             user={user}
             gameId={gameId}
             currentCallSpeed={currentCallSpeed}
+            onStartGame={onStartGame}
           />
         );
     }
