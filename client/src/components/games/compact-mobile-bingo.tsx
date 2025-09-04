@@ -148,43 +148,44 @@ export function CompactMobileBingo({
       {/* Enhanced Header */}
       <div className="flex-shrink-0 text-center mb-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-4 border border-indigo-200/50">
         <div className="text-lg font-bold text-gray-800 mb-2">All 15 Seats</div>
-        <div className="text-sm text-gray-600 mb-3">Select up to 2 seats to play</div>
+        <div className="text-sm text-gray-600 mb-2">Select up to 2 seats to play</div>
         {selectedSeats.length > 0 && (
-          <div className="text-sm text-blue-600 font-bold bg-blue-100 rounded-xl px-3 py-2 border border-blue-200">
+          <div className="text-sm text-blue-600 font-bold bg-blue-100 rounded-xl px-3 py-2 border border-blue-200 mb-3">
             Selected: {selectedSeats.join(', ')} ({selectedSeats.length}/2)
+          </div>
+        )}
+        
+        {/* Called Numbers - RIGHT UNDER "All 15 Seats" */}
+        {calledNumbers.length > 0 && (
+          <div className="mt-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 border border-yellow-200/50">
+            <div className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 justify-center">
+              🔥 Called Numbers ({calledNumbers.length}/75)
+            </div>
+            <div className="flex flex-wrap gap-1 justify-center max-h-16 overflow-y-auto">
+              {calledNumbers.slice(-15).map((num, idx) => (
+                <span 
+                  key={idx} 
+                  className={cn(
+                    "px-2 py-1 rounded-lg text-xs font-bold border transition-all duration-300 flex items-center justify-center min-w-7",
+                    idx === calledNumbers.slice(-15).length - 1 
+                      ? "bg-gradient-to-br from-red-500 to-red-600 text-white border-red-400 shadow-lg animate-pulse scale-110" 
+                      : "bg-gradient-to-br from-yellow-300 to-yellow-400 text-black border-yellow-500 shadow-sm"
+                  )}
+                  data-testid={`called-number-${num}`}
+                >
+                  {num}
+                </span>
+              ))}
+            </div>
+            {calledNumbers.length > 15 && (
+              <div className="text-xs text-gray-600 text-center mt-1">
+                Showing last 15 numbers
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Horizontal Called Numbers Display */}
-      {calledNumbers.length > 0 && (
-        <div className="flex-shrink-0 mb-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-3 border border-yellow-200/50">
-          <div className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-            🔥 Called Numbers ({calledNumbers.length}/75)
-          </div>
-          <div className="flex flex-wrap gap-1 justify-center max-h-20 overflow-y-auto">
-            {calledNumbers.slice(-20).map((num, idx) => (
-              <span 
-                key={idx} 
-                className={cn(
-                  "px-2 py-1 rounded-lg text-xs font-bold border transition-all duration-300 flex items-center justify-center min-w-8",
-                  idx === calledNumbers.slice(-20).length - 1 
-                    ? "bg-gradient-to-br from-red-500 to-red-600 text-white border-red-400 shadow-lg animate-pulse scale-110" 
-                    : "bg-gradient-to-br from-yellow-300 to-yellow-400 text-black border-yellow-500 shadow-sm"
-                )}
-                data-testid={`called-number-${num}`}
-              >
-                {num}
-              </span>
-            ))}
-          </div>
-          {calledNumbers.length > 20 && (
-            <div className="text-xs text-gray-600 text-center mt-1">
-              Showing last 20 numbers
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Enhanced Scrollable Bingo Grid */}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
