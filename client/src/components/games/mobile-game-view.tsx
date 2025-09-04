@@ -77,7 +77,6 @@ export function MobileGameView({
   onLeaveLobby,
   onStartGame,
   gameData,
-  participants: gameParticipants,
   patternProgress = []
 }: MobileGameViewProps) {
   const [activeTab, setActiveTab] = useState<MobileTab>('card');
@@ -230,7 +229,7 @@ export function MobileGameView({
           <MobileInfoView
             lobby={lobby}
             gameStatus={gameStatus}
-            participants={gameParticipants}
+            participants={participants}
             isConnected={isConnected}
             isPaused={isPaused}
             calledNumbers={calledNumbers}
