@@ -145,43 +145,6 @@ export function MobileGameView({
               </div>
             </div>
             
-            {/* Compact Two-Column Layout: Master Card + Game Info */}
-            <div className="flex-shrink-0 px-3 py-2">
-              <div className="flex gap-3">
-                {/* Left Column - Compact Master Card */}
-                <div className="w-1/2">
-                  <IntegratedMasterCard 
-                    calledNumbers={calledNumbers}
-                    currentNumber={currentNumber || undefined}
-                    nextCallIn={nextCallIn}
-                  />
-                </div>
-                
-                {/* Right Column - Game Information */}
-                <div className="w-1/2">
-                  <GameInfoCard 
-                    lobby={lobby}
-                    participants={participants}
-                    selectedSeats={selectedSeats}
-                    gamePhase={gamePhase}
-                    currentNumber={currentNumber || undefined}
-                    nextCallIn={nextCallIn}
-                    onGameSwitch={(gameId) => {
-                      // Find the actual game from available games
-                      const targetGame = availableGames.find(game => game.gameNumber === gameId);
-                      if (targetGame) {
-                        // Navigate to the specific game using the actual game ID
-                        window.location.href = `/games/${targetGame.id}`;
-                      } else {
-                        console.error(`Game ${gameId} not found in available games`);
-                      }
-                    }}
-                    availableGames={availableGames}
-                  />
-                </div>
-              </div>
-            </div>
-            
             {/* Compact Mobile Bingo Card */}
             <div className="flex-1 overflow-hidden">
               <CompactMobileBingo
